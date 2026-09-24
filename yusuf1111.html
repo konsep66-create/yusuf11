@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kumarhane Monopoly - Online Test</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background:#171717;
+    color:white;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+h1 {
+    text-align:center;
+}
+
+.panel {
+    background:#252525;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+input, button {
+    padding:12px;
+    margin:5px;
+    border-radius:8px;
+    border:0;
+    font-size:16px;
+}
+
+button {
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:disabled {
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.players {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.player {
+    background:#303030;
+    padding:15px;
+    border-radius:12px;
+}
+
+.board {
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    gap:5px;
+}
+
+.cell {
+    background:#303030;
+    border:1px solid #555;
+    min-height:70px;
+    padding:5px;
+    border-radius:7px;
+    font-size:12px;
+}
+
+.piece {
+    display:inline-block;
+    padding:4px 7px;
+    background:#ffd54a;
+    color:#111;
+    border-radius:20px;
+    margin-top:5px;
+}
+
+.status {
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+#game {
+    display:none;
+}
+
+#message {
+    min-height:25px;
+    color:#ddd;
+}
+
+.room-code {
+    font-size:30px;
+    font-weight:bold;
+    letter-spacing:5px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎲 Kumarhane Monopoly</h1>
+
+<div id="lobby" class="panel">
+
+    <h2>Online Oyun</h2>
+
+    <button id="createRoom">
+        🏠 Oda Oluştur
+    </button>
+
+    <hr>
+
+    <input id="roomInput"
+           maxlength="4"
+           placeholder="Oda Kodu">
+
+    <button id="joinRoom">
+        🚪 Odaya Katıl
+    </button>
+
+    <div id="lobbyMessage"></div>
+
+    <div id="createdRoom"></div>
+
+</div>
+
+
+<div id="game">
+
+    <div class="panel">
+
+        <div class="status" id="turnText">
+            Bağlanıyor...
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+
+    <div class="players">
+
+        <div class="player">
+            <h2>🧑 Oyuncu 1</h2>
+
+            <div>
+                💰 Para:
+                <span id="money0">1500</span> ₺
+            </div>
+
+            <div>
+                📍 Konum:
+                <span id="position0">0</span>
+            </div>
+        </div>
+
+
+        <div class="player">
+            <h2>👤 Oyuncu 2</h2>
+
+            <div>
+                💰 Para:
+                <span id="money1">1500</span> ₺
+            </div>
+
+            <div>
+                📍 Konum:
+                <span id="position1">0</span>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <button id="rollButton">
+            🎲 ZAR AT
+        </button>
+
+        <button id="leaveButton">
+            🚪 Odadan Çık
+        </button>
+
+    </div>
+
+
+    <div class="panel">
+
+        <h2>🎲 Oyun Tahtası</h2>
+
+        <div id="board" class="board"></div>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    onValue,
+    runTransaction
+}
+from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
+
+    authDomain: "yusuf11-5ecc9.firebaseapp.com",
+
+    databaseURL:
+    "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
+
+    projectId: "yusuf11-5ecc9",
+
+    storageBucket:
+    "yusuf11-5ecc9.firebasestorage.app",
+
+    messagingSenderId: "418982485830",
+
+    appId:
+    "1:418982485830:web:ff0b051026d0256f1b0f47"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+let roomCode = null;
+let playerNumber = null;
+let unsubscribe = null;
+
+
+const lobby =
+document.getElementById("lobby");
+
+const game =
+document.getElementById("game");
+
+const createRoom =
+document.getElementById("createRoom");
+
+const joinRoom =
+document.getElementById("joinRoom");
+
+const roomInput =
+document.getElementById("roomInput");
+
+const lobbyMessage =
+document.getElementById("lobbyMessage");
+
+const createdRoom =
+document.getElementById("createdRoom");
+
+const rollButton =
+document.getElementById("rollButton");
+
+const leaveButton =
+document.getElementById("leaveButton");
+
+const turnText =
+document.getElementById("turnText");
+
+const message =
+document.getElementById("message");
+
+const board =
+document.getElementById("board");
+
+
+for(let i = 0; i < 32; i++){
+
+    const cell =
+    document.createElement("div");
+
+    cell.className = "cell";
+
+    cell.id = "cell-" + i;
+
+    cell.innerHTML =
+    "<b>Kare " + i + "</b><div class='pieces'></div>";
+
+    board.appendChild(cell);
+}
+
+
+function generateRoomCode(){
+
+    const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code = "";
+
+    for(let i = 0; i < 4; i++){
+
+        code +=
+        chars[Math.floor(Math.random() * chars.length)];
+
+    }
+
+    return code;
+}
+
+
+async function createGame(){
+
+    let code;
+
+    while(true){
+
+        code = generateRoomCode();
+
+        const snapshot =
+        await get(ref(db, "rooms/" + code));
+
+        if(!snapshot.exists()) break;
+
+    }
+
+
+    roomCode = code;
+
+    playerNumber = 0;
+
+
+    const initialGame = {
+
+        players: {
+
+            0: {
+                name: "Oyuncu 1",
+                money: 1500,
+                position: 0,
+                connected: true
+            },
+
+            1: null
+
+        },
+
+        turn: 0,
+
+        lastRoll: 0,
+
+        message: "Oyuncu 2 bekleniyor..."
+
+    };
+
+
+    await set(
+        ref(db, "rooms/" + roomCode),
+        initialGame
+    );
+
+
+    createdRoom.innerHTML =
+
+    "<div class='room-code'>" +
+    code +
+    "</div>" +
+
+    "<p>Bu kodu arkadaşına gönder.</p>";
+
+
+    startGame();
+
+}
+
+
+async function joinGame(){
+
+    const code =
+    roomInput.value
+    .trim()
+    .toUpperCase();
+
+
+    if(code.length !== 4){
+
+        lobbyMessage.textContent =
+        "4 haneli oda kodu gir.";
+
+        return;
+
+    }
+
+
+    const roomRef =
+    ref(db, "rooms/" + code);
+
+
+    const result =
+    await runTransaction(
+        roomRef,
+        game => {
+
+            if(game === null){
+
+                return;
+
+            }
+
+
+            if(
+                game.players &&
+                game.players[1] !== null
+            ){
+
+                return;
+
+            }
+
+
+            game.players[1] = {
+
+                name: "Oyuncu 2",
+
+                money: 1500,
+
+                position: 0,
+
+                connected: true
+
+            };
+
+
+            game.message =
+            "Oyuncu 2 oyuna katıldı.";
+
+
+            return game;
+
+        }
+    );
+
+
+    if(!result.committed){
+
+        lobbyMessage.textContent =
+        "Oda bulunamadı veya oda dolu.";
+
+        return;
+
+    }
+
+
+    roomCode = code;
+
+    playerNumber = 1;
+
+
+    startGame();
+
+}
+
+
+function startGame(){
+
+    lobby.style.display = "none";
+
+    game.style.display = "block";
+
+
+    const roomRef =
+    ref(db, "rooms/" + roomCode);
+
+
+    unsubscribe =
+    onValue(roomRef, snapshot => {
+
+        const data =
+        snapshot.val();
+
+
+        if(!data){
+
+            message.textContent =
+            "Oda bulunamadı.";
+
+            return;
+
+        }
+
+
+        renderGame(data);
+
+    });
+
+}
+
+
+function renderGame(data){
+
+    if(!data.players) return;
+
+
+    const p0 = data.players[0];
+
+    const p1 = data.players[1];
+
+
+    document.getElementById("money0")
+    .textContent =
+    p0 ? p0.money : "-";
+
+
+    document.getElementById("position0")
+    .textContent =
+    p0 ? p0.position : "-";
+
+
+    document.getElementById("money1")
+    .textContent =
+    p1 ? p1.money : "-";
+
+
+    document.getElementById("position1")
+    .textContent =
+    p1 ? p1.position : "-";
+
+
+    if(data.turn === playerNumber){
+
+        turnText.textContent =
+        "🎲 SENİN SIRAN";
+
+        rollButton.disabled = false;
+
+    }else{
+
+        turnText.textContent =
+        "⏳ KARŞI OYUNCUNUN SIRASI";
+
+        rollButton.disabled = true;
+
+    }
+
+
+    message.textContent =
+    data.message || "";
+
+
+    document
+    .querySelectorAll(".pieces")
+    .forEach(x => x.innerHTML = "");
+
+
+    if(p0){
+
+        addPiece(
+            p0.position,
+            "🧑 Oyuncu 1"
+        );
+
+    }
+
+
+    if(p1){
+
+        addPiece(
+            p1.position,
+            "👤 Oyuncu 2"
+        );
+
+    }
+
+}
+
+
+function addPiece(position, text){
+
+    const cell =
+    document.getElementById(
+        "cell-" + position
+    );
+
+
+    if(!cell) return;
+
+
+    const piece =
+    document.createElement("span");
+
+    piece.className = "piece";
+
+    piece.textContent = text;
+
+
+    cell
+    .querySelector(".pieces")
+    .appendChild(piece);
+
+}
+
+
+async function rollDice(){
+
+    if(!roomCode) return;
+
+
+    const roomRef =
+    ref(db, "rooms/" + roomCode);
+
+
+    await runTransaction(
+        roomRef,
+        game => {
+
+            if(!game) return;
+
+            if(game.turn !== playerNumber){
+
+                return;
+
+            }
+
+
+            if(
+                !game.players ||
+                !game.players[playerNumber]
+            ){
+
+                return;
+
+            }
+
+
+            const dice =
+            Math.floor(
+                Math.random() * 6
+            ) + 1;
+
+
+            const player =
+            game.players[playerNumber];
+
+
+            const oldPosition =
+            player.position;
+
+
+            const newPosition =
+            (oldPosition + dice) % 32;
+
+
+            player.position =
+            newPosition;
+
+
+            if(newPosition < oldPosition){
+
+                player.money += 200;
+
+            }
+
+
+            game.lastRoll =
+            dice;
+
+
+            game.message =
+
+            (playerNumber === 0
+                ? "Oyuncu 1"
+                : "Oyuncu 2")
+
+            + " " + dice +
+            " attı.";
+
+
+            game.turn =
+            playerNumber === 0
+            ? 1
+            : 0;
+
+
+            return game;
+
+        }
+    );
+
+}
+
+
+async function leaveGame(){
+
+    if(!roomCode) return;
+
+
+    const roomRef =
+    ref(db, "rooms/" + roomCode);
+
+
+    await runTransaction(
+        roomRef,
+        game => {
+
+            if(!game) return;
+
+
+            if(game.players){
+
+                game.players[playerNumber] = null;
+
+            }
+
+
+            return game;
+
+        }
+    );
+
+
+    if(unsubscribe){
+
+        unsubscribe();
+
+    }
+
+
+    location.reload();
+
+}
+
+
+createRoom.addEventListener(
+    "click",
+    createGame
+);
+
+
+joinRoom.addEventListener(
+    "click",
+    joinGame
+);
+
+
+rollButton.addEventListener(
+    "click",
+    rollDice
+);
+
+
+leaveButton.addEventListener(
+    "click",
+    leaveGame
+);
+
+
+</script>
+
+</body>
+</html>
