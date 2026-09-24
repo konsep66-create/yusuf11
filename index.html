@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kumarhane Monopoly - Online Test</title>
+<title>Kumarhane Monopoly - Online</title>
 
 <style>
 body {
@@ -109,6 +109,7 @@ button:disabled {
 
 <h1>🎲 Kumarhane Monopoly</h1>
 
+
 <div id="lobby" class="panel">
 
     <h2>Online Oyun</h2>
@@ -119,9 +120,11 @@ button:disabled {
 
     <hr>
 
-    <input id="roomInput"
-           maxlength="4"
-           placeholder="Oda Kodu">
+    <input
+        id="roomInput"
+        maxlength="4"
+        placeholder="Oda Kodu"
+    >
 
     <button id="joinRoom">
         🚪 Odaya Katıl
@@ -137,12 +140,30 @@ button:disabled {
 <div id="game">
 
     <div class="panel">
-<div class="panel" style="text-align:center;">
-    🎮 ODA KODU:
-    <div id="gameRoomCode" class="room-code"></div>
-    <div>Bu kodu arkadaşına gönder.</div>
-</div>
-        <div class="status" id="turnText">
+
+        <div
+            class="panel"
+            style="text-align:center;"
+        >
+
+            🎮 ODA KODU:
+
+            <div
+                id="gameRoomCode"
+                class="room-code"
+            ></div>
+
+            <div>
+                Bu kodu arkadaşına gönder.
+            </div>
+
+        </div>
+
+
+        <div
+            class="status"
+            id="turnText"
+        >
             Bağlanıyor...
         </div>
 
@@ -154,6 +175,7 @@ button:disabled {
     <div class="players">
 
         <div class="player">
+
             <h2>🧑 Oyuncu 1</h2>
 
             <div>
@@ -165,10 +187,12 @@ button:disabled {
                 📍 Konum:
                 <span id="position0">0</span>
             </div>
+
         </div>
 
 
         <div class="player">
+
             <h2>👤 Oyuncu 2</h2>
 
             <div>
@@ -180,6 +204,7 @@ button:disabled {
                 📍 Konum:
                 <span id="position1">0</span>
             </div>
+
         </div>
 
     </div>
@@ -202,7 +227,10 @@ button:disabled {
 
         <h2>🎲 Oyun Tahtası</h2>
 
-        <div id="board" class="board"></div>
+        <div
+            id="board"
+            class="board"
+        ></div>
 
     </div>
 
@@ -213,6 +241,7 @@ button:disabled {
 
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
 
 import {
     getDatabase,
@@ -227,67 +256,88 @@ from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 const firebaseConfig = {
 
-    apiKey: "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
+    apiKey:
+    "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
 
-    authDomain: "yusuf11-5ecc9.firebaseapp.com",
+    authDomain:
+    "yusuf11-5ecc9.firebaseapp.com",
 
     databaseURL:
     "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
 
-    projectId: "yusuf11-5ecc9",
+    projectId:
+    "yusuf11-5ecc9",
 
     storageBucket:
     "yusuf11-5ecc9.firebasestorage.app",
 
-    messagingSenderId: "418982485830",
+    messagingSenderId:
+    "418982485830",
 
     appId:
     "1:418982485830:web:ff0b051026d0256f1b0f47"
+
 };
 
 
-const app = initializeApp(firebaseConfig);
+const app =
+initializeApp(firebaseConfig);
 
-const db = getDatabase(app);
+
+const db =
+getDatabase(app);
 
 
 let roomCode = null;
+
 let playerNumber = null;
+
 let unsubscribe = null;
 
 
 const lobby =
 document.getElementById("lobby");
 
+
 const game =
 document.getElementById("game");
+
 
 const createRoom =
 document.getElementById("createRoom");
 
+
 const joinRoom =
 document.getElementById("joinRoom");
+
 
 const roomInput =
 document.getElementById("roomInput");
 
+
 const lobbyMessage =
 document.getElementById("lobbyMessage");
+
 
 const createdRoom =
 document.getElementById("createdRoom");
 
+
 const rollButton =
 document.getElementById("rollButton");
+
 
 const leaveButton =
 document.getElementById("leaveButton");
 
+
 const turnText =
 document.getElementById("turnText");
 
+
 const message =
 document.getElementById("message");
+
 
 const board =
 document.getElementById("board");
@@ -303,9 +353,12 @@ for(let i = 0; i < 32; i++){
     cell.id = "cell-" + i;
 
     cell.innerHTML =
-    "<b>Kare " + i + "</b><div class='pieces'></div>";
+    "<b>Kare " +
+    i +
+    "</b><div class='pieces'></div>";
 
     board.appendChild(cell);
+
 }
 
 
@@ -319,11 +372,16 @@ function generateRoomCode(){
     for(let i = 0; i < 4; i++){
 
         code +=
-        chars[Math.floor(Math.random() * chars.length)];
+        chars[
+            Math.floor(
+                Math.random() * chars.length
+            )
+        ];
 
     }
 
     return code;
+
 }
 
 
@@ -331,62 +389,95 @@ async function createGame(){
 
     let code;
 
-    while(true){
 
-        code = generateRoomCode();
+    try {
 
-        const snapshot =
-        await get(ref(db, "rooms/" + code));
+        while(true){
 
-        if(!snapshot.exists()) break;
+            code =
+            generateRoomCode();
 
-    }
+            const snapshot =
+            await get(
+                ref(
+                    db,
+                    "rooms/" + code
+                )
+            );
+
+            if(!snapshot.exists()){
+
+                break;
+
+            }
+
+        }
 
 
-    roomCode = code;
+        roomCode = code;
 
-    playerNumber = 0;
+        playerNumber = 0;
 
 
-    const initialGame = {
+        const initialGame = {
 
-        players: {
+            players: {
 
-            0: {
-                name: "Oyuncu 1",
-                money: 1500,
-                position: 0,
-                connected: true
+                0: {
+
+                    name: "Oyuncu 1",
+
+                    money: 1500,
+
+                    position: 0,
+
+                    connected: true
+
+                }
+
             },
 
-            1: null
+            turn: 0,
 
-        },
+            lastRoll: 0,
 
-        turn: 0,
+            message:
+            "Oyuncu 2 bekleniyor..."
 
-        lastRoll: 0,
-
-        message: "Oyuncu 2 bekleniyor..."
-
-    };
+        };
 
 
-    await set(
-        ref(db, "rooms/" + roomCode),
-        initialGame
-    );
+        await set(
+            ref(
+                db,
+                "rooms/" + roomCode
+            ),
+            initialGame
+        );
 
 
-    createdRoom.innerHTML =
+        createdRoom.innerHTML =
 
-"<div class='room-code'>ODA KODU: " +
-code +
-"</div>" +
+        "<div class='room-code'>" +
+        "ODA KODU: " +
+        code +
+        "</div>" +
 
-"<p>Bu kodu arkadaşına gönder.</p>";
+        "<p>Bu kodu arkadaşına gönder.</p>";
 
-startGame();
+
+        startGame();
+
+
+    } catch(error){
+
+        console.error(error);
+
+        lobbyMessage.textContent =
+        "Oda oluşturulamadı: " +
+        error.message;
+
+    }
 
 }
 
@@ -410,30 +501,55 @@ async function joinGame(){
 
 
     const roomRef =
-    ref(db, "rooms/" + code);
+    ref(
+        db,
+        "rooms/" + code
+    );
 
 
-    const result =
-    await runTransaction(
-        roomRef,
-        game => {
+    try {
 
-            if(game === null){
-
-                return;
-
-            }
+        const snapshot =
+        await get(roomRef);
 
 
-            if (
-    game.players &&
-    game.players[1]
-) {
-    return;
-}
+        if(!snapshot.exists()){
+
+            lobbyMessage.textContent =
+            "Oda bulunamadı.";
+
+            return;
+
+        }
 
 
-            game.players[1] = {
+        const gameData =
+        snapshot.val();
+
+
+        if(
+            gameData.players &&
+            gameData.players[1]
+        ){
+
+            lobbyMessage.textContent =
+            "Oda dolu.";
+
+            return;
+
+        }
+
+
+        await set(
+
+            ref(
+                db,
+                "rooms/" +
+                code +
+                "/players/1"
+            ),
+
+            {
 
                 name: "Oyuncu 2",
 
@@ -443,104 +559,134 @@ async function joinGame(){
 
                 connected: true
 
-            };
+            }
+
+        );
 
 
-            game.message =
-            "Oyuncu 2 oyuna katıldı.";
+        await set(
+
+            ref(
+                db,
+                "rooms/" +
+                code +
+                "/message"
+            ),
+
+            "Oyuncu 2 oyuna katıldı."
+
+        );
 
 
-            return game;
+        roomCode = code;
 
-        }
-    );
+        playerNumber = 1;
 
 
-    if(!result.committed){
+        startGame();
+
+
+    } catch(error){
+
+        console.error(error);
 
         lobbyMessage.textContent =
-        "Oda bulunamadı veya oda dolu.";
-
-        return;
+        "Firebase bağlantı hatası: " +
+        error.message;
 
     }
-
-
-    roomCode = code;
-
-    playerNumber = 1;
-
-
-    startGame();
 
 }
 
 
 function startGame(){
 
-    lobby.style.display = "none";
+    lobby.style.display =
+    "none";
 
-    game.style.display = "block";
 
-    document.getElementById("gameRoomCode").textContent =
-        roomCode || "";
+    game.style.display =
+    "block";
+
+
+    document.getElementById(
+        "gameRoomCode"
+    ).textContent =
+    roomCode || "";
 
 
     const roomRef =
-    ref(db, "rooms/" + roomCode);
+    ref(
+        db,
+        "rooms/" + roomCode
+    );
 
 
     unsubscribe =
-    onValue(roomRef, snapshot => {
+    onValue(
+        roomRef,
+        snapshot => {
 
-        const data =
-        snapshot.val();
+            const data =
+            snapshot.val();
 
 
-        if(!data){
+            if(!data){
 
-            message.textContent =
-            "Oda bulunamadı.";
+                message.textContent =
+                "Oda bulunamadı.";
 
-            return;
+                return;
+
+            }
+
+
+            renderGame(data);
 
         }
-
-
-        renderGame(data);
-
-    });
+    );
 
 }
 
 
 function renderGame(data){
 
-    if(!data.players) return;
+    if(!data.players){
+
+        return;
+
+    }
 
 
-    const p0 = data.players[0];
+    const p0 =
+    data.players[0];
 
-    const p1 = data.players[1];
+
+    const p1 =
+    data.players[1];
 
 
-    document.getElementById("money0")
-    .textContent =
+    document.getElementById(
+        "money0"
+    ).textContent =
     p0 ? p0.money : "-";
 
 
-    document.getElementById("position0")
-    .textContent =
+    document.getElementById(
+        "position0"
+    ).textContent =
     p0 ? p0.position : "-";
 
 
-    document.getElementById("money1")
-    .textContent =
+    document.getElementById(
+        "money1"
+    ).textContent =
     p1 ? p1.money : "-";
 
 
-    document.getElementById("position1")
-    .textContent =
+    document.getElementById(
+        "position1"
+    ).textContent =
     p1 ? p1.position : "-";
 
 
@@ -549,14 +695,16 @@ function renderGame(data){
         turnText.textContent =
         "🎲 SENİN SIRAN";
 
-        rollButton.disabled = false;
+        rollButton.disabled =
+        false;
 
     }else{
 
         turnText.textContent =
         "⏳ KARŞI OYUNCUNUN SIRASI";
 
-        rollButton.disabled = true;
+        rollButton.disabled =
+        true;
 
     }
 
@@ -567,7 +715,9 @@ function renderGame(data){
 
     document
     .querySelectorAll(".pieces")
-    .forEach(x => x.innerHTML = "");
+    .forEach(
+        x => x.innerHTML = ""
+    );
 
 
     if(p0){
@@ -592,7 +742,10 @@ function renderGame(data){
 }
 
 
-function addPiece(position, text){
+function addPiece(
+    position,
+    text
+){
 
     const cell =
     document.getElementById(
@@ -600,15 +753,25 @@ function addPiece(position, text){
     );
 
 
-    if(!cell) return;
+    if(!cell){
+
+        return;
+
+    }
 
 
     const piece =
-    document.createElement("span");
+    document.createElement(
+        "span"
+    );
 
-    piece.className = "piece";
 
-    piece.textContent = text;
+    piece.className =
+    "piece";
+
+
+    piece.textContent =
+    text;
 
 
     cell
@@ -620,20 +783,27 @@ function addPiece(position, text){
 
 async function rollDice(){
 
-    if(!roomCode) return;
+    if(!roomCode){
+
+        return;
+
+    }
 
 
     const roomRef =
-    ref(db, "rooms/" + roomCode);
+    ref(
+        db,
+        "rooms/" + roomCode
+    );
 
 
     await runTransaction(
+
         roomRef,
-        game => {
 
-            if(!game) return;
+        gameData => {
 
-            if(game.turn !== playerNumber){
+            if(!gameData){
 
                 return;
 
@@ -641,8 +811,18 @@ async function rollDice(){
 
 
             if(
-                !game.players ||
-                !game.players[playerNumber]
+                gameData.turn !==
+                playerNumber
+            ){
+
+                return;
+
+            }
+
+
+            if(
+                !gameData.players ||
+                !gameData.players[playerNumber]
             ){
 
                 return;
@@ -657,7 +837,9 @@ async function rollDice(){
 
 
             const player =
-            game.players[playerNumber];
+            gameData.players[
+                playerNumber
+            ];
 
 
             const oldPosition =
@@ -665,43 +847,53 @@ async function rollDice(){
 
 
             const newPosition =
-            (oldPosition + dice) % 32;
+            (
+                oldPosition +
+                dice
+            ) % 32;
 
 
             player.position =
             newPosition;
 
 
-            if(newPosition < oldPosition){
+            if(
+                newPosition <
+                oldPosition
+            ){
 
                 player.money += 200;
 
             }
 
 
-            game.lastRoll =
+            gameData.lastRoll =
             dice;
 
 
-            game.message =
+            gameData.message =
 
-            (playerNumber === 0
+            (
+                playerNumber === 0
                 ? "Oyuncu 1"
-                : "Oyuncu 2")
+                : "Oyuncu 2"
+            )
 
-            + " " + dice +
+            + " " +
+            dice +
             " attı.";
 
 
-            game.turn =
+            gameData.turn =
             playerNumber === 0
             ? 1
             : 0;
 
 
-            return game;
+            return gameData;
 
         }
+
     );
 
 }
@@ -709,30 +901,46 @@ async function rollDice(){
 
 async function leaveGame(){
 
-    if(!roomCode) return;
+    if(!roomCode){
+
+        return;
+
+    }
 
 
     const roomRef =
-    ref(db, "rooms/" + roomCode);
+    ref(
+        db,
+        "rooms/" + roomCode
+    );
 
 
     await runTransaction(
+
         roomRef,
-        game => {
 
-            if(!game) return;
+        gameData => {
 
+            if(!gameData){
 
-            if(game.players){
-
-                game.players[playerNumber] = null;
+                return;
 
             }
 
 
-            return game;
+            if(gameData.players){
+
+                gameData.players[
+                    playerNumber
+                ] = null;
+
+            }
+
+
+            return gameData;
 
         }
+
     );
 
 
@@ -770,7 +978,6 @@ leaveButton.addEventListener(
     "click",
     leaveGame
 );
-
 
 </script>
 
