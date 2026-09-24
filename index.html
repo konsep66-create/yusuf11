@@ -2,1216 +2,1836 @@
 <html lang="tr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kumarhane Monopoly - Online</title>
+<meta charset="UTF-8">
 
-    <style>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-        * {
-            box-sizing: border-box;
-        }
+<title>🎲 Kumarhane Monopoly</title>
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #171717;
-            color: white;
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-        }
+<link
+    rel="icon"
+    href="./favicon.ico"
+>
 
-        h1 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+<style>
 
-        h2 {
-            margin-top: 0;
-        }
+/* =====================================================
+   GENEL
+===================================================== */
 
-        .panel {
-            background: #252525;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        input,
-        button {
-            padding: 12px;
-            margin: 5px;
-            border-radius: 8px;
-            border: 0;
-            font-size: 16px;
-        }
+body {
+    margin: 0;
 
-        input {
-            background: white;
-            color: black;
-            width: 180px;
-        }
+    min-height: 100vh;
 
-        button {
-            cursor: pointer;
-            font-weight: bold;
-            background: #ffd54a;
-            color: #111;
-        }
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-        button:hover {
-            filter: brightness(1.1);
-        }
+    background:
+        radial-gradient(
+            circle at center,
+            #26351e,
+            #10150d 75%
+        );
 
-        button:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
+    color: #fff;
 
-        hr {
-            border: 0;
-            border-top: 1px solid #444;
-            margin: 20px 0;
-        }
+    overflow-x: hidden;
+}
 
-        .players {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+button,
+input,
+select {
+    font: inherit;
+}
 
-        .player {
-            background: #303030;
-            padding: 15px;
-            border-radius: 12px;
-        }
+button {
+    cursor: pointer;
+}
 
-        .player h2 {
-            font-size: 20px;
-        }
 
-        .player-info {
-            margin: 10px 0;
-        }
+/* =====================================================
+   BAŞLIK
+===================================================== */
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 5px;
-        }
+header {
+    padding: 18px;
 
-        .cell {
-            background: #303030;
-            border: 1px solid #555;
-            min-height: 75px;
-            padding: 6px;
-            border-radius: 7px;
-            font-size: 12px;
-        }
+    text-align: center;
 
-        .cell b {
-            color: #ffd54a;
-        }
+    background: #111827;
 
-        .piece {
-            display: block;
-            padding: 5px;
-            background: #ffd54a;
-            color: #111;
-            border-radius: 20px;
-            margin-top: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
+    border-bottom:
+        2px solid #d4af37;
 
-        .piece.player2 {
-            background: #ff6b6b;
-            color: white;
-        }
+    position: sticky;
 
-        .status {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
+    top: 0;
 
-        #game {
-            display: none;
-        }
+    z-index: 1000;
+}
 
-        #message {
-            min-height: 25px;
-            color: #ddd;
-            text-align: center;
-        }
+header h1 {
+    margin: 0;
 
-        #lobbyMessage {
-            margin-top: 15px;
-            color: #ffcc66;
-            font-weight: bold;
-        }
+    color: #f5d76e;
 
-        .room-code {
-            font-size: 30px;
-            font-weight: bold;
-            letter-spacing: 5px;
-            text-align: center;
-            color: #ffd54a;
-            margin: 10px 0;
-        }
+    font-size: 27px;
+}
 
-        .center {
-            text-align: center;
-        }
 
-        .success {
-            color: #6cff8b;
-        }
+/* =====================================================
+   ANA ALAN
+===================================================== */
 
-        .error {
-            color: #ff6b6b;
-        }
+#app {
+    width: 100%;
 
-        .dice-result {
-            font-size: 25px;
-            text-align: center;
-            margin: 10px;
-        }
+    max-width: 1400px;
 
-        @media (max-width: 600px) {
+    margin: auto;
 
-            body {
-                padding: 10px;
-            }
+    padding: 20px;
+}
 
-            .players {
-                grid-template-columns: 1fr;
-            }
 
-            .board {
-                grid-template-columns: repeat(4, 1fr);
-            }
+/* =====================================================
+   PANEL
+===================================================== */
 
-            .cell {
-                min-height: 65px;
-            }
+.panel {
+    background:
+        rgba(17, 24, 39, .96);
 
-            input {
-                width: 140px;
-            }
+    border:
+        1px solid #475569;
 
-            button {
-                font-size: 14px;
-            }
-        }
+    border-radius: 16px;
 
-    </style>
+    padding: 20px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,.35);
+
+    margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   GİZLE
+===================================================== */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =====================================================
+   INPUT
+===================================================== */
+
+input,
+select {
+    width: 100%;
+
+    padding: 12px;
+
+    margin: 6px 0;
+
+    border-radius: 9px;
+
+    border:
+        1px solid #64748b;
+
+    background: #020617;
+
+    color: #fff;
+}
+
+
+/* =====================================================
+   BUTON
+===================================================== */
+
+button {
+    border: 0;
+
+    border-radius: 9px;
+
+    padding: 11px 15px;
+
+    background: #22c55e;
+
+    color: white;
+
+    font-weight: bold;
+
+    transition: .15s;
+}
+
+button:hover {
+    transform:
+        translateY(-1px);
+
+    filter:
+        brightness(1.08);
+}
+
+button.blue {
+    background: #2563eb;
+}
+
+button.red {
+    background: #dc2626;
+}
+
+button.gold {
+    background: #b8860b;
+}
+
+button.gray {
+    background: #475569;
+}
+
+
+/* =====================================================
+   LOBBY
+===================================================== */
+
+#lobby {
+    max-width: 500px;
+
+    margin:
+        50px auto;
+}
+
+#lobby h2 {
+    text-align: center;
+}
+
+.lobby-buttons {
+    display: grid;
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+
+/* =====================================================
+   ODA BİLGİSİ
+===================================================== */
+
+.room-info {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+.room-code {
+    font-size: 24px;
+
+    color: #f5d76e;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   OYUNCULAR
+===================================================== */
+
+.players {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.player-tag {
+    padding: 8px 12px;
+
+    border-radius: 20px;
+
+    background: #1e293b;
+
+    border:
+        1px solid #475569;
+}
+
+.player-tag.admin {
+    border-color: #f5d76e;
+
+    color: #f5d76e;
+}
+
+
+/* =====================================================
+   MONOPOLY TAHTASI
+===================================================== */
+
+#board-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    padding: 10px;
+}
+
+#board {
+
+    width: min(
+        900px,
+        95vw
+    );
+
+    height: min(
+        900px,
+        95vw
+    );
+
+    min-width: 650px;
+
+    min-height: 650px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(11, 1fr);
+
+    grid-template-rows:
+        repeat(11, 1fr);
+
+    gap: 2px;
+
+    background:
+        #111;
+
+    border:
+        5px solid #d4af37;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.6);
+}
+
+
+/* =====================================================
+   BLOKLAR
+===================================================== */
+
+.tile {
+    position: relative;
+
+    min-width: 0;
+
+    background:
+        #f4f1dc;
+
+    color: #111;
+
+    border:
+        1px solid #222;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    font-size: 10px;
+
+    padding: 3px;
+
+    overflow: hidden;
+}
+
+.tile strong {
+    font-size: 10px;
+}
+
+.tile.corner {
+    background:
+        #e7dfb0;
+}
+
+.tile.blackjack {
+    background:
+        linear-gradient(
+            135deg,
+            #075e3b,
+            #013522
+        );
+
+    color: white;
+
+    border:
+        2px solid #d4af37;
+}
+
+.tile.poker {
+    background:
+        linear-gradient(
+            135deg,
+            #651b1b,
+            #300707
+        );
+
+    color: white;
+
+    border:
+        2px solid #d4af37;
+}
+
+.tile-center {
+    grid-column:
+        2 / 11;
+
+    grid-row:
+        2 / 11;
+
+    background:
+        radial-gradient(
+            circle,
+            #27451f,
+            #142512
+        );
+
+    border:
+        2px solid #49683d;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    color: #f5d76e;
+
+    font-size: 30px;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   OYUNCU PİYONLARI
+===================================================== */
+
+.pieces {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 2px;
+
+    margin-top: 3px;
+}
+
+.piece {
+    width: 17px;
+
+    height: 17px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid white;
+
+    box-shadow:
+        0 2px 5px
+        rgba(0,0,0,.5);
+}
+
+
+/* =====================================================
+   ADMİN
+===================================================== */
+
+#adminPanel {
+    border-color: #f5d76e;
+}
+
+.admin-title {
+    color: #f5d76e;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+
+/* =====================================================
+   MASA
+===================================================== */
+
+.game-table {
+    background:
+        radial-gradient(
+            circle,
+            #075e3b,
+            #013522
+        );
+
+    border:
+        3px solid #d4af37;
+
+    border-radius: 25px;
+
+    padding: 25px;
+
+    min-height: 400px;
+
+    box-shadow:
+        inset 0 0 50px
+        rgba(0,0,0,.5);
+}
+
+
+/* =====================================================
+   KART
+===================================================== */
+
+.card {
+    width: 55px;
+
+    height: 78px;
+
+    background: white;
+
+    color: #111;
+
+    border-radius: 7px;
+
+    display: inline-flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    margin: 4px;
+
+    font-weight: bold;
+
+    box-shadow:
+        0 3px 7px
+        rgba(0,0,0,.4);
+}
+
+.card.red {
+    color: #c00;
+}
+
+.card.back {
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #182c66,
+            #182c66 5px,
+            #263f91 5px,
+            #263f91 10px
+        );
+
+    color: white;
+}
+
+
+/* =====================================================
+   POKER
+===================================================== */
+
+.poker-player {
+    background:
+        rgba(0,0,0,.25);
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    margin: 8px 0;
+}
+
+.community {
+    text-align: center;
+
+    margin: 15px 0;
+}
+
+.bet-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+
+/* =====================================================
+   MESAJ
+===================================================== */
+
+.message {
+    padding: 12px;
+
+    border-radius: 9px;
+
+    background: #020617;
+
+    margin:
+        10px 0;
+
+    text-align: center;
+}
+
+.success {
+    color: #4ade80;
+}
+
+.warning {
+    color: #facc15;
+}
+
+.error {
+    color: #f87171;
+}
+
+
+/* =====================================================
+   MOBİL
+===================================================== */
+
+@media (max-width: 700px) {
+
+    #app {
+        padding: 8px;
+    }
+
+    #board {
+        min-width: 580px;
+
+        min-height: 580px;
+    }
+
+    .tile {
+        font-size: 8px;
+    }
+
+    .tile strong {
+        font-size: 8px;
+    }
+
+    .card {
+        width: 45px;
+
+        height: 65px;
+    }
+}
+
+</style>
+
 </head>
 
 
 <body>
 
-    <h1>🎲 Kumarhane Monopoly</h1>
 
+<header>
 
-    <!-- ==================== LOBBY ==================== -->
+<h1>
+🎲 Kumarhane Monopoly
+</h1>
 
-    <div id="lobby" class="panel">
+</header>
 
-        <h2>🌐 Online Oyun</h2>
 
-        <div class="center">
+<div id="app">
 
-            <button id="createRoom">
-                🏠 Oda Oluştur
-            </button>
 
-        </div>
+<!-- ===================================================
+     LOBBY
+=================================================== -->
 
-        <hr>
+<section
+    id="lobby"
+    class="panel"
+>
 
-        <div class="center">
+<h2>🌐 Online Oyun</h2>
 
-            <input
-                id="roomInput"
-                maxlength="4"
-                placeholder="Oda Kodu"
-                autocomplete="off"
-            >
+<p>
+Bir oyuncu oda oluşturur.
+Diğer oyuncular 4 haneli kodla katılır.
+</p>
 
-            <button id="joinRoom">
-                🚪 Odaya Katıl
-            </button>
+<input
+    id="nameInput"
+    maxlength="14"
+    placeholder="Oyuncu adın"
+>
 
-        </div>
+<div class="lobby-buttons">
 
-        <div id="lobbyMessage"></div>
+<button id="createRoom">
+🏠 Oda Oluştur
+</button>
 
-        <div id="createdRoom"></div>
+</div>
 
-    </div>
+<hr>
 
+<input
+    id="roomInput"
+    maxlength="4"
+    inputmode="numeric"
+    placeholder="4 Haneli Oda Kodu"
+>
 
-    <!-- ==================== GAME ==================== -->
+<div class="lobby-buttons">
 
-    <div id="game">
+<button
+    id="joinRoom"
+    class="blue"
+>
+🚪 Odaya Katıl
+</button>
 
-        <div class="panel">
+</div>
 
-            <div
-                class="panel"
-                style="text-align:center;"
-            >
+<div
+    id="lobbyMessage"
+    class="message hidden"
+></div>
 
-                🎮 ODA KODU
+</section>
 
-                <div
-                    id="gameRoomCode"
-                    class="room-code"
-                ></div>
 
-                <div>
-                    Bu kodu arkadaşına gönder.
-                </div>
+<!-- ===================================================
+     OYUN
+=================================================== -->
 
-            </div>
+<section
+    id="game"
+    class="hidden"
+>
 
 
-            <div
-                class="status"
-                id="turnText"
-            >
-                Bağlanıyor...
-            </div>
+<!-- ODA BİLGİSİ -->
 
+<div class="panel">
 
-            <div
-                id="diceResult"
-                class="dice-result"
-            ></div>
+<div class="room-info">
 
+<div>
+Oda:
+<span
+    id="roomCode"
+    class="room-code"
+>
+----
+</span>
+</div>
 
-            <div id="message"></div>
+<div
+    id="connectionStatus"
+    class="success"
+>
+● Bağlı
+</div>
 
-        </div>
+</div>
 
+<hr>
 
-        <!-- PLAYERS -->
+<div
+    id="players"
+    class="players"
+></div>
 
-        <div class="players">
+</div>
 
-            <div class="player">
 
-                <h2>🧑 Oyuncu 1</h2>
+<!-- ===================================================
+     ADMIN
+=================================================== -->
 
-                <div class="player-info">
-                    💰 Para:
-                    <span id="money0">1500</span> ₺
-                </div>
+<div
+    id="adminPanel"
+    class="panel hidden"
+>
 
-                <div class="player-info">
-                    📍 Konum:
-                    <span id="position0">0</span>
-                </div>
+<div class="admin-title">
+👑 ADMIN KONTROLÜ
+</div>
 
-                <div>
-                    🟢 Durum:
-                    <span id="connected0">Bekleniyor</span>
-                </div>
+<p>
+Oyuncu 1 admin olur. Test amacıyla istediğin
+bloğa ışınlanabilirsin.
+</p>
 
-            </div>
+<select id="teleportSelect"></select>
 
+<button
+    id="teleportButton"
+    class="gold"
+>
+⚡ Işınlan
+</button>
 
-            <div class="player">
+</div>
 
-                <h2>👤 Oyuncu 2</h2>
 
-                <div class="player-info">
-                    💰 Para:
-                    <span id="money1">1500</span> ₺
-                </div>
+<!-- ===================================================
+     TAHTA
+=================================================== -->
 
-                <div class="player-info">
-                    📍 Konum:
-                    <span id="position1">0</span>
-                </div>
+<div class="panel">
 
-                <div>
-                    🟢 Durum:
-                    <span id="connected1">Bekleniyor</span>
-                </div>
+<h2>🎲 Oyun Tahtası</h2>
 
-            </div>
+<div id="board-wrapper">
 
-        </div>
+<div id="board">
 
+<div class="tile-center">
 
-        <!-- BUTTONS -->
+🎲
 
-        <div class="panel center">
+<div>
+KUMARHANE
+MONOPOLY
+</div>
 
-            <button
-                id="rollButton"
-                disabled
-            >
-                🎲 ZAR AT
-            </button>
+<small>
+Online Test
+</small>
 
-            <button id="leaveButton">
-                🚪 Odadan Çık
-            </button>
+</div>
 
-        </div>
+</div>
 
+</div>
 
-        <!-- BOARD -->
+</div>
 
-        <div class="panel">
 
-            <h2>🎲 Oyun Tahtası</h2>
+<!-- ===================================================
+     MASA ALANI
+=================================================== -->
 
-            <div
-                id="board"
-                class="board"
-            ></div>
+<div
+    id="tableArea"
+    class="panel hidden"
+>
 
-        </div>
+<h2 id="tableTitle">
+🎰 Masa
+</h2>
 
-    </div>
+<div
+    id="tableContent"
+    class="game-table"
+></div>
 
+</div>
 
-    <!-- ==================== FIREBASE ==================== -->
 
-    <script type="module">
+<!-- ÇIKIŞ -->
 
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+<div class="panel">
 
+<button
+    id="leaveRoom"
+    class="red"
+>
+🚪 Odadan Ayrıl
+</button>
 
-        import {
-            getDatabase,
-            ref,
-            set,
-            get,
-            onValue,
-            runTransaction,
-            remove
-        } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+</div>
 
 
-        // ==================================================
-        // FIREBASE AYARLARI
-        // ==================================================
+</section>
 
-        const firebaseConfig = {
+</div>
 
-            apiKey:
-                "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
 
-            authDomain:
-                "yusuf11-5ecc9.firebaseapp.com",
+<script type="module">
 
-            databaseURL:
-                "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
 
-            projectId:
-                "yusuf11-5ecc9",
+/* =====================================================
+   FIREBASE
+===================================================== */
 
-            storageBucket:
-                "yusuf11-5ecc9.firebasestorage.app",
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-            messagingSenderId:
-                "418982485830",
 
-            appId:
-                "1:418982485830:web:ff0b051026d0256f1b0f47"
+import {
+    getDatabase,
+    ref,
+    get,
+    set,
+    update,
+    onValue,
+    remove,
+    runTransaction
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        };
 
+import {
+    getAuth,
+    signInAnonymously
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // ==================================================
-        // FIREBASE BAŞLAT
-        // ==================================================
 
-        let app;
-        let db;
+const firebaseConfig = {
 
-        try {
+    apiKey:
+    "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
 
-            app = initializeApp(firebaseConfig);
+    authDomain:
+    "yusuf11-5ecc9.firebaseapp.com",
 
-            db = getDatabase(app);
+    databaseURL:
+    "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
 
-            console.log("Firebase başarıyla bağlandı.");
+    projectId:
+    "yusuf11-5ecc9",
 
-        } catch (error) {
+    storageBucket:
+    "yusuf11-5ecc9.firebasestorage.app",
 
-            console.error(
-                "Firebase başlatılamadı:",
-                error
-            );
+    messagingSenderId:
+    "418982485830",
 
-            alert(
-                "Firebase başlatılamadı.\n\n" +
-                error.message
-            );
+    appId:
+    "1:418982485830:web:ff0b051026d0256f1b0f47"
+};
 
-        }
 
+const app =
+    initializeApp(firebaseConfig);
 
-        // ==================================================
-        // DEĞİŞKENLER
-        // ==================================================
 
-        let roomCode = null;
+const db =
+    getDatabase(app);
 
-        let playerNumber = null;
 
-        let unsubscribe = null;
+const auth =
+    getAuth(app);
 
 
-        // ==================================================
-        // HTML ELEMENTLERİ
-        // ==================================================
+/* =====================================================
+   AUTH
+===================================================== */
 
-        const lobby =
-            document.getElementById("lobby");
+let firebaseUser = null;
 
-        const game =
-            document.getElementById("game");
 
-        const createRoom =
-            document.getElementById("createRoom");
+try {
 
-        const joinRoom =
-            document.getElementById("joinRoom");
+    const result =
+        await signInAnonymously(auth);
 
-        const roomInput =
-            document.getElementById("roomInput");
+    firebaseUser =
+        result.user;
 
-        const lobbyMessage =
-            document.getElementById("lobbyMessage");
+}
+catch (error) {
 
-        const createdRoom =
-            document.getElementById("createdRoom");
+    console.error(error);
 
-        const rollButton =
-            document.getElementById("rollButton");
+    alert(
+        "Firebase Authentication hatası.\n\n" +
+        "Firebase Console > Authentication > " +
+        "Sign-in method > Anonymous seçeneğini aç."
+    );
 
-        const leaveButton =
-            document.getElementById("leaveButton");
+}
 
-        const turnText =
-            document.getElementById("turnText");
 
-        const message =
-            document.getElementById("message");
+/* =====================================================
+   DEĞİŞKENLER
+===================================================== */
 
-        const board =
-            document.getElementById("board");
+let currentRoom = null;
 
-        const diceResult =
-            document.getElementById("diceResult");
+let currentPlayer = null;
 
+let isAdmin = false;
 
-        // ==================================================
-        // OYUN TAHTASI
-        // ==================================================
+let roomData = null;
 
-        for (let i = 0; i < 32; i++) {
+let roomListener = null;
 
-            const cell =
+
+/* =====================================================
+   ELEMENTLER
+===================================================== */
+
+const lobby =
+    document.getElementById("lobby");
+
+const game =
+    document.getElementById("game");
+
+const createRoom =
+    document.getElementById("createRoom");
+
+const joinRoom =
+    document.getElementById("joinRoom");
+
+const nameInput =
+    document.getElementById("nameInput");
+
+const roomInput =
+    document.getElementById("roomInput");
+
+const roomCode =
+    document.getElementById("roomCode");
+
+const playersElement =
+    document.getElementById("players");
+
+const board =
+    document.getElementById("board");
+
+const adminPanel =
+    document.getElementById("adminPanel");
+
+const teleportSelect =
+    document.getElementById("teleportSelect");
+
+const teleportButton =
+    document.getElementById("teleportButton");
+
+const tableArea =
+    document.getElementById("tableArea");
+
+const tableTitle =
+    document.getElementById("tableTitle");
+
+const tableContent =
+    document.getElementById("tableContent");
+
+const leaveRoom =
+    document.getElementById("leaveRoom");
+
+
+/* =====================================================
+   TAHTA VERİSİ
+===================================================== */
+
+const tiles = [
+
+    "Başlangıç",
+
+    "Akdeniz",
+
+    "Topluluk Fonu",
+
+    "Baltık",
+
+    "Gelir Vergisi",
+
+    "Tren İstasyonu",
+
+    "Doğu",
+
+    "Şans",
+
+    "Vermont",
+
+    "Connecticut",
+
+    "Hapishane",
+
+    "St. Charles",
+
+    "Elektrik",
+
+    "States",
+
+    "Virginia",
+
+    "Pennsylvania",
+
+    "St. James",
+
+    "Topluluk Fonu",
+
+    "Tennessee",
+
+    "New York",
+
+    "Ücretsiz Park",
+
+    "Kentucky",
+
+    "Şans",
+
+    "Indiana",
+
+    "Illinois",
+
+    "B&O Demiryolu",
+
+    "Atlantic",
+
+    "Ventnor",
+
+    "Water Works",
+
+    "Marvin Gardens",
+
+    "Hapisten Çık",
+
+    "Pacific",
+
+    "North Carolina",
+
+    "Topluluk Fonu",
+
+    "Pennsylvania Ave",
+
+    "Short Line",
+
+    "Şans",
+
+    "Park Place",
+
+    "Blackjack",
+
+    "Poker"
+
+];
+
+
+/* =====================================================
+   TAHTA POZİSYONLARI
+===================================================== */
+
+const positions = [];
+
+
+/*
+11x11 grid çevresinde
+40 pozisyon oluştur.
+*/
+
+for (
+    let c = 1;
+    c <= 11;
+    c++
+) {
+
+    positions.push(
+        [11, c]
+    );
+
+}
+
+
+for (
+    let r = 10;
+    r >= 1;
+    r--
+) {
+
+    positions.push(
+        [r, 11]
+    );
+
+}
+
+
+for (
+    let c = 10;
+    c >= 1;
+    c--
+) {
+
+    positions.push(
+        [1, c]
+    );
+
+}
+
+
+for (
+    let r = 2;
+    r <= 10;
+    r++
+) {
+
+    positions.push(
+        [r, 1]
+    );
+
+}
+
+
+/* =====================================================
+   TAHTAYI OLUŞTUR
+===================================================== */
+
+function buildBoard() {
+
+    tiles.forEach(
+        (name, index) => {
+
+            const tile =
                 document.createElement("div");
 
-            cell.className =
-                "cell";
-
-            cell.id =
-                "cell-" + i;
-
-            cell.innerHTML =
-                "<b>Kare " +
-                i +
-                "</b>" +
-                "<div class='pieces'></div>";
-
-            board.appendChild(cell);
-
-        }
+            tile.className =
+                "tile";
 
 
-        // ==================================================
-        // ODA KODU OLUŞTUR
-        // ==================================================
+            const [row, col] =
+                positions[index];
 
-        function generateRoomCode() {
 
-            const chars =
-                "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            tile.style.gridRow =
+                row;
 
-            let code = "";
+            tile.style.gridColumn =
+                col;
 
-            for (let i = 0; i < 4; i++) {
 
-                code +=
-                    chars[
-                        Math.floor(
-                            Math.random() *
-                            chars.length
-                        )
-                    ];
+            if (
+                index === 0 ||
+                index === 10 ||
+                index === 20 ||
+                index === 30
+            ) {
+
+                tile.classList.add(
+                    "corner"
+                );
 
             }
 
-            return code;
 
-        }
+            if (
+                name === "Blackjack"
+            ) {
 
+                tile.classList.add(
+                    "blackjack"
+                );
 
-        // ==================================================
-        // MESAJ GÖSTER
-        // ==================================================
-
-        function showLobbyMessage(
-            text,
-            type = ""
-        ) {
-
-            lobbyMessage.textContent =
-                text;
-
-            lobbyMessage.className =
-                type;
-
-        }
+            }
 
 
-        // ==================================================
-        // ODA OLUŞTUR
-        // ==================================================
+            if (
+                name === "Poker"
+            ) {
 
-        async function createGame() {
+                tile.classList.add(
+                    "poker"
+                );
 
-            console.log(
-                "Oda oluşturma başladı."
+            }
+
+
+            const title =
+                document.createElement("strong");
+
+            title.textContent =
+                name;
+
+
+            tile.appendChild(
+                title
             );
 
 
-            if (!db) {
+            const pieces =
+                document.createElement("div");
 
-                showLobbyMessage(
-                    "Firebase bağlantısı kurulamadı.",
-                    "error"
-                );
+            pieces.className =
+                "pieces";
 
-                return;
-
-            }
+            pieces.dataset.position =
+                index;
 
 
-            createRoom.disabled =
-                true;
-
-
-            showLobbyMessage(
-                "Oda oluşturuluyor..."
+            tile.appendChild(
+                pieces
             );
 
 
-            try {
+            board.appendChild(
+                tile
+            );
 
-                let code = null;
+        }
+    );
 
-
-                // Boş oda kodu bul
-                for (let i = 0; i < 10; i++) {
-
-                    const testCode =
-                        generateRoomCode();
-
-                    const roomSnapshot =
-                        await get(
-                            ref(
-                                db,
-                                "rooms/" +
-                                testCode
-                            )
-                        );
+}
 
 
-                    if (!roomSnapshot.exists()) {
-
-                        code =
-                            testCode;
-
-                        break;
-
-                    }
-
-                }
+buildBoard();
 
 
-                if (!code) {
+/* =====================================================
+   TELEPORT SELECT
+===================================================== */
 
-                    throw new Error(
-                        "Uygun oda kodu bulunamadı."
-                    );
+tiles.forEach(
+    (name, index) => {
 
-                }
+        const option =
+            document.createElement("option");
 
+        option.value =
+            index;
 
-                roomCode =
-                    code;
+        option.textContent =
+            index +
+            " - " +
+            name;
 
-                playerNumber =
-                    0;
+        teleportSelect.appendChild(
+            option
+        );
 
-
-                // Başlangıç oyunu
-                const initialGame = {
-
-                    players: {
-
-                        0: {
-
-                            name:
-                                "Oyuncu 1",
-
-                            money:
-                                1500,
-
-                            position:
-                                0,
-
-                            connected:
-                                true
-
-                        },
-
-                        1: null
-
-                    },
-
-                    turn:
-                        0,
-
-                    lastRoll:
-                        0,
-
-                    message:
-                        "Oyuncu 2 bekleniyor..."
-
-                };
+    }
+);
 
 
-                // Firebase'e yaz
-                await set(
+/* =====================================================
+   ODA KODU
+===================================================== */
+
+function generateRoomCode() {
+
+    return Math.floor(
+        1000 +
+        Math.random() * 9000
+    ).toString();
+
+}
+
+
+/* =====================================================
+   OYUNCU ID
+===================================================== */
+
+function generatePlayerId() {
+
+    return firebaseUser.uid;
+
+}
+
+
+/* =====================================================
+   ODA OLUŞTUR
+===================================================== */
+
+createRoom.onclick =
+async () => {
+
+    if (!firebaseUser) {
+
+        alert(
+            "Firebase Authentication hazır değil."
+        );
+
+        return;
+
+    }
+
+
+    const name =
+        nameInput.value.trim()
+        ||
+        "Oyuncu 1";
+
+
+    createRoom.disabled =
+        true;
+
+
+    try {
+
+        let code;
+
+        let exists =
+            true;
+
+
+        while (exists) {
+
+            code =
+                generateRoomCode();
+
+
+            const snap =
+                await get(
                     ref(
                         db,
-                        "rooms/" +
-                        roomCode
-                    ),
-                    initialGame
+                        "rooms/" + code
+                    )
                 );
 
 
-                console.log(
-                    "Oda Firebase'e kaydedildi:",
-                    roomCode
-                );
-
-
-                createdRoom.innerHTML =
-
-                    "<div class='room-code'>" +
-                    code +
-                    "</div>" +
-
-                    "<p class='center'>" +
-                    "Bu kodu arkadaşına gönder." +
-                    "</p>";
-
-
-                showLobbyMessage(
-                    "Oda oluşturuldu!",
-                    "success"
-                );
-
-
-                startGame();
-
-
-            } catch (error) {
-
-                console.error(
-                    "ODA OLUŞTURMA HATASI:",
-                    error
-                );
-
-
-                showLobbyMessage(
-                    "Oda oluşturulamadı: " +
-                    error.message,
-                    "error"
-                );
-
-
-                createRoom.disabled =
-                    false;
-
-            }
+            exists =
+                snap.exists();
 
         }
 
 
-        // ==================================================
-        // ODAYA KATIL
-        // ==================================================
-
-        async function joinGame() {
-
-            const code =
-                roomInput.value
-                    .trim()
-                    .toUpperCase();
+        const playerId =
+            generatePlayerId();
 
 
-            if (code.length !== 4) {
+        await set(
+            ref(
+                db,
+                "rooms/" + code
+            ),
+            {
 
-                showLobbyMessage(
-                    "Lütfen 4 haneli oda kodu gir.",
-                    "error"
-                );
+                host:
+                    playerId,
 
-                return;
+                createdAt:
+                    Date.now(),
 
-            }
+                status:
+                    "waiting",
 
+                players: {
 
-            if (!db) {
-
-                showLobbyMessage(
-                    "Firebase bağlantısı kurulamadı.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            joinRoom.disabled =
-                true;
-
-
-            showLobbyMessage(
-                "Oda aranıyor..."
-            );
-
-
-            try {
-
-                const roomRef =
-                    ref(
-                        db,
-                        "rooms/" +
-                        code
-                    );
-
-
-                const snapshot =
-                    await get(roomRef);
-
-
-                if (!snapshot.exists()) {
-
-                    showLobbyMessage(
-                        "Bu oda bulunamadı.",
-                        "error"
-                    );
-
-                    joinRoom.disabled =
-                        false;
-
-                    return;
-
-                }
-
-
-                const gameData =
-                    snapshot.val();
-
-
-                // Oyuncu 2 zaten var mı?
-                if (
-                    gameData.players &&
-                    gameData.players[1]
-                ) {
-
-                    showLobbyMessage(
-                        "Bu oda zaten dolu.",
-                        "error"
-                    );
-
-                    joinRoom.disabled =
-                        false;
-
-                    return;
-
-                }
-
-
-                // Oyuncu 2'yi ekle
-                await set(
-
-                    ref(
-                        db,
-                        "rooms/" +
-                        code +
-                        "/players/1"
-                    ),
-
-                    {
+                    [playerId]: {
 
                         name:
-                            "Oyuncu 2",
-
-                        money:
-                            1500,
+                            name,
 
                         position:
                             0,
 
-                        connected:
-                            true
+                        money:
+                            1500,
+
+                        admin:
+                            true,
+
+                        joinedAt:
+                            Date.now()
 
                     }
 
-                );
+                },
 
+                blackjack: null,
 
-                await set(
-
-                    ref(
-                        db,
-                        "rooms/" +
-                        code +
-                        "/message"
-                    ),
-
-                    "Oyuncu 2 oyuna katıldı."
-
-                );
-
-
-                roomCode =
-                    code;
-
-                playerNumber =
-                    1;
-
-
-                startGame();
-
-
-            } catch (error) {
-
-                console.error(
-                    "ODAYA KATILMA HATASI:",
-                    error
-                );
-
-
-                showLobbyMessage(
-                    "Odaya katılınamadı: " +
-                    error.message,
-                    "error"
-                );
-
-
-                joinRoom.disabled =
-                    false;
+                poker: null
 
             }
+        );
+
+
+        currentRoom =
+            code;
+
+        currentPlayer =
+            playerId;
+
+        isAdmin =
+            true;
+
+
+        enterGame();
+
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Oda oluşturulamadı:\n" +
+            error.message
+        );
+
+    }
+    finally {
+
+        createRoom.disabled =
+            false;
+
+    }
+
+};
+
+
+/* =====================================================
+   ODAYA KATIL
+===================================================== */
+
+joinRoom.onclick =
+async () => {
+
+    if (!firebaseUser) {
+
+        alert(
+            "Firebase Authentication hazır değil."
+        );
+
+        return;
+
+    }
+
+
+    const code =
+        roomInput.value.trim();
+
+
+    if (
+        !/^\d{4}$/.test(code)
+    ) {
+
+        alert(
+            "4 haneli oda kodu gir."
+        );
+
+        return;
+
+    }
+
+
+    const snapshot =
+        await get(
+            ref(
+                db,
+                "rooms/" + code
+            )
+        );
+
+
+    if (!snapshot.exists()) {
+
+        alert(
+            "Oda bulunamadı."
+        );
+
+        return;
+
+    }
+
+
+    const data =
+        snapshot.val();
+
+
+    const playerCount =
+        Object.keys(
+            data.players || {}
+        ).length;
+
+
+    if (
+        playerCount >= 4
+    ) {
+
+        alert(
+            "Test odası maksimum 4 oyuncu."
+        );
+
+        return;
+
+    }
+
+
+    const playerId =
+        generatePlayerId();
+
+
+    const name =
+        nameInput.value.trim()
+        ||
+        "Oyuncu";
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            code +
+            "/players/" +
+            playerId
+        ),
+        {
+
+            name:
+                name,
+
+            position:
+                0,
+
+            money:
+                1500,
+
+            admin:
+                false,
+
+            joinedAt:
+                Date.now()
 
         }
+    );
 
 
-        // ==================================================
-        // OYUNU BAŞLAT
-        // ==================================================
+    currentRoom =
+        code;
 
-        function startGame() {
+    currentPlayer =
+        playerId;
 
-            lobby.style.display =
-                "none";
-
-            game.style.display =
-                "block";
+    isAdmin =
+        false;
 
 
-            document.getElementById(
-                "gameRoomCode"
-            ).textContent =
-                roomCode;
+    enterGame();
+
+};
 
 
-            turnText.textContent =
-                "Oyuncular bekleniyor...";
+/* =====================================================
+   OYUNA GİR
+===================================================== */
+
+function enterGame() {
+
+    lobby.classList.add(
+        "hidden"
+    );
+
+    game.classList.remove(
+        "hidden"
+    );
+
+    roomCode.textContent =
+        currentRoom;
 
 
-            const roomRef =
-                ref(
-                    db,
-                    "rooms/" +
-                    roomCode
+    if (isAdmin) {
+
+        adminPanel.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    listenRoom();
+
+}
+
+
+/* =====================================================
+   FIREBASE ODA DİNLE
+===================================================== */
+
+function listenRoom() {
+
+    const roomRef =
+        ref(
+            db,
+            "rooms/" +
+            currentRoom
+        );
+
+
+    roomListener =
+        onValue(
+            roomRef,
+            snapshot => {
+
+                if (
+                    !snapshot.exists()
+                ) {
+
+                    alert(
+                        "Oda kapatıldı."
+                    );
+
+                    location.reload();
+
+                    return;
+
+                }
+
+
+                roomData =
+                    snapshot.val();
+
+
+                renderPlayers();
+
+                renderPieces();
+
+                checkMyTable();
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   OYUNCULAR
+===================================================== */
+
+function renderPlayers() {
+
+    playersElement.innerHTML =
+        "";
+
+
+    const players =
+        roomData.players || {};
+
+
+    Object.entries(
+        players
+    ).forEach(
+        ([id, player]) => {
+
+            const div =
+                document.createElement(
+                    "div"
                 );
 
 
-            // Eski listener varsa kapat
-            if (unsubscribe) {
-
-                unsubscribe();
-
-            }
+            div.className =
+                "player-tag";
 
 
-            // Firebase'i dinle
-            unsubscribe =
-                onValue(
-
-                    roomRef,
-
-                    snapshot => {
-
-                        const data =
-                            snapshot.val();
-
-
-                        // Oda silinmiş
-                        if (!data) {
-
-                            alert(
-                                "Bu oda artık mevcut değil."
-                            );
-
-                            location.reload();
-
-                            return;
-
-                        }
-
-
-                        renderGame(data);
-
-                    },
-
-                    error => {
-
-                        console.error(
-                            "Firebase dinleme hatası:",
-                            error
-                        );
-
-
-                        message.textContent =
-                            "Firebase bağlantı hatası: " +
-                            error.message;
-
-                    }
-
-                );
-
-        }
-
-
-        // ==================================================
-        // OYUNU EKRANA ÇİZ
-        // ==================================================
-
-        function renderGame(data) {
-
-            if (!data.players) {
-
-                return;
-
-            }
-
-
-            const p0 =
-                data.players[0];
-
-            const p1 =
-                data.players[1];
-
-
-            // Oyuncu 1
-            document.getElementById(
-                "money0"
-            ).textContent =
-                p0
-                    ? p0.money
-                    : "-";
-
-
-            document.getElementById(
-                "position0"
-            ).textContent =
-                p0
-                    ? p0.position
-                    : "-";
-
-
-            document.getElementById(
-                "connected0"
-            ).textContent =
-                p0
-                    ? "Oyunda"
-                    : "Bekleniyor";
-
-
-            // Oyuncu 2
-            document.getElementById(
-                "money1"
-            ).textContent =
-                p1
-                    ? p1.money
-                    : "-";
-
-
-            document.getElementById(
-                "position1"
-            ).textContent =
-                p1
-                    ? p1.position
-                    : "-";
-
-
-            document.getElementById(
-                "connected1"
-            ).textContent =
-                p1
-                    ? "Oyunda"
-                    : "Bekleniyor";
-
-
-            // Sıra
-            if (!p0 || !p1) {
-
-                turnText.textContent =
-                    "⏳ Oyuncu 2 bekleniyor...";
-
-                rollButton.disabled =
-                    true;
-
-            } else if (
-                data.turn === playerNumber
+            if (
+                player.admin
             ) {
 
-                turnText.textContent =
-                    "🎲 SENİN SIRAN";
-
-                rollButton.disabled =
-                    false;
-
-            } else {
-
-                turnText.textContent =
-                    "⏳ KARŞI OYUNCUNUN SIRASI";
-
-                rollButton.disabled =
-                    true;
-
-            }
-
-
-            // Mesaj
-            message.textContent =
-                data.message || "";
-
-
-            // Son zar
-            if (data.lastRoll) {
-
-                diceResult.textContent =
-                    "🎲 Son zar: " +
-                    data.lastRoll;
-
-            } else {
-
-                diceResult.textContent =
-                    "";
-
-            }
-
-
-            // Tahtadaki taşları temizle
-            document
-                .querySelectorAll(".pieces")
-                .forEach(
-                    element => {
-                        element.innerHTML = "";
-                    }
-                );
-
-
-            // Oyuncu 1 taşı
-            if (p0) {
-
-                addPiece(
-                    p0.position,
-                    "🧑 Oyuncu 1",
-                    false
+                div.classList.add(
+                    "admin"
                 );
 
             }
 
 
-            // Oyuncu 2 taşı
-            if (p1) {
-
-                addPiece(
-                    p1.position,
-                    "👤 Oyuncu 2",
-                    true
+            div.textContent =
+                (
+                    player.admin
+                    ? "👑 "
+                    : "👤 "
+                )
+                +
+                player.name
+                +
+                " • "
+                +
+                (
+                    tiles[
+                        player.position || 0
+                    ]
                 );
 
-            }
+
+            playersElement.appendChild(
+                div
+            );
 
         }
+    );
+
+}
 
 
-        // ==================================================
-        // TAŞ EKLE
-        // ==================================================
+/* =====================================================
+   TAHTADAKİ PİYONLAR
+===================================================== */
 
-        function addPiece(
-            position,
-            text,
-            player2
-        ) {
+function renderPieces() {
 
-            const cell =
-                document.getElementById(
-                    "cell-" +
-                    position
+    document
+        .querySelectorAll(".pieces")
+        .forEach(
+            p => p.innerHTML = ""
+        );
+
+
+    const colors = [
+        "#ef4444",
+        "#3b82f6",
+        "#22c55e",
+        "#facc15"
+    ];
+
+
+    const players =
+        roomData.players || {};
+
+
+    Object.entries(
+        players
+    ).forEach(
+        ([id, player], i) => {
+
+            const container =
+                document.querySelector(
+                    `.pieces[data-position="${player.position || 0}"]`
                 );
 
 
-            if (!cell) {
-
+            if (!container)
                 return;
-
-            }
 
 
             const piece =
                 document.createElement(
-                    "span"
+                    "div"
                 );
 
 
@@ -1219,339 +1839,1666 @@
                 "piece";
 
 
-            if (player2) {
-
-                piece.classList.add(
-                    "player2"
-                );
-
-            }
+            piece.style.background =
+                colors[i % colors.length];
 
 
-            piece.textContent =
-                text;
+            piece.title =
+                player.name;
 
 
-            cell
-                .querySelector(".pieces")
-                .appendChild(piece);
+            container.appendChild(
+                piece
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ADMIN IŞINLANMA
+===================================================== */
+
+teleportButton.onclick =
+async () => {
+
+    if (!isAdmin)
+        return;
+
+
+    const position =
+        Number(
+            teleportSelect.value
+        );
+
+
+    await update(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/players/" +
+            currentPlayer
+        ),
+        {
+
+            position:
+                position
+
+        }
+    );
+
+
+    /*
+    Blackjack veya Poker bloğuna
+    ışınlandıysa masa açılır.
+    */
+
+};
+
+
+/* =====================================================
+   MASA KONTROLÜ
+===================================================== */
+
+function checkMyTable() {
+
+    const me =
+        roomData.players?.[
+            currentPlayer
+        ];
+
+
+    if (!me) return;
+
+
+    const position =
+        me.position || 0;
+
+
+    /*
+    38 = Blackjack
+    39 = Poker
+    */
+
+    if (
+        position === 38
+    ) {
+
+        openBlackjack();
+
+        return;
+
+    }
+
+
+    if (
+        position === 39
+    ) {
+
+        openPoker();
+
+        return;
+
+    }
+
+
+    tableArea.classList.add(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   BLACKJACK
+===================================================== */
+
+function openBlackjack() {
+
+    tableArea.classList.remove(
+        "hidden"
+    );
+
+
+    tableTitle.textContent =
+        "🃏 BLACKJACK";
+
+
+    /*
+    İlk oyuncu geldiğinde oyun oluştur.
+    */
+
+    if (
+        !roomData.blackjack
+    ) {
+
+        if (
+            currentPlayer === roomData.host
+        ) {
+
+            createBlackjack();
 
         }
 
+        return;
 
-        // ==================================================
-        // ZAR AT
-        // ==================================================
+    }
 
-        async function rollDice() {
 
-            if (!roomCode) {
+    renderBlackjack();
 
-                return;
+}
+
+
+/* =====================================================
+   BLACKJACK DESTESİ
+===================================================== */
+
+function createDeck() {
+
+    const suits = [
+        "♠",
+        "♥",
+        "♦",
+        "♣"
+    ];
+
+    const ranks = [
+        "A",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K"
+    ];
+
+
+    const deck = [];
+
+
+    suits.forEach(
+        suit => {
+
+            ranks.forEach(
+                rank => {
+
+                    deck.push({
+                        suit,
+                        rank
+                    });
+
+                }
+            );
+
+        }
+    );
+
+
+    return deck;
+
+}
+
+
+function shuffle(deck) {
+
+    for (
+        let i = deck.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            deck[i],
+            deck[j]
+        ] =
+        [
+            deck[j],
+            deck[i]
+        ];
+
+    }
+
+
+    return deck;
+
+}
+
+
+/* =====================================================
+   BLACKJACK DEĞER
+===================================================== */
+
+function blackjackValue(cards) {
+
+    let total = 0;
+
+    let aces = 0;
+
+
+    cards.forEach(
+        card => {
+
+            if (
+                card.rank === "A"
+            ) {
+
+                total += 11;
+
+                aces++;
 
             }
+            else if (
+                ["K","Q","J"].includes(
+                    card.rank
+                )
+            ) {
 
-
-            if (playerNumber === null) {
-
-                return;
+                total += 10;
 
             }
+            else {
 
-
-            rollButton.disabled =
-                true;
-
-
-            try {
-
-                const roomRef =
-                    ref(
-                        db,
-                        "rooms/" +
-                        roomCode
+                total +=
+                    Number(
+                        card.rank
                     );
-
-
-                await runTransaction(
-
-                    roomRef,
-
-                    gameData => {
-
-                        // Oda yok
-                        if (!gameData) {
-
-                            return;
-
-                        }
-
-
-                        // Diğer oyuncu yok
-                        if (
-                            !gameData.players ||
-                            !gameData.players[0] ||
-                            !gameData.players[1]
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        // Sıra bizde değil
-                        if (
-                            gameData.turn !==
-                            playerNumber
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        const player =
-                            gameData.players[
-                                playerNumber
-                            ];
-
-
-                        if (!player) {
-
-                            return;
-
-                        }
-
-
-                        // Zar
-                        const dice =
-                            Math.floor(
-                                Math.random() * 6
-                            ) + 1;
-
-
-                        const oldPosition =
-                            player.position;
-
-
-                        const newPosition =
-                            (
-                                oldPosition +
-                                dice
-                            ) % 32;
-
-
-                        player.position =
-                            newPosition;
-
-
-                        // Başlangıç noktasını geçerse
-                        if (
-                            newPosition <
-                            oldPosition
-                        ) {
-
-                            player.money +=
-                                200;
-
-                        }
-
-
-                        gameData.lastRoll =
-                            dice;
-
-
-                        gameData.message =
-
-                            (
-                                playerNumber === 0
-                                    ? "Oyuncu 1"
-                                    : "Oyuncu 2"
-                            ) +
-
-                            " " +
-
-                            dice +
-
-                            " attı.";
-
-
-                        // Sırayı değiştir
-                        gameData.turn =
-                            playerNumber === 0
-                                ? 1
-                                : 0;
-
-
-                        return gameData;
-
-                    }
-
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "ZAR HATASI:",
-                    error
-                );
-
-
-                message.textContent =
-                    "Zar atılamadı: " +
-                    error.message;
 
             }
 
         }
+    );
 
 
-        // ==================================================
-        // ODADAN ÇIK
-        // ==================================================
+    while (
+        total > 21 &&
+        aces > 0
+    ) {
 
-        async function leaveGame() {
+        total -= 10;
 
-            if (!roomCode) {
+        aces--;
 
-                location.reload();
+    }
 
+
+    return total;
+
+}
+
+
+/* =====================================================
+   BLACKJACK OYUNU OLUŞTUR
+===================================================== */
+
+async function createBlackjack() {
+
+    const players =
+        roomData.players || {};
+
+
+    const deck =
+        shuffle(
+            createDeck()
+        );
+
+
+    const hands = {};
+
+
+    Object.keys(
+        players
+    ).forEach(
+        id => {
+
+            hands[id] = {
+
+                cards: [
+                    deck.pop(),
+                    deck.pop()
+                ],
+
+                status:
+                    "playing",
+
+                bet:
+                    100
+
+            };
+
+        }
+    );
+
+
+    const dealer = {
+
+        cards: [
+            deck.pop(),
+            deck.pop()
+        ],
+
+        status:
+            "playing"
+
+    };
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        {
+
+            deck:
+                deck,
+
+            hands:
+                hands,
+
+            dealer:
+                dealer,
+
+            turn:
+                Object.keys(players)[0],
+
+            status:
+                "playing"
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   BLACKJACK GÖSTER
+===================================================== */
+
+function renderBlackjack() {
+
+    const gameData =
+        roomData.blackjack;
+
+
+    if (!gameData)
+        return;
+
+
+    let html =
+        "";
+
+
+    html +=
+        "<h2>🎰 Kurpiyer</h2>";
+
+
+    html +=
+        "<div>";
+
+
+    gameData.dealer.cards
+        .forEach(
+            (card, index) => {
+
+                if (
+                    index === 1 &&
+                    gameData.status === "playing"
+                ) {
+
+                    html +=
+                        cardHTML(
+                            null,
+                            true
+                        );
+
+                }
+                else {
+
+                    html +=
+                        cardHTML(
+                            card
+                        );
+
+                }
+
+            }
+        );
+
+
+    html +=
+        "</div>";
+
+
+    html +=
+        "<hr>";
+
+
+    Object.entries(
+        gameData.hands || {}
+    ).forEach(
+        ([id, hand]) => {
+
+            const player =
+                roomData.players[id];
+
+
+            if (!player)
                 return;
+
+
+            html +=
+                `<div class="poker-player">`;
+
+
+            html +=
+                `<strong>👤 ${escapeHTML(player.name)}</strong>`;
+
+
+            html +=
+                `<br>`;
+
+
+            hand.cards.forEach(
+                card => {
+
+                    html +=
+                        cardHTML(card);
+
+                }
+            );
+
+
+            html +=
+                `<div>Toplam: ${blackjackValue(hand.cards)}</div>`;
+
+
+            if (
+                id === currentPlayer &&
+                hand.status === "playing"
+            ) {
+
+                html +=
+                    `<div class="bet-actions">
+
+                        <button
+                            id="bjHit"
+                        >
+                            Kart Çek
+                        </button>
+
+                        <button
+                            id="bjStand"
+                            class="blue"
+                        >
+                            Kal
+                        </button>
+
+                        <button
+                            id="bjDouble"
+                            class="gold"
+                        >
+                            Double
+                        </button>
+
+                        <button
+                            id="bjSplit"
+                            class="gray"
+                        >
+                            Split
+                        </button>
+
+                    </div>`;
 
             }
 
 
-            try {
+            html +=
+                "</div>";
 
-                const roomRef =
-                    ref(
-                        db,
-                        "rooms/" +
-                        roomCode
-                    );
+        }
+    );
 
 
-                const snapshot =
-                    await get(roomRef);
+    tableContent.innerHTML =
+        html;
 
 
-                if (snapshot.exists()) {
+    const hit =
+        document.getElementById(
+            "bjHit"
+        );
 
-                    const data =
-                        snapshot.val();
+
+    const stand =
+        document.getElementById(
+            "bjStand"
+        );
 
 
-                    // Oyuncuyu kaldır
+    const doubleButton =
+        document.getElementById(
+            "bjDouble"
+        );
+
+
+    const split =
+        document.getElementById(
+            "bjSplit"
+        );
+
+
+    if (hit)
+        hit.onclick =
+            () =>
+                blackjackHit();
+
+
+    if (stand)
+        stand.onclick =
+            () =>
+                blackjackStand();
+
+
+    if (doubleButton)
+        doubleButton.onclick =
+            () =>
+                blackjackDouble();
+
+
+    if (split)
+        split.onclick =
+            () =>
+                blackjackSplit();
+
+}
+
+
+/* =====================================================
+   KART HTML
+===================================================== */
+
+function cardHTML(
+    card,
+    back = false
+) {
+
+    if (back) {
+
+        return `
+        <div class="card back">
+            🂠
+        </div>
+        `;
+
+    }
+
+
+    const red =
+        card.suit === "♥" ||
+        card.suit === "♦";
+
+
+    return `
+    <div class="card ${red ? "red" : ""}">
+        <strong>${card.rank}</strong>
+        <span>${card.suit}</span>
+    </div>
+    `;
+
+}
+
+
+/* =====================================================
+   BLACKJACK KART ÇEK
+===================================================== */
+
+async function blackjackHit() {
+
+    const gameData =
+        roomData.blackjack;
+
+
+    if (
+        gameData.turn !==
+        currentPlayer
+    )
+        return;
+
+
+    const hand =
+        gameData.hands[
+            currentPlayer
+        ];
+
+
+    hand.cards.push(
+        gameData.deck.pop()
+    );
+
+
+    if (
+        blackjackValue(
+            hand.cards
+        ) >= 21
+    ) {
+
+        hand.status =
+            "stand";
+
+    }
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        gameData
+    );
+
+
+    nextBlackjackTurn();
+
+}
+
+
+/* =====================================================
+   BLACKJACK KAL
+===================================================== */
+
+async function blackjackStand() {
+
+    const gameData =
+        roomData.blackjack;
+
+
+    if (
+        gameData.turn !==
+        currentPlayer
+    )
+        return;
+
+
+    gameData.hands[
+        currentPlayer
+    ].status =
+        "stand";
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        gameData
+    );
+
+
+    nextBlackjackTurn();
+
+}
+
+
+/* =====================================================
+   BLACKJACK DOUBLE
+===================================================== */
+
+async function blackjackDouble() {
+
+    const gameData =
+        roomData.blackjack;
+
+
+    if (
+        gameData.turn !==
+        currentPlayer
+    )
+        return;
+
+
+    const hand =
+        gameData.hands[
+            currentPlayer
+        ];
+
+
+    hand.bet *= 2;
+
+
+    hand.cards.push(
+        gameData.deck.pop()
+    );
+
+
+    hand.status =
+        "stand";
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        gameData
+    );
+
+
+    nextBlackjackTurn();
+
+}
+
+
+/* =====================================================
+   BLACKJACK SPLIT
+===================================================== */
+
+async function blackjackSplit() {
+
+    const gameData =
+        roomData.blackjack;
+
+
+    if (
+        gameData.turn !==
+        currentPlayer
+    )
+        return;
+
+
+    const hand =
+        gameData.hands[
+            currentPlayer
+        ];
+
+
+    if (
+        hand.cards.length !== 2
+    )
+        return;
+
+
+    if (
+        hand.cards[0].rank !==
+        hand.cards[1].rank
+    ) {
+
+        alert(
+            "Split için iki kartın değeri eşleşmeli."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Test sürümünde split
+    ikinci eli oluşturur.
+    */
+
+    hand.split = {
+
+        cards: [
+            hand.cards.pop(),
+            gameData.deck.pop()
+        ],
+
+        status:
+            "playing",
+
+        bet:
+            hand.bet
+
+    };
+
+
+    hand.cards.push(
+        gameData.deck.pop()
+    );
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        gameData
+    );
+
+}
+
+
+/* =====================================================
+   BLACKJACK SIRASI
+===================================================== */
+
+async function nextBlackjackTurn() {
+
+    /*
+    Test sürümünde sıradaki
+    aktif oyuncuyu bul.
+    */
+
+    const gameData =
+        roomData.blackjack;
+
+
+    const ids =
+        Object.keys(
+            gameData.hands
+        );
+
+
+    const available =
+        ids.filter(
+            id =>
+                gameData.hands[id]
+                    .status === "playing"
+        );
+
+
+    if (
+        available.length
+    ) {
+
+        gameData.turn =
+            available[0];
+
+
+        await set(
+            ref(
+                db,
+                "rooms/" +
+                currentRoom +
+                "/blackjack"
+            ),
+            gameData
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Oyuncular bitti.
+    Kurpiyer oynar.
+    */
+
+    const dealer =
+        gameData.dealer;
+
+
+    while (
+        blackjackValue(
+            dealer.cards
+        ) < 17
+    ) {
+
+        dealer.cards.push(
+            gameData.deck.pop()
+        );
+
+    }
+
+
+    dealer.status =
+        "stand";
+
+
+    gameData.status =
+        "finished";
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/blackjack"
+        ),
+        gameData
+    );
+
+}
+
+
+/* =====================================================
+   POKER
+===================================================== */
+
+function openPoker() {
+
+    tableArea.classList.remove(
+        "hidden"
+    );
+
+
+    tableTitle.textContent =
+        "♠️ TEXAS HOLD'EM POKER";
+
+
+    if (
+        !roomData.poker
+    ) {
+
+        if (
+            currentPlayer ===
+            roomData.host
+        ) {
+
+            createPoker();
+
+        }
+
+        return;
+
+    }
+
+
+    renderPoker();
+
+}
+
+
+/* =====================================================
+   POKER OLUŞTUR
+===================================================== */
+
+async function createPoker() {
+
+    const players =
+        roomData.players || {};
+
+
+    const ids =
+        Object.keys(
+            players
+        );
+
+
+    if (
+        ids.length < 2
+    ) {
+
+        tableContent.innerHTML =
+            `
+            <h2>♠️ Poker</h2>
+
+            <p>
+            Poker için en az 2 oyuncu gerekir.
+            </p>
+
+            <p>
+            Odadaki bütün oyuncular
+            masaya girdiğinde oyun başlayacak.
+            </p>
+            `;
+
+        return;
+
+    }
+
+
+    const deck =
+        shuffle(
+            createDeck()
+        );
+
+
+    const hands = {};
+
+
+    ids.forEach(
+        id => {
+
+            hands[id] = {
+
+                cards: [
+                    deck.pop(),
+                    deck.pop()
+                ],
+
+                chips:
+                    1000,
+
+                currentBet:
+                    0,
+
+                folded:
+                    false
+
+            };
+
+        }
+    );
+
+
+    const community = [
+
+        deck.pop(),
+        deck.pop(),
+        deck.pop(),
+
+        deck.pop(),
+
+        deck.pop()
+
+    ];
+
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/poker"
+        ),
+        {
+
+            deck:
+                deck,
+
+            hands:
+                hands,
+
+            community:
+                community,
+
+            revealed:
+                0,
+
+            pot:
+                0,
+
+            turn:
+                ids[0],
+
+            stage:
+                "preflop",
+
+            status:
+                "playing",
+
+            dealer:
+                ids[0],
+
+            currentBet:
+                0
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   POKER GÖSTER
+===================================================== */
+
+function renderPoker() {
+
+    const poker =
+        roomData.poker;
+
+
+    if (!poker)
+        return;
+
+
+    let html =
+        "";
+
+
+    html +=
+        `<h2>♠️ Texas Hold'em</h2>`;
+
+
+    html +=
+        `<div class="message">
+            Pot: ${poker.pot || 0}
+        </div>`;
+
+
+    html +=
+        `<div class="community">`;
+
+
+    poker.community
+        .forEach(
+            (card, index) => {
+
+                if (
+                    index <
+                    poker.revealed
+                ) {
+
+                    html +=
+                        cardHTML(card);
+
+                }
+                else {
+
+                    html +=
+                        cardHTML(
+                            null,
+                            true
+                        );
+
+                }
+
+            }
+        );
+
+
+    html +=
+        `</div>`;
+
+
+    html +=
+        "<hr>";
+
+
+    Object.entries(
+        poker.hands || {}
+    ).forEach(
+        ([id, hand]) => {
+
+            const player =
+                roomData.players[id];
+
+
+            if (!player)
+                return;
+
+
+            html +=
+                `<div class="poker-player">`;
+
+
+            html +=
+                `<strong>👤 ${escapeHTML(player.name)}</strong>`;
+
+
+            if (
+                hand.folded
+            ) {
+
+                html +=
+                    " — FOLD";
+
+            }
+
+
+            html +=
+                `<br>`;
+
+
+            /*
+            Sadece kendi kartlarımızı
+            açık göster.
+            */
+
+            hand.cards.forEach(
+                card => {
+
                     if (
-                        data.players &&
-                        data.players[playerNumber]
+                        id === currentPlayer
                     ) {
 
-                        await remove(
-
-                            ref(
-                                db,
-                                "rooms/" +
-                                roomCode +
-                                "/players/" +
-                                playerNumber
-                            )
-
-                        );
+                        html +=
+                            cardHTML(
+                                card
+                            );
 
                     }
+                    else {
 
-
-                    // Eğer oda sahibi çıkarsa
-                    // ve diğer oyuncu yoksa odayı sil
-                    if (
-                        playerNumber === 0 &&
-                        (
-                            !data.players ||
-                            !data.players[1]
-                        )
-                    ) {
-
-                        await remove(
-                            roomRef
-                        );
+                        html +=
+                            cardHTML(
+                                null,
+                                true
+                            );
 
                     }
 
                 }
+            );
 
 
-            } catch (error) {
+            html +=
+                `<br>Bahis: ${hand.currentBet || 0}`;
 
-                console.error(
-                    "Odadan çıkma hatası:",
-                    error
-                );
-
-            }
-
-
-            if (unsubscribe) {
-
-                unsubscribe();
-
-            }
-
-
-            location.reload();
+            html +=
+                "</div>";
 
         }
+    );
 
 
-        // ==================================================
-        // BUTONLAR
-        // ==================================================
+    if (
+        poker.turn ===
+        currentPlayer
+    ) {
 
-        createRoom.addEventListener(
-            "click",
-            createGame
+        html +=
+            `
+
+            <div class="bet-actions">
+
+                <button
+                    id="pokerFold"
+                    class="red"
+                >
+                    Fold
+                </button>
+
+                <button
+                    id="pokerCheck"
+                >
+                    Check
+                </button>
+
+                <button
+                    id="pokerCall"
+                    class="blue"
+                >
+                    Call
+                </button>
+
+                <button
+                    id="pokerRaise"
+                    class="gold"
+                >
+                    Raise +100
+                </button>
+
+            </div>
+
+            `;
+
+    }
+
+
+    tableContent.innerHTML =
+        html;
+
+
+    const fold =
+        document.getElementById(
+            "pokerFold"
         );
 
 
-        joinRoom.addEventListener(
-            "click",
-            joinGame
+    const check =
+        document.getElementById(
+            "pokerCheck"
         );
 
 
-        rollButton.addEventListener(
-            "click",
-            rollDice
+    const call =
+        document.getElementById(
+            "pokerCall"
         );
 
 
-        leaveButton.addEventListener(
-            "click",
-            leaveGame
+    const raise =
+        document.getElementById(
+            "pokerRaise"
         );
 
 
-        // Enter ile odaya katıl
-        roomInput.addEventListener(
-            "keydown",
-            event => {
+    if (fold)
+        fold.onclick =
+            () =>
+                pokerAction(
+                    "fold"
+                );
 
-                if (event.key === "Enter") {
 
-                    joinGame();
+    if (check)
+        check.onclick =
+            () =>
+                pokerAction(
+                    "check"
+                );
 
-                }
+
+    if (call)
+        call.onclick =
+            () =>
+                pokerAction(
+                    "call"
+                );
+
+
+    if (raise)
+        raise.onclick =
+            () =>
+                pokerAction(
+                    "raise"
+                );
+
+}
+
+
+/* =====================================================
+   POKER AKSİYON
+===================================================== */
+
+async function pokerAction(
+    action
+) {
+
+    const poker =
+        roomData.poker;
+
+
+    if (
+        poker.turn !==
+        currentPlayer
+    )
+        return;
+
+
+    const hand =
+        poker.hands[
+            currentPlayer
+        ];
+
+
+    if (
+        action === "fold"
+    ) {
+
+        hand.folded =
+            true;
+
+    }
+
+
+    if (
+        action === "call"
+    ) {
+
+        const difference =
+            Math.max(
+                0,
+                (poker.currentBet || 0)
+                -
+                (hand.currentBet || 0)
+            );
+
+
+        hand.currentBet +=
+            difference;
+
+        poker.pot +=
+            difference;
+
+    }
+
+
+    if (
+        action === "raise"
+    ) {
+
+        const target =
+            (poker.currentBet || 0)
+            + 100;
+
+
+        const difference =
+            target -
+            (hand.currentBet || 0);
+
+
+        hand.currentBet +=
+            difference;
+
+        poker.currentBet =
+            target;
+
+        poker.pot +=
+            difference;
+
+    }
+
+
+    /*
+    Check ekstra para koymaz.
+    */
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/poker"
+        ),
+        poker
+    );
+
+
+    nextPokerTurn();
+
+}
+
+
+/* =====================================================
+   POKER SIRASI
+===================================================== */
+
+async function nextPokerTurn() {
+
+    const poker =
+        roomData.poker;
+
+
+    const ids =
+        Object.keys(
+            poker.hands
+        );
+
+
+    const active =
+        ids.filter(
+            id =>
+                !poker.hands[id]
+                    .folded
+        );
+
+
+    if (
+        active.length <= 1
+    ) {
+
+        poker.status =
+            "finished";
+
+
+        await set(
+            ref(
+                db,
+                "rooms/" +
+                currentRoom +
+                "/poker"
+            ),
+            poker
+        );
+
+        return;
+
+    }
+
+
+    let index =
+        active.indexOf(
+            poker.turn
+        );
+
+
+    index =
+        (
+            index + 1
+        )
+        %
+        active.length;
+
+
+    poker.turn =
+        active[index];
+
+
+    /*
+    Basit test akışı:
+    Herkes bir tur oynayınca
+    sonraki ortak kartı aç.
+    */
+
+    const allMatched =
+        active.every(
+            id =>
+                (
+                    poker.hands[id]
+                        .currentBet
+                    ===
+                    poker.currentBet
+                )
+        );
+
+
+    if (
+        allMatched
+    ) {
+
+        poker.revealed =
+            Math.min(
+                5,
+                poker.revealed + 1
+            );
+
+
+        poker.currentBet =
+            0;
+
+
+        active.forEach(
+            id => {
+
+                poker.hands[id]
+                    .currentBet =
+                    0;
 
             }
         );
 
+    }
 
-        console.log(
-            "🎮 Kumarhane Monopoly hazır."
+
+    await set(
+        ref(
+            db,
+            "rooms/" +
+            currentRoom +
+            "/poker"
+        ),
+        poker
+    );
+
+}
+
+
+/* =====================================================
+   ODADAN AYRIL
+===================================================== */
+
+leaveRoom.onclick =
+async () => {
+
+    if (
+        currentRoom &&
+        currentPlayer
+    ) {
+
+        await remove(
+            ref(
+                db,
+                "rooms/" +
+                currentRoom +
+                "/players/" +
+                currentPlayer
+            )
         );
 
-    </script>
+    }
+
+
+    location.reload();
+
+};
+
+
+/* =====================================================
+   HTML GÜVENLİĞİ
+===================================================== */
+
+function escapeHTML(
+    value
+) {
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
 
 </body>
 
