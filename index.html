@@ -16,21 +16,27 @@ body{
     margin:0;
     padding:20px;
     font-family:Arial,sans-serif;
-    background:#111;
+    background:
+        radial-gradient(circle at top,#252525,#090909 70%);
     color:white;
 }
 
 h1{
     text-align:center;
-    margin-bottom:20px;
+    margin:0 0 20px;
+    text-shadow:0 3px 8px rgba(0,0,0,.8);
 }
 
 .panel{
-    background:#202020;
+    background:
+        linear-gradient(145deg,#242424,#151515);
     padding:18px;
     border-radius:15px;
     margin-bottom:18px;
-    box-shadow:0 5px 20px rgba(0,0,0,.25);
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.04);
+    border:1px solid #333;
 }
 
 input,
@@ -38,13 +44,26 @@ button{
     padding:12px 16px;
     margin:5px;
     border:0;
-    border-radius:8px;
+    border-radius:9px;
     font-size:16px;
 }
 
 button{
     cursor:pointer;
     font-weight:bold;
+    transition:
+        transform .15s,
+        box-shadow .15s,
+        opacity .15s;
+}
+
+button:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,0,0,.35);
+}
+
+button:active:not(:disabled){
+    transform:translateY(1px);
 }
 
 button:disabled{
@@ -61,6 +80,8 @@ button:disabled{
     font-weight:bold;
     letter-spacing:6px;
     text-align:center;
+    color:#ffd54a;
+    text-shadow:0 3px 10px rgba(255,213,74,.25);
 }
 
 .status{
@@ -83,14 +104,21 @@ button:disabled{
 }
 
 .player{
-    background:#292929;
+    background:
+        linear-gradient(145deg,#303030,#202020);
     padding:15px;
     border-radius:12px;
     border:2px solid transparent;
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.04);
 }
 
 .player.active{
     border-color:#ffd54a;
+    box-shadow:
+        0 0 20px rgba(255,213,74,.18),
+        inset 0 1px rgba(255,255,255,.08);
 }
 
 .player h2{
@@ -102,86 +130,15 @@ button:disabled{
     font-weight:bold;
 }
 
-.board-wrapper{
-    display:flex;
-    justify-content:center;
-    overflow-x:auto;
-}
-
-.board{
-    width:min(900px,100%);
-    display:grid;
-    grid-template-columns:repeat(8,1fr);
-    gap:5px;
-}
-
-.cell{
-    min-height:105px;
-    background:#303030;
-    border:2px solid #555;
-    border-radius:8px;
-    padding:6px;
-    position:relative;
-    overflow:hidden;
-}
-
-.cell.property{
-    background:#253b2d;
-}
-
-.cell.tax{
-    background:#533333;
-}
-
-.cell.chance{
-    background:#3d3458;
-}
-
-.cell.jail{
-    background:#454545;
-}
-
-.cell.start{
-    background:#5b461d;
-}
-
-.cell-title{
-    font-size:12px;
-    font-weight:bold;
-}
-
-.cell-price{
-    font-size:11px;
-    margin-top:4px;
-    color:#ffd54a;
-}
-
-.pieces{
-    margin-top:8px;
-}
-
-.piece{
-    display:inline-block;
-    padding:4px 7px;
-    border-radius:15px;
-    background:#ffd54a;
-    color:#111;
-    font-size:11px;
-    margin:2px;
-}
-
-.piece.p2{
-    background:#62b5ff;
-}
-
-.owner{
-    font-size:10px;
-    margin-top:5px;
-    color:#fff;
-}
-
 .controls{
     text-align:center;
+}
+
+#rollButton{
+    background:#ffd54a;
+    color:#111;
+    font-size:18px;
+    min-width:150px;
 }
 
 #buyButton{
@@ -189,8 +146,367 @@ button:disabled{
     color:white;
 }
 
-#buyButton:disabled{
+#declineButton{
+    background:#d94b4b;
+    color:white;
+}
+
+#leaveButton{
     background:#555;
+    color:white;
+}
+
+.action-box{
+    display:none;
+    margin:15px auto 5px;
+    max-width:600px;
+    padding:18px;
+    border-radius:14px;
+    background:
+        linear-gradient(145deg,#3b3219,#201d13);
+    border:2px solid #ffd54a;
+    box-shadow:
+        0 0 25px rgba(255,213,74,.15);
+}
+
+.action-box.show{
+    display:block;
+}
+
+.action-title{
+    font-size:20px;
+    font-weight:bold;
+    color:#ffd54a;
+    margin-bottom:8px;
+}
+
+.action-text{
+    color:#ddd;
+    margin-bottom:10px;
+}
+
+/* =========================
+   BOARD
+========================= */
+
+.board-wrapper{
+    display:flex;
+    justify-content:center;
+    overflow-x:auto;
+    padding:25px 10px 35px;
+}
+
+.board{
+    width:min(900px,90vw);
+    aspect-ratio:1 / 1;
+    display:grid;
+    grid-template-columns:repeat(11,1fr);
+    grid-template-rows:repeat(11,1fr);
+    gap:4px;
+
+    padding:7px;
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(145deg,#9a713b,#573818 45%,#2f1d0c);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.65),
+        inset 0 2px 2px rgba(255,255,255,.18),
+        inset 0 -6px 12px rgba(0,0,0,.45);
+
+    transform:
+        perspective(1100px)
+        rotateX(1deg);
+
+    position:relative;
+}
+
+/* Ortadaki masa */
+
+.board::after{
+    content:"";
+    position:absolute;
+
+    left:calc(3 * (100% / 11) + 7px);
+    top:calc(3 * (100% / 11) + 7px);
+
+    width:calc(5 * (100% / 11) - 8px);
+    height:calc(5 * (100% / 11) - 8px);
+
+    border-radius:15px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #24452d 0%,
+            #17321f 55%,
+            #102317 100%
+        );
+
+    box-shadow:
+        inset 0 8px 20px rgba(0,0,0,.45),
+        inset 0 -4px 10px rgba(255,255,255,.04);
+
+    pointer-events:none;
+    z-index:0;
+}
+
+.cell{
+    background:
+        linear-gradient(145deg,#464646,#292929);
+
+    border:1px solid #777;
+    border-radius:7px;
+
+    padding:5px;
+
+    position:relative;
+    overflow:hidden;
+
+    min-width:0;
+
+    box-shadow:
+        0 3px 5px rgba(0,0,0,.5),
+        inset 0 1px rgba(255,255,255,.08);
+
+    z-index:2;
+
+    transition:
+        transform .15s,
+        box-shadow .15s;
+}
+
+.cell:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 7px 12px rgba(0,0,0,.5),
+        inset 0 1px rgba(255,255,255,.12);
+}
+
+.cell.property{
+    background:
+        linear-gradient(145deg,#294a36,#172c20);
+}
+
+.cell.tax{
+    background:
+        linear-gradient(145deg,#653b3b,#382020);
+}
+
+.cell.chance{
+    background:
+        linear-gradient(145deg,#514272,#2d2442);
+}
+
+.cell.jail{
+    background:
+        linear-gradient(145deg,#555,#303030);
+}
+
+.cell.start{
+    background:
+        linear-gradient(145deg,#735b25,#403011);
+}
+
+.cell.casino{
+    background:
+        linear-gradient(145deg,#693d69,#361e36);
+}
+
+.cell-title{
+    font-size:10px;
+    font-weight:bold;
+    line-height:1.15;
+}
+
+.cell-price{
+    font-size:9px;
+    margin-top:4px;
+    color:#ffd54a;
+}
+
+.pieces{
+    margin-top:5px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+}
+
+.piece{
+    display:inline-block;
+    padding:3px 5px;
+    border-radius:12px;
+    background:#ffd54a;
+    color:#111;
+    font-size:9px;
+    font-weight:bold;
+    box-shadow:0 2px 5px rgba(0,0,0,.4);
+}
+
+.piece.p2{
+    background:#62b5ff;
+}
+
+.owner{
+    font-size:8px;
+    margin-top:3px;
+    color:#fff;
+}
+
+.property-owned-0{
+    box-shadow:
+        inset 0 0 0 2px #ffd54a,
+        0 3px 7px rgba(0,0,0,.5);
+}
+
+.property-owned-1{
+    box-shadow:
+        inset 0 0 0 2px #62b5ff,
+        0 3px 7px rgba(0,0,0,.5);
+}
+
+/* =========================
+   DICE CENTER
+========================= */
+
+.dice-center{
+    position:absolute;
+
+    left:calc(3 * (100% / 11) + 7px);
+    top:calc(3 * (100% / 11) + 7px);
+
+    width:calc(5 * (100% / 11) - 8px);
+    height:calc(5 * (100% / 11) - 8px);
+
+    z-index:10;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    pointer-events:none;
+}
+
+.dice-title{
+    font-size:12px;
+    color:#aaa;
+    margin-bottom:10px;
+}
+
+.dice-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.die{
+    width:58px;
+    height:58px;
+
+    background:
+        linear-gradient(145deg,#fff,#cfcfcf);
+
+    color:#111;
+
+    border-radius:12px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+    font-weight:bold;
+
+    box-shadow:
+        0 10px 15px rgba(0,0,0,.45),
+        inset 0 2px 2px rgba(255,255,255,.9);
+
+    transform:translateY(0);
+}
+
+.die.rolling{
+    animation:
+        diceFall .65s cubic-bezier(.2,.8,.25,1);
+}
+
+@keyframes diceFall{
+
+    0%{
+        transform:
+            translateY(-90px)
+            rotate(0deg)
+            scale(.7);
+
+        opacity:0;
+    }
+
+    45%{
+        opacity:1;
+    }
+
+    70%{
+        transform:
+            translateY(12px)
+            rotate(250deg)
+            scale(1.05);
+    }
+
+    85%{
+        transform:
+            translateY(-5px)
+            rotate(330deg)
+            scale(.98);
+    }
+
+    100%{
+        transform:
+            translateY(0)
+            rotate(360deg)
+            scale(1);
+    }
+}
+
+.dice-total{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+    color:#ffd54a;
+    text-shadow:0 2px 5px #000;
+}
+
+.dice-placeholder{
+    color:#888;
+    font-size:14px;
+    text-align:center;
+}
+
+/* =========================
+   PROPERTY LIST
+========================= */
+
+.property-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+}
+
+.property-item{
+    background:
+        linear-gradient(145deg,#292929,#202020);
+    padding:10px;
+    border-radius:8px;
+    font-size:13px;
+    border:1px solid #3d3d3d;
+}
+
+.info-box{
+    text-align:center;
+    color:#bbb;
+    font-size:14px;
 }
 
 .danger{
@@ -203,24 +519,15 @@ button:disabled{
     font-weight:bold;
 }
 
-.info-box{
+#lobbyMessage{
     text-align:center;
-    color:#bbb;
-    font-size:14px;
+    margin-top:10px;
+    color:#ffcc66;
 }
 
-.property-list{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-}
-
-.property-item{
-    background:#292929;
-    padding:10px;
-    border-radius:8px;
-    font-size:13px;
-}
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:700px){
 
@@ -232,12 +539,27 @@ button:disabled{
         grid-template-columns:1fr;
     }
 
+    .board-wrapper{
+        justify-content:flex-start;
+    }
+
     .board{
         min-width:700px;
+        width:700px;
     }
 
     .cell{
-        min-height:90px;
+        min-height:55px;
+    }
+
+    .die{
+        width:48px;
+        height:48px;
+        font-size:25px;
+    }
+
+    .property-list{
+        grid-template-columns:1fr;
     }
 
 }
@@ -288,7 +610,6 @@ button:disabled{
 
 <div id="game">
 
-
     <!-- ROOM -->
 
     <div class="panel">
@@ -308,14 +629,12 @@ button:disabled{
 
         </div>
 
-
         <div
             id="turnText"
             class="status"
         >
             Bağlanıyor...
         </div>
-
 
         <div id="message"></div>
 
@@ -385,19 +704,44 @@ button:disabled{
     <div class="panel controls">
 
         <button id="rollButton">
-            🎲 ZAR AT
+            🎲 İKİ ZAR AT
         </button>
 
         <button
             id="buyButton"
             disabled
         >
-            🏠 MÜLKÜ SATIN AL
+            🏠 SATIN AL
+        </button>
+
+        <button
+            id="declineButton"
+            disabled
+        >
+            ❌ ALMA
         </button>
 
         <button id="leaveButton">
             🚪 Oyundan Çık
         </button>
+
+
+        <div
+            id="actionBox"
+            class="action-box"
+        >
+
+            <div
+                id="actionTitle"
+                class="action-title"
+            ></div>
+
+            <div
+                id="actionText"
+                class="action-text"
+            ></div>
+
+        </div>
 
     </div>
 
@@ -409,17 +753,57 @@ button:disabled{
         <h2>🗺️ Oyun Tahtası</h2>
 
         <div class="info-box">
-            Zar at → ilerle → bulunduğun alanın etkisini gör.
+            🎲 İki zar at → toplam kadar ilerle →
+            geldiğin alanın etkisini gör.
         </div>
-
-        <br>
 
         <div class="board-wrapper">
 
             <div
                 id="board"
                 class="board"
-            ></div>
+            >
+
+                <div class="dice-center">
+
+                    <div
+                        id="diceTitle"
+                        class="dice-title"
+                    >
+                        🎲 ZARLAR
+                    </div>
+
+                    <div
+                        id="diceRow"
+                        class="dice-row"
+                    >
+
+                        <div
+                            id="die1"
+                            class="die"
+                        >
+                            ?
+                        </div>
+
+                        <div
+                            id="die2"
+                            class="die"
+                        >
+                            ?
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="diceTotal"
+                        class="dice-total"
+                    >
+                        Zar bekleniyor...
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -447,7 +831,6 @@ button:disabled{
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-
 import {
     getDatabase,
     ref,
@@ -459,7 +842,9 @@ import {
 from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 
-/* ================= FIREBASE ================= */
+/* =====================================================
+   FIREBASE
+===================================================== */
 
 const firebaseConfig = {
 
@@ -490,12 +875,13 @@ const firebaseConfig = {
 const app =
 initializeApp(firebaseConfig);
 
-
 const db =
 getDatabase(app);
 
 
-/* ================= VARIABLES ================= */
+/* =====================================================
+   VARIABLES
+===================================================== */
 
 let roomCode = null;
 
@@ -503,8 +889,12 @@ let playerNumber = null;
 
 let unsubscribe = null;
 
+let lastDiceAnimationId = null;
 
-/* ================= ELEMENTS ================= */
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
 const lobby =
 document.getElementById("lobby");
@@ -533,6 +923,9 @@ document.getElementById("rollButton");
 const buyButton =
 document.getElementById("buyButton");
 
+const declineButton =
+document.getElementById("declineButton");
+
 const leaveButton =
 document.getElementById("leaveButton");
 
@@ -548,8 +941,28 @@ document.getElementById("board");
 const propertyList =
 document.getElementById("propertyList");
 
+const actionBox =
+document.getElementById("actionBox");
 
-/* ================= BOARD DATA ================= */
+const actionTitle =
+document.getElementById("actionTitle");
+
+const actionText =
+document.getElementById("actionText");
+
+const die1 =
+document.getElementById("die1");
+
+const die2 =
+document.getElementById("die2");
+
+const diceTotal =
+document.getElementById("diceTotal");
+
+
+/* =====================================================
+   BOARD DATA
+===================================================== */
 
 const spaces = [
 
@@ -753,11 +1166,68 @@ const spaces = [
 ];
 
 
-/* ================= BOARD CREATE ================= */
+/* =====================================================
+   BOARD POSITION
+===================================================== */
+
+function getBoardPosition(index){
+
+    /*
+        32 alanı 11x11 dış çerçeveye yerleştiriyoruz.
+
+        0  = sağ alt köşe
+        8  = sol alt köşe
+        16 = sağ üst köşe
+        24 = sağ üstten aşağı doğru
+    */
+
+    if(index <= 8){
+
+        return {
+            row:11,
+            col:11-index
+        };
+
+    }
+
+    if(index <= 15){
+
+        return {
+            row:11-(index-8),
+            col:1
+        };
+
+    }
+
+    if(index <= 22){
+
+        return {
+            row:1,
+            col:index-15
+        };
+
+    }
+
+    return {
+        row:index-22,
+        col:11
+    };
+
+}
+
+
+/* =====================================================
+   BOARD CREATE
+===================================================== */
 
 function createBoard(){
 
-    board.innerHTML = "";
+    board
+    .querySelectorAll(".cell")
+    .forEach(
+        x=>x.remove()
+    );
+
 
     spaces.forEach(
         (space,index)=>{
@@ -765,11 +1235,25 @@ function createBoard(){
             const cell =
             document.createElement("div");
 
+
             cell.className =
             "cell " + space.type;
 
+
             cell.id =
-            "cell-" + index;
+            "cell-"+index;
+
+
+            const position =
+            getBoardPosition(index);
+
+
+            cell.style.gridRow =
+            position.row;
+
+
+            cell.style.gridColumn =
+            position.col;
 
 
             let html =
@@ -807,7 +1291,7 @@ function createBoard(){
 
                 html +=
 
-                `<div>
+                `<div style="margin-top:5px">
                     🎴 Sürpriz
                 </div>`;
 
@@ -818,8 +1302,30 @@ function createBoard(){
 
                 html +=
 
-                `<div>
+                `<div style="margin-top:5px">
                     🎰 Kumarhane
+                </div>`;
+
+            }
+
+
+            if(space.type === "jail"){
+
+                html +=
+
+                `<div style="margin-top:5px">
+                    🚔 Hapis
+                </div>`;
+
+            }
+
+
+            if(space.type === "start"){
+
+                html +=
+
+                `<div style="margin-top:5px">
+                    🚀 Başlangıç
                 </div>`;
 
             }
@@ -842,16 +1348,22 @@ function createBoard(){
 }
 
 
-/* ================= PROPERTY LIST ================= */
+/* =====================================================
+   PROPERTY LIST
+===================================================== */
 
 function createPropertyList(){
 
     propertyList.innerHTML = "";
 
+
     spaces.forEach(
         (space,index)=>{
 
-            if(space.type !== "property"){
+            if(
+                space.type !==
+                "property"
+            ){
 
                 return;
 
@@ -861,8 +1373,10 @@ function createPropertyList(){
             const item =
             document.createElement("div");
 
+
             item.className =
             "property-item";
+
 
             item.innerHTML =
 
@@ -872,6 +1386,7 @@ function createPropertyList(){
              <br>
              Kira: ${space.rent} ₺`;
 
+
             propertyList.appendChild(item);
 
         }
@@ -880,14 +1395,18 @@ function createPropertyList(){
 }
 
 
-/* ================= ROOM CODE ================= */
+/* =====================================================
+   ROOM CODE
+===================================================== */
 
 function generateRoomCode(){
 
     const chars =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+
     let code = "";
+
 
     for(let i=0;i<4;i++){
 
@@ -900,12 +1419,15 @@ function generateRoomCode(){
 
     }
 
+
     return code;
 
 }
 
 
-/* ================= CREATE GAME ================= */
+/* =====================================================
+   CREATE GAME
+===================================================== */
 
 async function createGame(){
 
@@ -973,7 +1495,17 @@ async function createGame(){
 
             lastRoll:0,
 
+            lastRoll1:0,
+
+            lastRoll2:0,
+
+            diceRollId:0,
+
             gameStarted:false,
+
+            pendingAction:null,
+
+            gameOver:false,
 
             message:
             "Oyuncu 2 bekleniyor..."
@@ -998,7 +1530,10 @@ async function createGame(){
         `<div class="room-code">
             ODA KODU: ${code}
         </div>
-        <p>Bu kodu arkadaşına gönder.</p>`;
+
+        <p style="text-align:center">
+            Bu kodu arkadaşına gönder.
+        </p>`;
 
 
         startGame();
@@ -1017,7 +1552,9 @@ async function createGame(){
 }
 
 
-/* ================= JOIN GAME ================= */
+/* =====================================================
+   JOIN GAME
+===================================================== */
 
 async function joinGame(){
 
@@ -1154,7 +1691,9 @@ async function joinGame(){
 }
 
 
-/* ================= START ================= */
+/* =====================================================
+   START
+===================================================== */
 
 function startGame(){
 
@@ -1213,7 +1752,9 @@ function startGame(){
 }
 
 
-/* ================= RENDER ================= */
+/* =====================================================
+   RENDER GAME
+===================================================== */
 
 function renderGame(data){
 
@@ -1231,6 +1772,8 @@ function renderGame(data){
     data.players[1];
 
 
+    /* MONEY */
+
     document.getElementById(
         "money0"
     ).textContent =
@@ -1243,6 +1786,8 @@ function renderGame(data){
     p1 ? Math.round(p1.money) : "-";
 
 
+    /* POSITION */
+
     document.getElementById(
         "position0"
     ).textContent =
@@ -1254,6 +1799,8 @@ function renderGame(data){
     ).textContent =
     p1 ? p1.position : "-";
 
+
+    /* PROPERTY COUNT */
 
     document.getElementById(
         "properties0"
@@ -1271,6 +1818,8 @@ function renderGame(data){
     : 0;
 
 
+    /* ACTIVE PLAYER */
+
     document.getElementById(
         "playerPanel0"
     ).classList.toggle(
@@ -1287,25 +1836,9 @@ function renderGame(data){
     );
 
 
-    if(data.turn === playerNumber){
-
-        turnText.textContent =
-        "🎲 SENİN SIRAN";
-
-        rollButton.disabled =
-        false;
-
-    }
-    else{
-
-        turnText.textContent =
-        "⏳ KARŞI OYUNCUNUN SIRASI";
-
-        rollButton.disabled =
-        true;
-
-    }
-
+    /* =========================
+       GAME STATUS
+    ========================= */
 
     if(
         !p0 ||
@@ -1319,13 +1852,189 @@ function renderGame(data){
         true;
 
     }
+    else if(data.gameOver){
+
+        const winner =
+        data.winner === 0
+        ? "Oyuncu 1"
+        : "Oyuncu 2";
+
+
+        turnText.textContent =
+        "🏆 OYUN BİTTİ — "+
+        winner+
+        " KAZANDI!";
+
+
+        rollButton.disabled =
+        true;
+
+    }
+    else if(data.pendingAction){
+
+        if(
+            data.pendingAction.player ===
+            playerNumber
+        ){
+
+            turnText.textContent =
+            "🏠 SEÇİM YAPMAN GEREKİYOR";
+
+
+            rollButton.disabled =
+            true;
+
+        }
+        else{
+
+            turnText.textContent =
+            "⏳ "+
+            (
+                data.pendingAction.player === 0
+                ? "Oyuncu 1"
+                : "Oyuncu 2"
+            )+
+            " seçim yapıyor...";
+
+
+            rollButton.disabled =
+            true;
+
+        }
+
+    }
+    else if(data.turn === playerNumber){
+
+        turnText.textContent =
+        "🎲 SENİN SIRAN";
+
+
+        rollButton.disabled =
+        false;
+
+    }
+    else{
+
+        turnText.textContent =
+        "⏳ KARŞI OYUNCUNUN SIRASI";
+
+
+        rollButton.disabled =
+        true;
+
+    }
 
 
     message.textContent =
     data.message || "";
 
 
-    /* PIECES */
+    /* =========================
+       DICE
+    ========================= */
+
+    if(data.lastRoll1){
+
+        die1.textContent =
+        data.lastRoll1;
+
+        die2.textContent =
+        data.lastRoll2;
+
+        diceTotal.textContent =
+        "TOPLAM: "+
+        data.lastRoll;
+
+    }
+
+
+    if(
+        data.diceRollId &&
+        data.diceRollId !==
+        lastDiceAnimationId
+    ){
+
+        lastDiceAnimationId =
+        data.diceRollId;
+
+
+        die1.classList.remove("rolling");
+
+        die2.classList.remove("rolling");
+
+
+        void die1.offsetWidth;
+
+
+        die1.classList.add("rolling");
+
+        die2.classList.add("rolling");
+
+    }
+
+
+    /* =========================
+       ACTION BOX
+    ========================= */
+
+    buyButton.disabled =
+    true;
+
+    declineButton.disabled =
+    true;
+
+    actionBox.classList.remove(
+        "show"
+    );
+
+
+    if(
+        data.pendingAction &&
+        data.pendingAction.player ===
+        playerNumber
+    ){
+
+        const position =
+        data.pendingAction.position;
+
+
+        const space =
+        spaces[position];
+
+
+        if(space){
+
+            actionBox.classList.add(
+                "show"
+            );
+
+
+            actionTitle.textContent =
+            "🏠 MÜLK SATIN ALMA";
+
+
+            actionText.textContent =
+            space.name+
+            " alanına geldin. "+
+            space.price+
+            " ₺ karşılığında satın almak ister misin?";
+
+
+            buyButton.disabled =
+            false;
+
+
+            declineButton.disabled =
+            false;
+
+        }
+
+    }
+
+
+    /* =========================
+       PIECES
+    ========================= */
 
     document
     .querySelectorAll(".pieces")
@@ -1338,7 +2047,7 @@ function renderGame(data){
 
         addPiece(
             p0.position,
-            "🧑 Oyuncu 1",
+            "🧑 P1",
             false
         );
 
@@ -1349,19 +2058,35 @@ function renderGame(data){
 
         addPiece(
             p1.position,
-            "👤 Oyuncu 2",
+            "👤 P2",
             true
         );
 
     }
 
 
-    /* OWNERS */
+    /* =========================
+       OWNERS
+    ========================= */
 
     document
     .querySelectorAll(".owner")
     .forEach(
         x=>x.textContent=""
+    );
+
+
+    document
+    .querySelectorAll(".cell")
+    .forEach(
+        cell=>{
+
+            cell.classList.remove(
+                "property-owned-0",
+                "property-owned-1"
+            );
+
+        }
     );
 
 
@@ -1386,68 +2111,38 @@ function renderGame(data){
 
 
                 const ownerElement =
-                cell.querySelector(".owner");
+                cell.querySelector(
+                    ".owner"
+                );
 
 
                 if(ownerElement){
 
                     ownerElement.textContent =
                     owner === 0
-                    ? "👑 Oyuncu 1"
-                    : "👑 Oyuncu 2";
+                    ? "👑 P1"
+                    : "👑 P2";
 
                 }
+
+
+                cell.classList.add(
+                    owner === 0
+                    ? "property-owned-0"
+                    : "property-owned-1"
+                );
 
             }
         );
 
     }
 
-
-    /* BUY BUTTON */
-
-    buyButton.disabled =
-    true;
-
-
-    if(
-        data.turn === playerNumber &&
-        p0 &&
-        p1
-    ){
-
-        const me =
-        data.players[playerNumber];
-
-
-        const current =
-        spaces[me.position];
-
-
-        const owner =
-        data.properties
-        ? data.properties[me.position]
-        : undefined;
-
-
-        if(
-            current &&
-            current.type === "property" &&
-            owner === undefined &&
-            me.money >= current.price
-        ){
-
-            buyButton.disabled =
-            false;
-
-        }
-
-    }
-
 }
 
 
-/* ================= PIECE ================= */
+/* =====================================================
+   PIECE
+===================================================== */
 
 function addPiece(
     position,
@@ -1482,14 +2177,26 @@ function addPiece(
     text;
 
 
-    cell
-    .querySelector(".pieces")
-    .appendChild(piece);
+    const pieces =
+    cell.querySelector(
+        ".pieces"
+    );
+
+
+    if(pieces){
+
+        pieces.appendChild(
+            piece
+        );
+
+    }
 
 }
 
 
-/* ================= ROLL ================= */
+/* =====================================================
+   ROLL DICE
+===================================================== */
 
 async function rollDice(){
 
@@ -1514,6 +2221,22 @@ async function rollDice(){
         data=>{
 
             if(!data){
+
+                return;
+
+            }
+
+
+            if(data.gameOver){
+
+                return;
+
+            }
+
+
+            if(
+                data.pendingAction
+            ){
 
                 return;
 
@@ -1559,10 +2282,22 @@ async function rollDice(){
             data.players[playerNumber];
 
 
-            const dice =
+            /* TWO DICE */
+
+            const dice1 =
             Math.floor(
                 Math.random()*6
             )+1;
+
+
+            const dice2 =
+            Math.floor(
+                Math.random()*6
+            )+1;
+
+
+            const diceTotalValue =
+            dice1+dice2;
 
 
             const oldPosition =
@@ -1571,12 +2306,28 @@ async function rollDice(){
 
             const newPosition =
             (
-                oldPosition+dice
+                oldPosition+
+                diceTotalValue
             ) % spaces.length;
 
 
             player.position =
             newPosition;
+
+
+            /* DICE DATA */
+
+            data.lastRoll1 =
+            dice1;
+
+            data.lastRoll2 =
+            dice2;
+
+            data.lastRoll =
+            diceTotalValue;
+
+            data.diceRollId =
+            Date.now();
 
 
             /* START BONUS */
@@ -1586,25 +2337,24 @@ async function rollDice(){
                 oldPosition
             ){
 
-                player.money += 200;
+                player.money +=
+                200;
+
 
                 data.message =
-
                 player.name+
                 " başlangıçtan geçti ve 200 ₺ aldı.";
 
             }
 
 
-            data.lastRoll =
-            dice;
-
-
             const space =
             spaces[newPosition];
 
 
-            /* PROPERTY */
+            /* =================================================
+               PROPERTY
+            ================================================= */
 
             if(
                 space.type ===
@@ -1615,6 +2365,8 @@ async function rollDice(){
                 data.properties &&
                 data.properties[newPosition];
 
+
+                /* ANOTHER PLAYER'S PROPERTY */
 
                 if(
                     owner !== undefined &&
@@ -1634,40 +2386,98 @@ async function rollDice(){
 
 
                     data.message =
-
                     player.name+
                     " "+space.name+
                     " alanına geldi ve "+
                     rent+
                     " ₺ kira ödedi.";
 
+
+                    /* turn continues below */
+
                 }
+
+
+                /* OWN PROPERTY */
+
                 else if(
-                    owner === playerNumber
+                    owner ===
+                    playerNumber
                 ){
 
                     data.message =
-
                     player.name+
                     " kendi mülküne geldi.";
 
+
                 }
+
+
+                /* EMPTY PROPERTY */
+
                 else{
 
-                    data.message =
+                    /*
+                        EN ÖNEMLİ KISIM:
 
-                    player.name+
-                    " "+space.name+
-                    " alanına geldi. "+
-                    space.price+
-                    " ₺ karşılığında satın alınabilir.";
+                        Burada artık turn değiştirmiyoruz.
+
+                        pendingAction oluşturuyoruz.
+
+                        Oyuncu SATIN AL veya ALMA
+                        seçeneğine basana kadar
+                        aynı oyuncunun sırası devam ediyor.
+                    */
+
+                    if(
+                        player.money >=
+                        space.price
+                    ){
+
+                        data.pendingAction = {
+
+                            type:"buy",
+
+                            player:
+                            playerNumber,
+
+                            position:
+                            newPosition,
+
+                            price:
+                            space.price
+
+                        };
+
+
+                        data.message =
+                        player.name+
+                        " "+space.name+
+                        " alanına geldi. "+
+                        "Satın almak ister misin?";
+
+
+                        return data;
+
+                    }
+                    else{
+
+                        data.message =
+                        player.name+
+                        " "+space.name+
+                        " alanına geldi ancak "+
+                        "satın almak için yeterli parası yok.";
+
+                    }
 
                 }
 
             }
 
 
-            /* TAX */
+            /* =================================================
+               TAX
+            ================================================= */
 
             if(
                 space.type ===
@@ -1679,7 +2489,6 @@ async function rollDice(){
 
 
                 data.message =
-
                 player.name+
                 " "+space.name+
                 " ödedi: "+
@@ -1689,7 +2498,9 @@ async function rollDice(){
             }
 
 
-            /* CHANCE */
+            /* =================================================
+               CHANCE
+            ================================================= */
 
             if(
                 space.type ===
@@ -1746,7 +2557,9 @@ async function rollDice(){
             }
 
 
-            /* CASINO */
+            /* =================================================
+               CASINO
+            ================================================= */
 
             if(
                 space.type ===
@@ -1759,9 +2572,14 @@ async function rollDice(){
                 );
 
 
-                if(casinoRoll === 1){
+                if(
+                    casinoRoll ===
+                    1
+                ){
 
-                    player.money += 250;
+                    player.money +=
+                    250;
+
 
                     data.message =
                     player.name+
@@ -1770,7 +2588,9 @@ async function rollDice(){
                 }
                 else{
 
-                    player.money -= 150;
+                    player.money -=
+                    150;
+
 
                     data.message =
                     player.name+
@@ -1781,36 +2601,45 @@ async function rollDice(){
             }
 
 
-            /* BANKRUPTCY */
+            /* =================================================
+               BANKRUPTCY
+            ================================================= */
 
             if(
-                player.money <= 0
+                player.money <=
+                0
             ){
 
-                player.money = 0;
+                player.money =
+                0;
+
 
                 data.winner =
                 opponent;
 
+
                 data.gameOver =
                 true;
 
-                data.message =
 
+                data.message =
                 player.name+
                 " iflas etti! "+
                 data.players[opponent].name+
                 " oyunu kazandı!";
 
-            }
 
-
-            if(!data.gameOver){
-
-                data.turn =
-                opponent;
+                return data;
 
             }
+
+
+            /* =================================================
+               NEXT TURN
+            ================================================= */
+
+            data.turn =
+            opponent;
 
 
             return data;
@@ -1822,7 +2651,9 @@ async function rollDice(){
 }
 
 
-/* ================= BUY PROPERTY ================= */
+/* =====================================================
+   BUY PROPERTY
+===================================================== */
 
 async function buyProperty(){
 
@@ -1853,8 +2684,24 @@ async function buyProperty(){
             }
 
 
+            if(data.gameOver){
+
+                return;
+
+            }
+
+
             if(
-                data.turn !==
+                !data.pendingAction
+            ){
+
+                return;
+
+            }
+
+
+            if(
+                data.pendingAction.player !==
                 playerNumber
             ){
 
@@ -1863,7 +2710,10 @@ async function buyProperty(){
             }
 
 
-            if(!data.players){
+            if(
+                !data.players ||
+                !data.players[playerNumber]
+            ){
 
                 return;
 
@@ -1874,15 +2724,12 @@ async function buyProperty(){
             data.players[playerNumber];
 
 
-            if(!player){
-
-                return;
-
-            }
+            const position =
+            data.pendingAction.position;
 
 
             const space =
-            spaces[player.position];
+            spaces[position];
 
 
             if(
@@ -1896,13 +2743,20 @@ async function buyProperty(){
             }
 
 
+            const currentOwner =
+            data.properties &&
+            data.properties[position];
+
+
             if(
-                data.properties &&
-                data.properties[player.position]
-                !== undefined
+                currentOwner !==
+                undefined
             ){
 
-                return;
+                data.pendingAction =
+                null;
+
+                return data;
 
             }
 
@@ -1912,47 +2766,87 @@ async function buyProperty(){
                 space.price
             ){
 
-                return;
+                data.pendingAction =
+                null;
+
+
+                data.message =
+                "Yeterli paran yok.";
+
+
+                data.turn =
+                playerNumber === 0
+                ? 1
+                : 0;
+
+
+                return data;
 
             }
 
+
+            /* MONEY */
 
             player.money -=
             space.price;
 
 
-            if(!player.properties){
+            /* PLAYER PROPERTY */
 
-                player.properties = {};
+            if(
+                !player.properties
+            ){
+
+                player.properties =
+                {};
 
             }
 
 
             player.properties[
-                player.position
-            ] = true;
+                position
+            ] =
+            true;
 
 
-            if(!data.properties){
+            /* GLOBAL PROPERTY */
 
-                data.properties = {};
+            if(
+                !data.properties
+            ){
+
+                data.properties =
+                {};
 
             }
 
 
             data.properties[
-                player.position
+                position
             ] =
             playerNumber;
 
 
             data.message =
-
             player.name+
             " "+space.name+
             " mülkünü "+
             space.price+
-            " ₺ karşılığında satın aldı.";
+            " ₺ karşılığında satın aldı!";
+
+
+            /* CLEAR DECISION */
+
+            data.pendingAction =
+            null;
+
+
+            /* NEXT PLAYER */
+
+            data.turn =
+            playerNumber === 0
+            ? 1
+            : 0;
 
 
             return data;
@@ -1964,7 +2858,105 @@ async function buyProperty(){
 }
 
 
-/* ================= LEAVE ================= */
+/* =====================================================
+   DECLINE PROPERTY
+===================================================== */
+
+async function declineProperty(){
+
+    if(!roomCode){
+
+        return;
+
+    }
+
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+
+        roomRef,
+
+        data=>{
+
+            if(!data){
+
+                return;
+
+            }
+
+
+            if(data.gameOver){
+
+                return;
+
+            }
+
+
+            if(
+                !data.pendingAction
+            ){
+
+                return;
+
+            }
+
+
+            if(
+                data.pendingAction.player !==
+                playerNumber
+            ){
+
+                return;
+
+            }
+
+
+            const player =
+            data.players[playerNumber];
+
+
+            const position =
+            data.pendingAction.position;
+
+
+            const space =
+            spaces[position];
+
+
+            data.pendingAction =
+            null;
+
+
+            data.message =
+            player.name+
+            " "+space.name+
+            " mülkünü satın almadı.";
+
+
+            data.turn =
+            playerNumber === 0
+            ? 1
+            : 0;
+
+
+            return data;
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   LEAVE
+===================================================== */
 
 async function leaveGame(){
 
@@ -1999,7 +2991,8 @@ async function leaveGame(){
 
                 data.players[
                     playerNumber
-                ] = null;
+                ] =
+                null;
 
             }
 
@@ -2023,7 +3016,9 @@ async function leaveGame(){
 }
 
 
-/* ================= EVENTS ================= */
+/* =====================================================
+   EVENTS
+===================================================== */
 
 createRoom.addEventListener(
     "click",
@@ -2049,13 +3044,21 @@ buyButton.addEventListener(
 );
 
 
+declineButton.addEventListener(
+    "click",
+    declineProperty
+);
+
+
 leaveButton.addEventListener(
     "click",
     leaveGame
 );
 
 
-/* ================= START UI ================= */
+/* =====================================================
+   INITIAL UI
+===================================================== */
 
 createBoard();
 
