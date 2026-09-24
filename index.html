@@ -2,270 +2,5696 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kumarhane Monopoly V2.2 Test</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Kumarhane Monopoly V3</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;padding:16px;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#292929,#080808 70%);color:#fff}
-h1{text-align:center;margin:0 0 16px;color:#ffd54a}.panel{background:linear-gradient(145deg,#242424,#151515);padding:16px;border-radius:14px;margin-bottom:16px;border:1px solid #333;box-shadow:0 8px 25px #0008}
-input,button{padding:11px 14px;margin:4px;border:0;border-radius:8px;font-size:15px}button{cursor:pointer;font-weight:bold}button:disabled{opacity:.35;cursor:not-allowed}
-#game{display:none}.room-code{text-align:center;font-size:28px;font-weight:bold;letter-spacing:6px;color:#ffd54a}.status{text-align:center;font-size:20px;font-weight:bold;margin:10px}.players{display:grid;grid-template-columns:1fr 1fr;gap:12px}.player{padding:12px;border-radius:11px;background:#202020;border:2px solid transparent}.player.active{border-color:#ffd54a}.money{font-size:20px;font-weight:bold}
-.controls{text-align:center}.gold{background:#ffd54a;color:#111}.green{background:#36c56f;color:#fff}.red{background:#d94b4b;color:#fff}.blue{background:#317bd6;color:#fff}.dark{background:#444;color:#fff}
-.action-box{display:none;max-width:650px;margin:12px auto;padding:14px;border:2px solid #ffd54a;border-radius:12px;background:#302710}.action-box.show{display:block}.action-title{font-size:19px;color:#ffd54a;font-weight:bold}.action-text{margin:8px 0;color:#ddd}
-.board-wrap{display:flex;justify-content:center;overflow:auto;padding:15px}.board{width:min(900px,92vw);aspect-ratio:1/1;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:0;background:#6d4b24;padding:0;border:7px solid #9b7139;border-radius:16px;box-shadow:0 18px 40px #000b;position:relative}
-.cell{background:linear-gradient(145deg,#454545,#292929);border:1px solid #777;border-radius:0;padding:4px;position:relative;overflow:hidden;min-width:0;z-index:2}
-.cell.corner{background:linear-gradient(145deg,#735b25,#403011);font-size:10px}
-.cell.property{background:linear-gradient(145deg,#294a36,#172c20)}.cell.tax{background:linear-gradient(145deg,#653b3b,#382020)}.cell.chance{background:linear-gradient(145deg,#514272,#2d2442)}.cell.jail{background:linear-gradient(145deg,#555,#303030)}.cell.start{background:linear-gradient(145deg,#735b25,#403011)}.cell.blackjack{background:linear-gradient(145deg,#6b4b1c,#34240c);border-color:#d5a936}.cell.poker{background:linear-gradient(145deg,#1f5d3b,#0d2e1d);border-color:#49bd7a}
-.cell-title{font-size:9px;font-weight:bold;line-height:1.12}.cell-price{font-size:8px;color:#ffd54a;margin-top:3px}.owner{font-size:8px;color:#fff;margin-top:2px}.pieces{display:flex;gap:2px;flex-wrap:wrap;margin-top:3px}.piece{padding:2px 4px;border-radius:10px;background:#ffd54a;color:#111;font-size:8px;font-weight:bold}.piece.p2{background:#62b5ff}
-.property-owned-0{box-shadow:inset 0 0 0 2px #ffd54a}.property-owned-1{box-shadow:inset 0 0 0 2px #62b5ff}
-.center{grid-column:3/8;grid-row:3/8;background:radial-gradient(circle,#24452d,#102317);display:flex;align-items:center;justify-content:center;text-align:center;z-index:1;border:0}
-.dice-center{display:flex;flex-direction:column;align-items:center;gap:7px}.dice-row{display:flex;gap:10px}.die{width:55px;height:55px;border-radius:10px;background:linear-gradient(145deg,#fff,#ccc);color:#111;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;box-shadow:0 8px 12px #0008}.die.rolling{animation:diceFall .65s ease}@keyframes diceFall{0%{transform:translateY(-60px) rotate(0) scale(.7);opacity:0}60%{opacity:1;transform:translateY(8px) rotate(260deg) scale(1.05)}100%{transform:translateY(0) rotate(360deg) scale(1)}}
-.dice-total{color:#ffd54a;font-weight:bold}.info-box{text-align:center;color:#bbb}.property-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.property-item{padding:8px;background:#222;border:1px solid #3b3b3b;border-radius:7px;font-size:12px}
-.admin-box{display:none;text-align:center;border:1px solid #d5a936;background:#251f0e;padding:10px;border-radius:10px;margin-top:10px}.admin-box.show{display:block}
-.modal{display:none;position:fixed;inset:0;background:#000b;z-index:1000;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modal-card{width:min(900px,96vw);max-height:94vh;overflow:auto;background:#181818;border:2px solid #ffd54a;border-radius:16px;padding:18px;box-shadow:0 20px 60px #000}
-.modal-title{text-align:center;color:#ffd54a;margin-top:0}.casino-table{background:radial-gradient(circle,#255d3b,#0e2418);border:3px solid #9b7139;border-radius:20px;padding:20px}.cards{display:flex;gap:8px;flex-wrap:wrap;min-height:70px}.playing-card{width:52px;height:70px;border-radius:7px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:0 4px 8px #0008}.back{background:linear-gradient(135deg,#263f9b,#111d4c);color:#fff;border:2px solid #fff}.hand-row{padding:10px;border-bottom:1px solid #ffffff22}.decision{margin-top:8px}.modal-message{text-align:center;color:#ddd;margin:8px}
-.poker-board{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:82px;margin:10px}.poker-card{width:58px;height:80px}.poker-actions{text-align:center}.bet-info{text-align:center;color:#ffd54a}
-@media(max-width:700px){body{padding:8px}.players{grid-template-columns:1fr}.board{min-width:720px;width:720px}.property-list{grid-template-columns:1fr}}
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --gold:#ffd54a;
+    --gold2:#ffb300;
+    --green:#36c56f;
+    --red:#d94b4b;
+    --blue:#62b5ff;
+    --dark:#090909;
+    --panel:#181818;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    font-family:Arial,sans-serif;
+    color:#fff;
+    background:
+        radial-gradient(circle at top,#292929 0%,#090909 70%);
+}
+
+h1{
+    text-align:center;
+    margin:0 0 20px;
+    text-shadow:0 3px 8px #000;
+}
+
+h2{
+    margin-top:0;
+}
+
+button,
+input,
+select{
+    padding:11px 15px;
+    border:0;
+    border-radius:9px;
+    font-size:15px;
+}
+
+button{
+    cursor:pointer;
+    font-weight:bold;
+    transition:.15s;
+}
+
+button:hover:not(:disabled){
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px #0008;
+}
+
+button:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+}
+
+.panel{
+    background:
+        linear-gradient(145deg,#252525,#151515);
+    border:1px solid #333;
+    border-radius:15px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:
+        0 8px 25px #0008,
+        inset 0 1px #ffffff0a;
+}
+
+#game{
+    display:none;
+}
+
+.room-code{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    letter-spacing:6px;
+    color:var(--gold);
+}
+
+.status{
+    text-align:center;
+    font-size:21px;
+    font-weight:bold;
+    margin:12px;
+}
+
+#message,
+#lobbyMessage{
+    text-align:center;
+    min-height:24px;
+    color:#ddd;
+}
+
+.players{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.player{
+    padding:15px;
+    border-radius:12px;
+    border:2px solid transparent;
+    background:linear-gradient(145deg,#303030,#202020);
+}
+
+.player.active{
+    border-color:var(--gold);
+    box-shadow:0 0 20px #ffd54a33;
+}
+
+.money{
+    font-size:20px;
+    font-weight:bold;
+    color:#8df0a9;
+}
+
+.controls{
+    text-align:center;
+}
+
+#rollButton{
+    background:var(--gold);
+    color:#111;
+}
+
+#buyButton{
+    background:var(--green);
+    color:white;
+}
+
+#declineButton{
+    background:var(--red);
+    color:white;
+}
+
+#leaveButton{
+    background:#555;
+    color:white;
+}
+
+#adminButton{
+    background:#8d5cff;
+    color:white;
+}
+
+.action-box{
+    display:none;
+    max-width:700px;
+    margin:15px auto 0;
+    padding:18px;
+    border:2px solid var(--gold);
+    border-radius:14px;
+    background:#332b16;
+}
+
+.action-box.show{
+    display:block;
+}
+
+.action-title{
+    color:var(--gold);
+    font-size:20px;
+    font-weight:bold;
+}
+
+.action-text{
+    color:#ddd;
+    margin:8px 0 14px;
+}
+
+.admin-panel{
+    display:none;
+    margin-top:15px;
+    padding:15px;
+    border-radius:12px;
+    background:linear-gradient(145deg,#30204d,#1c142d);
+    border:1px solid #8d5cff;
+}
+
+.admin-panel.show{
+    display:block;
+}
+
+.teleport-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:7px;
+    max-height:300px;
+    overflow:auto;
+}
+
+.teleport-grid button{
+    background:#292929;
+    color:white;
+    border:1px solid #555;
+    font-size:12px;
+}
+
+/* BOARD */
+
+.board-wrapper{
+    display:flex;
+    justify-content:center;
+    overflow:auto;
+    padding:20px 5px 30px;
+}
+
+.board{
+    width:min(850px,90vw);
+    aspect-ratio:1;
+    min-width:650px;
+
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    grid-template-rows:repeat(9,1fr);
+
+    gap:0;
+    padding:0;
+
+    position:relative;
+
+    border:8px solid #6d471f;
+    border-radius:18px;
+
+    background:#18351f;
+
+    box-shadow:
+        0 20px 45px #000b,
+        inset 0 0 30px #0008;
+}
+
+.board-center{
+    position:absolute;
+    left:calc(2 * 100% / 9);
+    top:calc(2 * 100% / 9);
+    width:calc(5 * 100% / 9);
+    height:calc(5 * 100% / 9);
+
+    border:1px solid #ffffff12;
+    border-radius:12px;
+
+    background:
+        radial-gradient(circle,#285c37,#14321f 70%);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    pointer-events:none;
+    z-index:1;
+}
+
+.center-logo{
+    text-align:center;
+    color:#d6ad48;
+    font-size:30px;
+    font-weight:bold;
+    text-shadow:0 3px 10px #000;
+}
+
+.cell{
+    position:relative;
+    min-width:0;
+    overflow:hidden;
+
+    padding:5px;
+
+    border:1px solid #b59a68;
+
+    background:
+        linear-gradient(145deg,#454545,#282828);
+
+    box-shadow:
+        inset 0 1px #ffffff1a;
+
+    z-index:2;
+}
+
+.cell:hover{
+    z-index:5;
+    background:#505050;
+}
+
+.cell.property{
+    background:linear-gradient(145deg,#294d36,#172b20);
+}
+
+.cell.tax{
+    background:linear-gradient(145deg,#653b3b,#382020);
+}
+
+.cell.chance{
+    background:linear-gradient(145deg,#514272,#2d2442);
+}
+
+.cell.jail{
+    background:linear-gradient(145deg,#555,#303030);
+}
+
+.cell.start{
+    background:linear-gradient(145deg,#735b25,#403011);
+}
+
+.cell.casino{
+    background:linear-gradient(145deg,#693d69,#361e36);
+}
+
+.cell.blackjack{
+    background:
+        linear-gradient(145deg,#163f27,#071d11);
+    border-color:#d5ad45;
+}
+
+.cell.poker{
+    background:
+        linear-gradient(145deg,#54202b,#281016);
+    border-color:#d5ad45;
+}
+
+.cell-title{
+    font-size:10px;
+    font-weight:bold;
+    line-height:1.15;
+}
+
+.cell-price{
+    color:var(--gold);
+    font-size:9px;
+    margin-top:4px;
+}
+
+.owner{
+    font-size:8px;
+    margin-top:3px;
+}
+
+.pieces{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    margin-top:5px;
+}
+
+.piece{
+    padding:3px 5px;
+    border-radius:10px;
+    background:var(--gold);
+    color:#111;
+    font-size:9px;
+    font-weight:bold;
+}
+
+.piece.p2{
+    background:var(--blue);
+}
+
+.property-owned-0{
+    box-shadow:inset 0 0 0 3px var(--gold);
+}
+
+.property-owned-1{
+    box-shadow:inset 0 0 0 3px var(--blue);
+}
+
+.dice-center{
+    position:absolute;
+    z-index:10;
+    left:calc(2 * 100% / 9);
+    top:calc(2 * 100% / 9);
+    width:calc(5 * 100% / 9);
+    height:calc(5 * 100% / 9);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding-bottom:20px;
+
+    pointer-events:none;
+}
+
+.dice-row{
+    display:flex;
+    gap:12px;
+}
+
+.die{
+    width:58px;
+    height:58px;
+    border-radius:12px;
+    background:linear-gradient(145deg,#fff,#ccc);
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    font-weight:bold;
+    box-shadow:0 8px 15px #0008;
+}
+
+.dice-total{
+    margin-top:8px;
+    color:var(--gold);
+    font-weight:bold;
+}
+
+.die.rolling{
+    animation:diceRoll .65s;
+}
+
+@keyframes diceRoll{
+    0%{
+        transform:translateY(-60px) rotate(0) scale(.7);
+        opacity:0;
+    }
+    50%{
+        opacity:1;
+    }
+    80%{
+        transform:translateY(8px) rotate(300deg) scale(1.05);
+    }
+    100%{
+        transform:translateY(0) rotate(360deg) scale(1);
+    }
+}
+
+/* PROPERTY LIST */
+
+.property-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+}
+
+.property-item{
+    background:#242424;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #444;
+}
+
+/* CASINO MODALS */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#000b;
+    z-index:1000;
+    overflow:auto;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-card{
+    width:min(1000px,100%);
+    max-height:95vh;
+    overflow:auto;
+
+    background:
+        linear-gradient(145deg,#222,#101010);
+
+    border:2px solid #b88a32;
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:0 25px 70px #000;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+
+    border-bottom:1px solid #444;
+    padding-bottom:12px;
+    margin-bottom:15px;
+}
+
+.close-button{
+    background:#555;
+    color:white;
+}
+
+.casino-table{
+    background:
+        radial-gradient(circle,#247341,#0a2d18);
+    border:8px solid #6d471f;
+    border-radius:100px;
+    padding:30px;
+    min-height:420px;
+    box-shadow:inset 0 0 40px #0008;
+}
+
+.cards{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
+    min-height:90px;
+}
+
+.card{
+    width:58px;
+    height:82px;
+    border-radius:7px;
+    background:white;
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 4px 8px #0008;
+}
+
+.card.red{
+    color:#d22;
+}
+
+.card.back{
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #263b91,
+            #263b91 5px,
+            #182665 5px,
+            #182665 10px
+        );
+    color:white;
+}
+
+.casino-row{
+    margin:18px 0;
+}
+
+.casino-label{
+    text-align:center;
+    color:#ddd;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.casino-controls{
+    text-align:center;
+    margin-top:20px;
+}
+
+.casino-controls button{
+    margin:4px;
+}
+
+.green-button{
+    background:#2faa62;
+    color:white;
+}
+
+.red-button{
+    background:#d54b4b;
+    color:white;
+}
+
+.blue-button{
+    background:#3d86d8;
+    color:white;
+}
+
+.gold-button{
+    background:#d6a82e;
+    color:#111;
+}
+
+.blackjack-player{
+    display:inline-block;
+    vertical-align:top;
+    min-width:180px;
+    margin:5px;
+    padding:10px;
+    background:#0004;
+    border:1px solid #ffffff22;
+    border-radius:10px;
+}
+
+.poker-seat{
+    background:#0005;
+    border:1px solid #ffffff22;
+    padding:10px;
+    border-radius:10px;
+    margin:6px;
+}
+
+.poker-seats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.community{
+    text-align:center;
+    margin:20px 0;
+}
+
+.pot{
+    color:var(--gold);
+    font-size:20px;
+    font-weight:bold;
+    text-align:center;
+}
+
+.small{
+    color:#aaa;
+    font-size:12px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.notice{
+    padding:10px;
+    border-radius:8px;
+    background:#ffffff0d;
+    border:1px solid #ffffff13;
+    margin:10px 0;
+}
+
+.bet-row{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    flex-wrap:wrap;
+    margin:10px 0;
+}
+
+.bet-row input{
+    width:120px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    body{
+        padding:10px;
+    }
+
+    .players{
+        grid-template-columns:1fr;
+    }
+
+    .property-list{
+        grid-template-columns:1fr;
+    }
+
+    .board{
+        min-width:650px;
+    }
+
+    .teleport-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .poker-seats{
+        grid-template-columns:1fr;
+    }
+
+    .casino-table{
+        border-radius:30px;
+        padding:15px;
+    }
+}
 </style>
 </head>
+
 <body>
-<h1>🎲 Kumarhane Monopoly <small style="font-size:12px;color:#888">V2.2 TEST</small></h1>
+
+<h1>🎲 Kumarhane Monopoly</h1>
+
+<!-- =====================================================
+     LOBBY
+===================================================== -->
 
 <div id="lobby" class="panel">
-<h2>🌐 Online Oyun</h2>
-<p>Oyuncu 1 odayı oluşturur ve <b>Admin</b> olur. Oyuncu 2 kodla katılır.</p>
-<button id="createRoom" class="gold">🏠 Oda Oluştur</button>
-<hr>
-<input id="roomInput" maxlength="4" placeholder="4 Haneli Oda Kodu">
-<button id="joinRoom" class="blue">🚪 Odaya Katıl</button>
-<div id="lobbyMessage"></div><div id="createdRoom"></div>
+
+    <h2>🌐 Online Oyun</h2>
+
+    <p>
+        Bir oyuncu oda oluşturur, diğer oyuncu oda koduyla katılır.
+    </p>
+
+    <button id="createRoom">
+        🏠 Oda Oluştur
+    </button>
+
+    <hr>
+
+    <input
+        id="roomInput"
+        maxlength="4"
+        placeholder="4 Haneli Oda Kodu"
+    >
+
+    <button id="joinRoom">
+        🚪 Odaya Katıl
+    </button>
+
+    <div id="lobbyMessage"></div>
+
+    <div id="createdRoom"></div>
+
 </div>
+
+
+<!-- =====================================================
+     GAME
+===================================================== -->
 
 <div id="game">
-<div class="panel">
-<div style="text-align:center">🎮 ODA KODU<div id="gameRoomCode" class="room-code"></div></div>
-<div id="turnText" class="status">Bağlanıyor...</div><div id="message" style="text-align:center;min-height:25px"></div>
-<div id="adminBox" class="admin-box">
-<b>👑 ADMIN / TEST MODU</b><br>
-Oyuncu 1 olarak istediğin bloğa ışınlanabilirsin.
-<div id="teleportButtons"></div>
+
+    <div class="panel">
+
+        <div style="text-align:center">
+
+            🎮 ODA KODU
+
+            <div id="gameRoomCode" class="room-code"></div>
+
+            <div>
+                Bu kodu arkadaşına gönder.
+            </div>
+
+        </div>
+
+        <div id="turnText" class="status">
+            Bağlanıyor...
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+
+    <!-- PLAYERS -->
+
+    <div class="players">
+
+        <div id="playerPanel0" class="player">
+
+            <h2>
+                🧑 Oyuncu 1
+                <span id="adminBadge"></span>
+            </h2>
+
+            <div class="money">
+                💰
+                <span id="money0">1500</span>
+                ₺
+            </div>
+
+            <div>
+                📍 Konum:
+                <span id="position0">0</span>
+            </div>
+
+            <div>
+                🏠 Mülk:
+                <span id="properties0">0</span>
+            </div>
+
+        </div>
+
+
+        <div id="playerPanel1" class="player">
+
+            <h2>👤 Oyuncu 2</h2>
+
+            <div class="money">
+                💰
+                <span id="money1">1500</span>
+                ₺
+            </div>
+
+            <div>
+                📍 Konum:
+                <span id="position1">0</span>
+            </div>
+
+            <div>
+                🏠 Mülk:
+                <span id="properties1">0</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="panel controls">
+
+        <button id="rollButton">
+            🎲 İKİ ZAR AT
+        </button>
+
+        <button id="buyButton" disabled>
+            🏠 SATIN AL
+        </button>
+
+        <button id="declineButton" disabled>
+            ❌ ALMA
+        </button>
+
+        <button id="adminButton">
+            🛠️ ADMIN TEST
+        </button>
+
+        <button id="leaveButton">
+            🚪 Oyundan Çık
+        </button>
+
+
+        <div id="actionBox" class="action-box">
+
+            <div id="actionTitle" class="action-title"></div>
+
+            <div id="actionText" class="action-text"></div>
+
+        </div>
+
+
+        <div id="adminPanel" class="admin-panel">
+
+            <h3>🛠️ Oyuncu 1 Admin / Test Modu</h3>
+
+            <p class="small">
+                Bu alan yalnızca Oyuncu 1 tarafından kullanılabilir.
+                Tahtadaki herhangi bir bloğa doğrudan ışınlanabilirsin.
+            </p>
+
+            <div id="teleportGrid" class="teleport-grid"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOARD -->
+
+    <div class="panel">
+
+        <h2>🗺️ Oyun Tahtası</h2>
+
+        <div class="info-box">
+            🎲 Zar at → ilerle → geldiğin alanın etkisini gör.
+            Blackjack veya Poker alanına gelen oyuncu ilgili masaya katılır.
+        </div>
+
+        <div class="board-wrapper">
+
+            <div id="board" class="board">
+
+                <div class="board-center">
+                    <div class="center-logo">
+                        🎰
+                        <br>
+                        CASINO
+                    </div>
+                </div>
+
+
+                <div class="dice-center">
+
+                    <div class="dice-row">
+
+                        <div id="die1" class="die">
+                            ?
+                        </div>
+
+                        <div id="die2" class="die">
+                            ?
+                        </div>
+
+                    </div>
+
+                    <div id="diceTotal" class="dice-total">
+                        Zar bekleniyor...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROPERTY LIST -->
+
+    <div class="panel">
+
+        <h2>🏠 Mülkler</h2>
+
+        <div id="propertyList" class="property-list"></div>
+
+    </div>
+
 </div>
+
+
+<!-- =====================================================
+     BLACKJACK MODAL
+===================================================== -->
+
+<div id="blackjackModal" class="modal">
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <h2>
+                🃏 BLACKJACK MASASI
+            </h2>
+
+            <button
+                class="close-button"
+                id="closeBlackjack"
+            >
+                Kapat
+            </button>
+
+        </div>
+
+        <div class="notice">
+            Amaç 21'i geçmeden kurpiyerin elinden yüksek toplam yapmaktır.
+            Blackjack = ilk iki kartta 21.
+        </div>
+
+        <div class="casino-table">
+
+            <div class="casino-row">
+
+                <div class="casino-label">
+                    🧑‍💼 KURPİYER
+                </div>
+
+                <div
+                    id="dealerCards"
+                    class="cards"
+                ></div>
+
+                <div
+                    id="dealerScore"
+                    class="casino-label"
+                >
+                    ?
+                </div>
+
+            </div>
+
+
+            <hr>
+
+
+            <div class="casino-row">
+
+                <div class="casino-label">
+                    OYUNCULAR
+                </div>
+
+                <div id="blackjackPlayers"></div>
+
+            </div>
+
+
+            <div id="blackjackStatus"
+                 class="notice"
+                 style="text-align:center">
+            </div>
+
+
+            <div class="casino-controls">
+
+                <button
+                    id="bjStart"
+                    class="gold-button"
+                >
+                    🪙 ELİ BAŞLAT
+                </button>
+
+                <button
+                    id="bjHit"
+                    class="green-button"
+                    disabled
+                >
+                    🃏 KART ÇEK
+                </button>
+
+                <button
+                    id="bjStand"
+                    class="blue-button"
+                    disabled
+                >
+                    ✋ KAL
+                </button>
+
+                <button
+                    id="bjDouble"
+                    class="gold-button"
+                    disabled
+                >
+                    2️⃣ DOUBLE
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="players">
-<div id="playerPanel0" class="player"><h2>👑 Oyuncu 1 <small>(Admin)</small></h2><div class="money">💰 <span id="money0">1500</span> ₺</div><div>📍 Konum: <span id="position0">0</span></div><div>🏠 Mülk: <span id="properties0">0</span></div></div>
-<div id="playerPanel1" class="player"><h2>👤 Oyuncu 2</h2><div class="money">💰 <span id="money1">1500</span> ₺</div><div>📍 Konum: <span id="position1">0</span></div><div>🏠 Mülk: <span id="properties1">0</span></div></div>
+
+<!-- =====================================================
+     POKER MODAL
+===================================================== -->
+
+<div id="pokerModal" class="modal">
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <h2>
+                ♠️ TEXAS HOLD'EM POKER
+            </h2>
+
+            <button
+                class="close-button"
+                id="closePoker"
+            >
+                Kapat
+            </button>
+
+        </div>
+
+        <div class="notice">
+
+            Her oyuncuya 2 kapalı kart dağıtılır.
+            Ortaya 5 ortak kart gelir.
+            Amaç en iyi 5 kartlık eli oluşturmaktır.
+
+        </div>
+
+        <div class="casino-table">
+
+            <div class="pot">
+                POT:
+                <span id="pokerPot">0</span>
+                ₺
+            </div>
+
+
+            <div class="community">
+
+                <div class="casino-label">
+                    ORTAK KARTLAR
+                </div>
+
+                <div
+                    id="communityCards"
+                    class="cards"
+                ></div>
+
+            </div>
+
+
+            <div
+                id="pokerSeats"
+                class="poker-seats"
+            ></div>
+
+
+            <div
+                id="pokerStatus"
+                class="notice"
+                style="text-align:center"
+            ></div>
+
+
+            <div class="bet-row">
+
+                <input
+                    id="pokerBetAmount"
+                    type="number"
+                    min="1"
+                    placeholder="Miktar"
+                >
+
+                <button
+                    id="pokerCheck"
+                    class="blue-button"
+                >
+                    CHECK
+                </button>
+
+                <button
+                    id="pokerBet"
+                    class="green-button"
+                >
+                    BET
+                </button>
+
+                <button
+                    id="pokerCall"
+                    class="gold-button"
+                >
+                    CALL
+                </button>
+
+                <button
+                    id="pokerRaise"
+                    class="gold-button"
+                >
+                    RAISE
+                </button>
+
+                <button
+                    id="pokerFold"
+                    class="red-button"
+                >
+                    FOLD
+                </button>
+
+            </div>
+
+
+            <div style="text-align:center">
+
+                <button
+                    id="pokerStart"
+                    class="gold-button"
+                >
+                    🃏 YENİ EL
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="panel controls">
-<button id="rollButton" class="gold">🎲 İKİ ZAR AT</button>
-<button id="buyButton" class="green" disabled>🏠 SATIN AL</button>
-<button id="declineButton" class="red" disabled>❌ ALMA</button>
-<button id="leaveButton" class="dark">🚪 Oyundan Çık</button>
-<div id="actionBox" class="action-box"><div id="actionTitle" class="action-title"></div><div id="actionText" class="action-text"></div></div>
-</div>
-
-<div class="panel"><h2>🗺️ Oyun Tahtası</h2><div class="info-box">Bloklar köşelerden birleşir. Admin, test için istediği bloğa ışınlanabilir.</div>
-<div class="board-wrap"><div id="board" class="board"><div id="center" class="center">
-<div class="dice-center"><b>🎲 ZARLAR</b><div class="dice-row"><div id="die1" class="die">?</div><div id="die2" class="die">?</div></div><div id="diceTotal" class="dice-total">Zar bekleniyor...</div></div>
-</div></div></div></div>
-
-<div class="panel"><h2>🏠 Mülkler</h2><div id="propertyList" class="property-list"></div></div>
-</div>
-
-<!-- BLACKJACK -->
-<div id="blackjackModal" class="modal"><div class="modal-card"><h2 class="modal-title">🃏 BLACKJACK</h2>
-<div class="casino-table"><div style="text-align:center"><b>Kurpiyer</b><div id="dealerCards" class="cards" style="justify-content:center"></div><div id="dealerTotal"></div></div>
-<hr><div id="bjPlayers"></div></div>
-<div id="bjMessage" class="modal-message"></div><div style="text-align:center"><button id="bjClose" class="dark">Masadan Çık</button></div>
-</div></div>
-
-<!-- POKER -->
-<div id="pokerModal" class="modal"><div class="modal-card"><h2 class="modal-title">♠️ TEXAS HOLD'EM POKER</h2>
-<div class="casino-table"><div style="text-align:center"><b>ORTAK KARTLAR</b><div id="pokerCommunity" class="poker-board"></div><div class="bet-info" id="pokerPot">Pot: 0 ₺</div></div>
-<div id="pokerPlayers"></div></div>
-<div id="pokerMessage" class="modal-message"></div><div style="text-align:center"><button id="pokerClose" class="dark">Masadan Çık</button></div>
-</div></div>
 
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {getDatabase,ref,set,get,onValue,runTransaction} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
-import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-const firebaseConfig={apiKey:"AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",authDomain:"yusuf11-5ecc9.firebaseapp.com",databaseURL:"https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",projectId:"yusuf11-5ecc9",storageBucket:"yusuf11-5ecc9.firebasestorage.app",messagingSenderId:"418982485830",appId:"1:418982485830:web:ff0b051026d0256f1b0f47"};
-const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);
-let roomCode=null,playerNumber=null,unsubscribe=null,lastDiceAnimationId=null,currentUser=null;
+/* =====================================================
+   FIREBASE
+===================================================== */
 
-const $=id=>document.getElementById(id);
-const spaces=[
-{name:"BAŞLANGIÇ",type:"start"},{name:"Ankara Caddesi",type:"property",price:100,rent:20},{name:"Şans",type:"chance"},
-{name:"İstanbul Caddesi",type:"property",price:120,rent:25},{name:"Vergi",type:"tax",amount:100},{name:"İzmir Caddesi",type:"property",price:140,rent:30},
-{name:"Hapishane",type:"jail"},{name:"Şans",type:"chance"},{name:"Bursa Caddesi",type:"property",price:160,rent:35},
-{name:"Antalya Caddesi",type:"property",price:180,rent:40},{name:"Vergi",type:"tax",amount:150},{name:"Adana Caddesi",type:"property",price:200,rent:45},
-{name:"Şans",type:"chance"},{name:"Trabzon Caddesi",type:"property",price:220,rent:50},{name:"BLACKJACK",type:"blackjack"},
-{name:"Eskişehir Caddesi",type:"property",price:240,rent:55},{name:"Mersin Caddesi",type:"property",price:260,rent:60},
-{name:"Vergi",type:"tax",amount:200},{name:"Şans",type:"chance"},{name:"Samsun Caddesi",type:"property",price:280,rent:65},
-{name:"Konya Caddesi",type:"property",price:300,rent:70},{name:"Hapishane",type:"jail"},{name:"Gaziantep Caddesi",type:"property",price:320,rent:75},
-{name:"Şans",type:"chance"},{name:"Kayseri Caddesi",type:"property",price:340,rent:80},{name:"Vergi",type:"tax",amount:250},
-{name:"Bodrum Caddesi",type:"property",price:360,rent:90},{name:"POKER",type:"poker"},{name:"Muğla Caddesi",type:"property",price:380,rent:100},
-{name:"Şans",type:"chance"},{name:"Çeşme Caddesi",type:"property",price:400,rent:110},{name:"Vergi",type:"tax",amount:300}
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    onValue,
+    runTransaction
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
+
+    authDomain:
+    "yusuf11-5ecc9.firebaseapp.com",
+
+    databaseURL:
+    "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
+
+    projectId:
+    "yusuf11-5ecc9",
+
+    storageBucket:
+    "yusuf11-5ecc9.firebasestorage.app",
+
+    messagingSenderId:
+    "418982485830",
+
+    appId:
+    "1:418982485830:web:ff0b051026d0256f1b0f47"
+
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getDatabase(app);
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let roomCode = null;
+
+let playerNumber = null;
+
+let unsubscribe = null;
+
+let lastDiceAnimationId = null;
+
+let adminMode = false;
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const $ = id =>
+document.getElementById(id);
+
+const lobby = $("lobby");
+const game = $("game");
+
+const createRoom = $("createRoom");
+const joinRoom = $("joinRoom");
+const roomInput = $("roomInput");
+
+const lobbyMessage = $("lobbyMessage");
+const createdRoom = $("createdRoom");
+
+const rollButton = $("rollButton");
+const buyButton = $("buyButton");
+const declineButton = $("declineButton");
+const leaveButton = $("leaveButton");
+const adminButton = $("adminButton");
+
+const turnText = $("turnText");
+const message = $("message");
+
+const board = $("board");
+const propertyList = $("propertyList");
+
+const actionBox = $("actionBox");
+const actionTitle = $("actionTitle");
+const actionText = $("actionText");
+
+const die1 = $("die1");
+const die2 = $("die2");
+const diceTotal = $("diceTotal");
+
+const adminPanel = $("adminPanel");
+const teleportGrid = $("teleportGrid");
+
+
+/* =====================================================
+   BOARD
+===================================================== */
+
+const spaces = [
+
+    {
+        name:"BAŞLANGIÇ",
+        type:"start"
+    },
+
+    {
+        name:"Ankara Caddesi",
+        type:"property",
+        price:100,
+        rent:20
+    },
+
+    {
+        name:"Şans",
+        type:"chance"
+    },
+
+    {
+        name:"İstanbul Caddesi",
+        type:"property",
+        price:120,
+        rent:25
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:100
+    },
+
+    {
+        name:"BLACKJACK",
+        type:"blackjack"
+    },
+
+    {
+        name:"İzmir Caddesi",
+        type:"property",
+        price:140,
+        rent:30
+    },
+
+    {
+        name:"Hapishane",
+        type:"jail"
+    },
+
+    {
+        name:"Bursa Caddesi",
+        type:"property",
+        price:160,
+        rent:35
+    },
+
+    {
+        name:"Antalya Caddesi",
+        type:"property",
+        price:180,
+        rent:40
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:150
+    },
+
+    {
+        name:"Adana Caddesi",
+        type:"property",
+        price:200,
+        rent:45
+    },
+
+    {
+        name:"Şans",
+        type:"chance"
+    },
+
+    {
+        name:"Trabzon Caddesi",
+        type:"property",
+        price:220,
+        rent:50
+    },
+
+    {
+        name:"Kumarhane",
+        type:"casino"
+    },
+
+    {
+        name:"Eskişehir Caddesi",
+        type:"property",
+        price:240,
+        rent:55
+    },
+
+    {
+        name:"Mersin Caddesi",
+        type:"property",
+        price:260,
+        rent:60
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:200
+    },
+
+    {
+        name:"Poker",
+        type:"poker"
+    },
+
+    {
+        name:"Samsun Caddesi",
+        type:"property",
+        price:280,
+        rent:65
+    },
+
+    {
+        name:"Konya Caddesi",
+        type:"property",
+        price:300,
+        rent:70
+    },
+
+    {
+        name:"Hapishane",
+        type:"jail"
+    },
+
+    {
+        name:"Gaziantep Caddesi",
+        type:"property",
+        price:320,
+        rent:75
+    },
+
+    {
+        name:"Şans",
+        type:"chance"
+    },
+
+    {
+        name:"Kayseri Caddesi",
+        type:"property",
+        price:340,
+        rent:80
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:250
+    },
+
+    {
+        name:"Bodrum Caddesi",
+        type:"property",
+        price:360,
+        rent:90
+    },
+
+    {
+        name:"Kumarhane",
+        type:"casino"
+    },
+
+    {
+        name:"Muğla Caddesi",
+        type:"property",
+        price:380,
+        rent:100
+    },
+
+    {
+        name:"Şans",
+        type:"chance"
+    },
+
+    {
+        name:"Çeşme Caddesi",
+        type:"property",
+        price:400,
+        rent:110
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:300
+    }
+
 ];
 
-function pos(i){
- if(i<=8)return{r:9,c:9-i};
- if(i<=15)return{r:9-(i-8),c:1};
- if(i<=23)return{r:1,c:i-15};
- return{r:i-23,c:9};
-}
-function createBoard(){
- document.querySelectorAll(".cell").forEach(x=>x.remove());
- spaces.forEach((s,i)=>{
-  const e=document.createElement("div"),p=pos(i);e.id="cell-"+i;e.className="cell "+s.type;
-  e.style.gridRow=p.r;e.style.gridColumn=p.c;
-  if([0,8,16,23].includes(i))e.classList.add("corner");
-  let h=`<div class="cell-title">${i}. ${s.name}</div>`;
-  if(s.type==="property")h+=`<div class="cell-price">💰 ${s.price} ₺</div><div class="owner"></div>`;
-  if(s.type==="tax")h+=`<div class="cell-price">-${s.amount} ₺</div>`;
-  if(s.type==="chance")h+=`<div>🎴 Sürpriz</div>`;
-  if(s.type==="blackjack")h+=`<div>🃏 Kurpiyer masası</div>`;
-  if(s.type==="poker")h+=`<div>♠️ Texas Hold'em</div>`;
-  if(s.type==="jail")h+=`<div>🚔 Hapis</div>`;
-  if(s.type==="start")h+=`<div>🚀 Başlangıç</div>`;
-  h+=`<div class="pieces"></div>`;e.innerHTML=h;board.appendChild(e);
- });
-}
-function createPropertyList(){
- $("propertyList").innerHTML="";
- spaces.forEach((s,i)=>{if(s.type==="property")$("propertyList").insertAdjacentHTML("beforeend",`<div class="property-item"><b>${i}. ${s.name}</b><br>Alış: ${s.price} ₺ · Kira: ${s.rent} ₺</div>`)});
-}
-function roomCodeGen(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join("")}
-async function ensureAuth(){if(!auth.currentUser)currentUser=await signInAnonymously(auth);else currentUser=auth.currentUser;return currentUser}
-async function createGame(){
- try{
-  await ensureAuth();let code;
-  do{code=roomCodeGen()}while((await get(ref(db,"rooms/"+code))).exists());
-  roomCode=code;playerNumber=0;
-  await set(ref(db,"rooms/"+code),{players:{0:{name:"Oyuncu 1",money:1500,position:0,connected:true,properties:{}}},properties:{},turn:0,lastRoll:0,lastRoll1:0,lastRoll2:0,diceRollId:0,gameStarted:false,pendingAction:null,gameOver:false,message:"Oyuncu 2 bekleniyor...",adminUid:currentUser.uid});
-  $("createdRoom").innerHTML=`<div class="room-code">ODA KODU: ${code}</div><p style="text-align:center">Oyuncu 1 admin/test modudur.</p>`;startGame();
- }catch(e){console.error(e);$("lobbyMessage").textContent="Oda oluşturulamadı: "+e.message}
-}
-async function joinGame(){
- const code=$("roomInput").value.trim().toUpperCase();if(code.length!==4){$("lobbyMessage").textContent="4 haneli oda kodu gir.";return}
- try{
-  await ensureAuth();const rr=ref(db,"rooms/"+code),s=await get(rr);if(!s.exists()){ $("lobbyMessage").textContent="Oda bulunamadı.";return}
-  const d=s.val();if(d.players&&d.players[1]){$("lobbyMessage").textContent="Oda dolu.";return}
-  await set(ref(db,"rooms/"+code+"/players/1"),{name:"Oyuncu 2",money:1500,position:0,connected:true,properties:{}});
-  await set(ref(db,"rooms/"+code+"/gameStarted"),true);await set(ref(db,"rooms/"+code+"/message"),"Oyuncu 2 oyuna katıldı. Oyun başladı!");
-  roomCode=code;playerNumber=1;startGame();
- }catch(e){console.error(e);$("lobbyMessage").textContent="Firebase bağlantı hatası: "+e.message}
-}
-function startGame(){
- $("lobby").style.display="none";$("game").style.display="block";$("gameRoomCode").textContent=roomCode;createBoard();createPropertyList();
- unsubscribe=onValue(ref(db,"rooms/"+roomCode),s=>{const d=s.val();if(d)renderGame(d)});
-}
-function addPiece(i,t,p2){const c=$("cell-"+i);if(!c)return;const x=document.createElement("span");x.className="piece"+(p2?" p2":"");x.textContent=t;c.querySelector(".pieces")?.appendChild(x)}
-function renderGame(d){
- const p0=d.players?.[0],p1=d.players?.[1];
- $("money0").textContent=p0?Math.round(p0.money):"-";$("money1").textContent=p1?Math.round(p1.money):"-";
- $("position0").textContent=p0?p0.position:"-";$("position1").textContent=p1?p1.position:"-";
- $("properties0").textContent=p0?.properties?Object.keys(p0.properties).length:0;$("properties1").textContent=p1?.properties?Object.keys(p1.properties).length:0;
- $("playerPanel0").classList.toggle("active",d.turn===0);$("playerPanel1").classList.toggle("active",d.turn===1);
- $("adminBox").classList.toggle("show",playerNumber===0);
- if(!p0||!p1)$("turnText").textContent="⏳ Oyuncu 2 bekleniyor...";
- else if(d.gameOver)$("turnText").textContent="🏁 OYUN BİTTİ";
- else if(d.pendingAction)$("turnText").textContent=d.pendingAction.player===playerNumber?"🏠 SEÇİM YAP":"⏳ KARŞI OYUNCU SEÇİYOR...";
- else $("turnText").textContent=d.turn===playerNumber?"🎲 SENİN SIRAN":"⏳ KARŞI OYUNCUNUN SIRASI";
- $("message").textContent=d.message||"";
- $("rollButton").disabled=!p0||!p1||d.turn!==playerNumber||!!d.pendingAction||d.gameOver;
- $("buyButton").disabled=true;$("declineButton").disabled=true;$("actionBox").classList.remove("show");
- if(d.pendingAction?.player===playerNumber){
-  const s=spaces[d.pendingAction.position];$("actionBox").classList.add("show");$("actionTitle").textContent="🏠 MÜLK SATIN ALMA";$("actionText").textContent=`${s.name} alanına geldin. ${s.price} ₺ karşılığında satın almak ister misin?`;$("buyButton").disabled=false;$("declineButton").disabled=false;
- }
- if(d.lastRoll1){$("die1").textContent=d.lastRoll1;$("die2").textContent=d.lastRoll2;$("diceTotal").textContent="TOPLAM: "+d.lastRoll}
- if(d.diceRollId&&d.diceRollId!==lastDiceAnimationId){lastDiceAnimationId=d.diceRollId;$("die1").classList.remove("rolling");$("die2").classList.remove("rolling");void $("die1").offsetWidth;$("die1").classList.add("rolling");$("die2").classList.add("rolling")}
- document.querySelectorAll(".pieces").forEach(x=>x.innerHTML="");if(p0)addPiece(p0.position,"👑 P1",false);if(p1)addPiece(p1.position,"👤 P2",true);
- document.querySelectorAll(".owner").forEach(x=>x.textContent="");document.querySelectorAll(".cell").forEach(x=>x.classList.remove("property-owned-0","property-owned-1"));
- Object.entries(d.properties||{}).forEach(([i,o])=>{const c=$("cell-"+i);if(c){c.querySelector(".owner").textContent=o===0?"👑 P1":"👑 P2";c.classList.add("property-owned-"+o)}});
- buildTeleport();
- renderMiniGames(d);
-}
-function buildTeleport(){
- if(playerNumber!==0)return;
- const wrap=$("teleportButtons");wrap.innerHTML="";
- spaces.forEach((s,i)=>{const b=document.createElement("button");b.className="dark";b.style.fontSize="11px";b.textContent=i+" · "+s.name;b.onclick=()=>teleport(i);wrap.appendChild(b)});
-}
-async function teleport(i){
- if(playerNumber!==0||!roomCode)return;
- await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(!d||!d.players?.[0])return;d.players[0].position=i;d.pendingAction=null;d.message="👑 Admin Oyuncu 1, "+spaces[i].name+" bloğuna ışınlandı. "+(spaces[i].type==="blackjack"?"Blackjack masası açılıyor.":spaces[i].type==="poker"?"Poker masası açılıyor.":"");return d});
-}
-async function rollDice(){
- await runTransaction(ref(db,"rooms/"+roomCode),d=>{
-  if(!d||d.gameOver||d.pendingAction||d.turn!==playerNumber||!d.players?.[0]||!d.players?.[1])return;
-  const p=d.players[playerNumber],opp=playerNumber?0:1,a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6),t=a+b,old=p.position,n=(old+t)%spaces.length;p.position=n;d.lastRoll1=a;d.lastRoll2=b;d.lastRoll=t;d.diceRollId=Date.now();
-  if(n<old)p.money+=200;
-  const s=spaces[n];
-  if(s.type==="property"){
-   const owner=d.properties?.[n];
-   if(owner!==undefined&&owner!==playerNumber){p.money-=s.rent;d.players[owner].money+=s.rent;d.message=p.name+" "+s.name+" için "+s.rent+" ₺ kira ödedi."}
-   else if(owner===undefined&&p.money>=s.price){d.pendingAction={type:"buy",player:playerNumber,position:n,price:s.price};d.message=p.name+" "+s.name+" alanına geldi. Satın almak ister misin?";return d}
-  } else if(s.type==="tax"){p.money-=s.amount;d.message=p.name+" "+s.name+" ödedi: "+s.amount+" ₺"}
-  else if(s.type==="chance"){const cards=[["🎁 150 ₺ kazandın.",150],["💸 100 ₺ kaybettin.",-100],["🎉 200 ₺ kazandın.",200],["🚕 75 ₺ ödedin.",-75]],x=cards[Math.floor(Math.random()*cards.length)];p.money+=x[1];d.message=p.name+" "+x[0]}
-  else if(s.type==="jail"){d.message=p.name+" hapis alanına geldi."}
-  else if(s.type==="blackjack"){d.message="🃏 "+p.name+" BLACKJACK masasına geldi.";d.casino={type:"blackjack",status:"open"}}
-  else if(s.type==="poker"){d.message="♠️ "+p.name+" POKER masasına geldi.";d.casino={type:"poker",status:"open"}}
-  if(p.money<=0){p.money=0;d.gameOver=true;d.winner=opp;d.message=p.name+" iflas etti."}else d.turn=opp;
-  return d;
- });
-}
-async function buyProperty(){
- await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(!d?.pendingAction||d.pendingAction.player!==playerNumber)return;const p=d.players[playerNumber],i=d.pendingAction.position,s=spaces[i];if(!s||p.money<s.price)return; p.money-=s.price;p.properties=p.properties||{};p.properties[i]=true;d.properties=d.properties||{};d.properties[i]=playerNumber;d.pendingAction=null;d.turn=playerNumber?0:1;d.message=p.name+" "+s.name+" satın aldı.";return d});
-}
-async function declineProperty(){
- await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(!d?.pendingAction||d.pendingAction.player!==playerNumber)return;d.message=d.players[playerNumber].name+" mülkü satın almadı.";d.pendingAction=null;d.turn=playerNumber?0:1;return d});
-}
-async function leaveGame(){if(roomCode)await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(d?.players)d.players[playerNumber]=null;return d});location.reload()}
 
-/* ---------- CARD ENGINE ---------- */
-const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-function deck(){let a=[];for(const s of suits)for(const r of ranks)a.push({s,r});return a.sort(()=>Math.random()-.5)}
-function val(c){return c.r==="A"?14:["J","Q","K"].includes(c.r)?({J:11,Q:12,K:13}[c.r]):+c.r}
-function bjVal(cs){let t=0,a=0;cs.forEach(c=>{if(c.r==="A"){t+=11;a++}else t+=Math.min(val(c),10)});while(t>21&&a){t-=10;a--}return t}
-function cardHTML(c,back=false,cls=""){return `<div class="playing-card ${back?"back":""} ${cls}">${back?"🂠":c.r+c.s}</div>`}
-function dealBJ(){
- let d=deck(),hands=[[],[]],dealer=[d.pop(),d.pop()];for(let i=0;i<2;i++){hands[i]=[d.pop(),d.pop()]}return{deck:d,hands,dealer,turn:0,done:[false,false],doubled:[false,false],bets:[100,100],results:[]}
+/* =====================================================
+   BOARD POSITION
+   32 ALAN = 9x9 PERIMETER
+===================================================== */
+
+function getBoardPosition(index){
+
+    if(index <= 8){
+
+        return {
+            row:9,
+            col:9-index
+        };
+
+    }
+
+    if(index <= 16){
+
+        return {
+            row:9-(index-8),
+            col:1
+        };
+
+    }
+
+    if(index <= 24){
+
+        return {
+            row:1,
+            col:index-16+1
+        };
+
+    }
+
+    return {
+
+        row:index-24+1,
+        col:9
+
+    };
+
 }
-async function startBJ(){
- await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(!d)return;if(!d.casino||d.casino.type!=="blackjack")return; if(!d.casino.bj){d.casino.bj=dealBJ();d.casino.bj.message="Blackjack başladı."; }return d});
+
+
+/* =====================================================
+   BOARD CREATE
+===================================================== */
+
+function createBoard(){
+
+    board
+    .querySelectorAll(".cell")
+    .forEach(x=>x.remove());
+
+
+    spaces.forEach(
+        (space,index)=>{
+
+            const cell =
+            document.createElement("div");
+
+            cell.className =
+            "cell "+space.type;
+
+            cell.id =
+            "cell-"+index;
+
+            const position =
+            getBoardPosition(index);
+
+            cell.style.gridRow =
+            position.row;
+
+            cell.style.gridColumn =
+            position.col;
+
+
+            let html = `
+
+                <div class="cell-title">
+                    ${index}. ${space.name}
+                </div>
+
+            `;
+
+
+            if(space.type==="property"){
+
+                html += `
+
+                    <div class="cell-price">
+                        💰 ${space.price} ₺
+                    </div>
+
+                    <div class="owner"></div>
+
+                `;
+
+            }
+
+
+            if(space.type==="tax"){
+
+                html += `
+
+                    <div class="cell-price">
+                        -${space.amount} ₺
+                    </div>
+
+                `;
+
+            }
+
+
+            if(space.type==="chance"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        🎴 Sürpriz
+                    </div>
+                `;
+
+            }
+
+
+            if(space.type==="casino"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        🎰 Kumarhane
+                    </div>
+                `;
+
+            }
+
+
+            if(space.type==="blackjack"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        🃏 21
+                    </div>
+                `;
+
+            }
+
+
+            if(space.type==="poker"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        ♠️ HOLD'EM
+                    </div>
+                `;
+
+            }
+
+
+            if(space.type==="jail"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        🚔 Hapis
+                    </div>
+                `;
+
+            }
+
+
+            if(space.type==="start"){
+
+                html += `
+                    <div style="margin-top:5px">
+                        🚀 Başlangıç
+                    </div>
+                `;
+
+            }
+
+
+            html += `
+                <div class="pieces"></div>
+            `;
+
+
+            cell.innerHTML =
+            html;
+
+            board.appendChild(cell);
+
+        }
+    );
+
 }
-function bjRender(d){
- const bj=d.casino?.bj;if(!bj)return;
- $("blackjackModal").classList.add("show");$("dealerCards").innerHTML=bj.dealer.map((c,i)=>cardHTML(c,i===1&&!bj.dealerDone)).join("");$("dealerTotal").textContent=bj.dealerDone?"Toplam: "+bjVal(bj.dealer):"Gösterilen: "+bjVal([bj.dealer[0]]);
- $("bjPlayers").innerHTML=(d.players?[0,1].map(i=>{const p=d.players[i];if(!p)return"";const active=bj.turn===i&&!bj.done[i]&&!bj.dealerDone;return `<div class="hand-row"><b>${p.name}</b> · Bahis ${bj.bets[i]} ₺ ${active?"🎯 SIRA SENDE":""}<div class="cards">${bj.hands[i].map(c=>cardHTML(c)).join("")}</div><div>Toplam: ${bjVal(bj.hands[i])}</div>${active&&playerNumber===i?`<div class="decision"><button class="gold" onclick="bjHit()">Kart Çek</button><button class="blue" onclick="bjStand()">Kal</button><button class="green" onclick="bjDouble()">Double</button><button class="dark" onclick="bjSplit()">Split</button></div>`:""}</div>`}).join(""):"");$("bjMessage").textContent=bj.message||"";
+
+
+/* =====================================================
+   PROPERTY LIST
+===================================================== */
+
+function createPropertyList(){
+
+    propertyList.innerHTML="";
+
+    spaces.forEach(
+        (space,index)=>{
+
+            if(space.type!=="property"){
+                return;
+            }
+
+            const item =
+            document.createElement("div");
+
+            item.className =
+            "property-item";
+
+            item.innerHTML = `
+
+                <b>
+                    ${index}. ${space.name}
+                </b>
+
+                <br>
+
+                Alış:
+                ${space.price} ₺
+
+                <br>
+
+                Kira:
+                ${space.rent} ₺
+
+            `;
+
+            propertyList.appendChild(item);
+
+        }
+    );
+
 }
-async function bjAction(fn){await runTransaction(ref(db,"rooms/"+roomCode),d=>{const bj=d.casino?.bj;if(!bj||bj.turn!==playerNumber||bj.done[playerNumber]||bj.dealerDone)return;fn(bj,d);return d})}
-window.bjHit=()=>bjAction((bj,d)=>{bj.hands[playerNumber].push(bj.deck.pop());if(bjVal(bj.hands[playerNumber])>=21){bj.done[playerNumber]=true;bj.turn=playerNumber?0:1;bjAdvance(bj,d)}});
-window.bjStand=()=>bjAction((bj,d)=>{bj.done[playerNumber]=true;bjAdvance(bj,d)});
-window.bjDouble=()=>bjAction((bj,d)=>{const p=d.players[playerNumber];if(p.money<bj.bets[playerNumber])return;p.money-=bj.bets[playerNumber];bj.bets[playerNumber]*=2;bj.doubled[playerNumber]=true;bj.hands[playerNumber].push(bj.deck.pop());bj.done[playerNumber]=true;bjAdvance(bj,d)});
-window.bjSplit=()=>bjAction((bj,d)=>{bj.message="Split bu test sürümünde iki ayrı el görseliyle genişletilecek; şimdilik işlem uygulanmadı."});
-function bjAdvance(bj,d){let n=bj.turn===0?1:0;if(!bj.done[n]){bj.turn=n;return}if(bj.done[0]&&bj.done[1]){bj.dealerDone=true;while(bjVal(bj.dealer)<17)bj.dealer.push(bj.deck.pop());for(let i=0;i<2;i++){const p=d.players[i],v=bjVal(bj.hands[i]),dv=bjVal(bj.dealer),bet=bj.bets[i];let result;if(v>21)result="Kaybetti";else if(v===21&&bj.hands[i].length===2&&!(dv===21&&bj.dealer.length===2)){p.money+=Math.floor(bet*1.5);result="BLACKJACK!";}else if(dv>21||v>dv){p.money+=bet;result="Kazandı";}else if(v===dv){p.money+=bet;result="Berabere";}else result="Kaybetti";bj.results[i]=result}bj.message="Kurpiyer eli tamamlandı."}}
-async function openBJ(){await startBJ()}
-function pokerNew(){
- const d=deck(),players=[0,1].map(()=>({hole:[d.pop(),d.pop()],fold:false,bet:0,done:false,stackBet:0}));return{deck:d,players,community:[],stage:"preflop",turn:0,pot:0,currentBet:0,acted:[false,false],message:"Pre-flop başladı."}
+
+
+/* =====================================================
+   ROOM CODE
+===================================================== */
+
+function generateRoomCode(){
+
+    const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code="";
+
+    for(let i=0;i<4;i++){
+
+        code +=
+        chars[
+            Math.floor(
+                Math.random()*chars.length
+            )
+        ];
+
+    }
+
+    return code;
+
 }
-async function startPoker(){await runTransaction(ref(db,"rooms/"+roomCode),d=>{if(!d?.casino||d.casino.type!=="poker")return;if(!d.casino.poker)d.casino.poker=pokerNew();return d})}
-function pokerRank(cards){let counts={};cards.forEach(c=>counts[c.r]=(counts[c.r]||0)+1);let nums=[...new Set(cards.map(val))].sort((a,b)=>b-a);if(nums.includes(14))nums.push(1);let straight=false;for(let i=0;i<=nums.length-5;i++)if(nums[i]-nums[i+4]===4)straight=true;let groups=Object.values(counts).sort((a,b)=>b-a);const flush=cards.length>=5&&cards.filter(c=>c.s===cards[0].s).length>=5;if(straight&&flush)return 8;if(groups[0]===4)return 7;if(groups[0]===3&&groups[1]>=2)return 6;if(flush)return 5;if(straight)return 4;if(groups[0]===3)return 3;if(groups[0]===2&&groups[1]===2)return 2;if(groups[0]===2)return 1;return 0}
-function bestRank(cs){let best=-1;for(let a=0;a<cs.length;a++)for(let b=a+1;b<cs.length;b++)for(let c=b+1;c<cs.length;c++)for(let e=c+1;e<cs.length;e++)for(let f=e+1;f<cs.length;f++)best=Math.max(best,pokerRank([cs[a],cs[b],cs[c],cs[e],cs[f]]));return best}
-function advancePoker(p,d){const active=p.players.filter(x=>!x.fold);if(active.length===1){p.stage="showdown";p.message="Rakip fold etti. Pot kazanan oyuncuya yazıldı.";d.players[active[0]===p.players[0]?0:1].money+=p.pot;return}p.acted=[false,false];p.currentBet=0;if(p.stage==="preflop"){p.community.push(p.deck.pop(),p.deck.pop(),p.deck.pop());p.stage="flop"}else if(p.stage==="flop"){p.community.push(p.deck.pop());p.stage="turn"}else if(p.stage==="turn"){p.community.push(p.deck.pop());p.stage="river"}else{p.stage="showdown";const r0=bestRank(p.players[0].hole.concat(p.community)),r1=bestRank(p.players[1].hole.concat(p.community));if(r0>r1)d.players[0].money+=p.pot;else if(r1>r0)d.players[1].money+=p.pot;else{d.players[0].money+=Math.floor(p.pot/2);d.players[1].money+=Math.ceil(p.pot/2)}p.message="Showdown tamamlandı."}}
-function pokerAct(type,amount=0){return runTransaction(ref(db,"rooms/"+roomCode),d=>{const p=d.casino?.poker;if(!p||p.stage==="showdown"||p.turn!==playerNumber||p.players[playerNumber].fold)return;const me=p.players[playerNumber],opp=p.players[playerNumber?0:1];if(type==="fold"){me.fold=true;advancePoker(p,d);return d}if(type==="check"){if(p.currentBet!==me.bet)return;me.done=true}else if(type==="call"){const diff=p.currentBet-me.bet;if(d.players[playerNumber].money<diff)return;d.players[playerNumber].money-=diff;me.bet+=diff;p.pot+=diff;me.done=true}else if(type==="bet"||type==="raise"){const target=Math.max(amount,p.currentBet+50),diff=target-me.bet;if(d.players[playerNumber].money<diff)return;d.players[playerNumber].money-=diff;me.bet=target;p.currentBet=target;p.pot+=diff;me.done=true;p.acted=[false,false]}if(me.done){p.acted[playerNumber]=true;const other=playerNumber?0:1;p.turn=other;if(p.players[0].done&&p.players[1].done)advancePoker(p,d)}return d})}
-function pokerRender(d){
- const p=d.casino?.poker;if(!p)return;$("pokerModal").classList.add("show");$("pokerCommunity").innerHTML=p.community.map(c=>cardHTML(c,false,"poker-card")).join("");
- $("pokerPot").textContent=`Pot: ${p.pot} ₺ · Aşama: ${p.stage}`;
- $("pokerPlayers").innerHTML=[0,1].map(i=>{const x=d.players[i],me=i===playerNumber,ph=p.players[i];if(!x)return"";return `<div class="hand-row"><b>${x.name}</b> ${ph.fold?"❌ Fold":""}<div class="cards">${ph.hole.map(c=>cardHTML(c,!me,"poker-card")).join("")}</div>${p.stage!=="showdown"&&i===playerNumber&&!ph.fold?`<div class="poker-actions">${p.turn===i?`<button class="blue" onclick="pokerDo('check')">Check</button><button class="green" onclick="pokerDo('call')">Call</button><button class="gold" onclick="pokerDo('bet',100)">Bet/Raise 100</button><button class="red" onclick="pokerDo('fold')">Fold</button>`:"⏳ Sıra rakipte"}</div>`:""}</div>`}).join("");$("pokerMessage").textContent=p.message||"";
+
+
+/* =====================================================
+   CREATE ROOM
+===================================================== */
+
+async function createGame(){
+
+    try{
+
+        let code;
+
+        while(true){
+
+            code =
+            generateRoomCode();
+
+            const snap =
+            await get(
+                ref(
+                    db,
+                    "rooms/"+code
+                )
+            );
+
+            if(!snap.exists()){
+                break;
+            }
+
+        }
+
+
+        roomCode=code;
+
+        playerNumber=0;
+
+
+        const initialGame={
+
+            players:{
+
+                0:{
+
+                    name:"Oyuncu 1",
+
+                    money:1500,
+
+                    position:0,
+
+                    connected:true,
+
+                    properties:{}
+
+                }
+
+            },
+
+            properties:{},
+
+            turn:0,
+
+            lastRoll:0,
+
+            lastRoll1:0,
+
+            lastRoll2:0,
+
+            diceRollId:0,
+
+            gameStarted:false,
+
+            pendingAction:null,
+
+            gameOver:false,
+
+            winner:null,
+
+            message:
+            "Oyuncu 2 bekleniyor...",
+
+            blackjack:null,
+
+            poker:null
+
+        };
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+code
+            ),
+            initialGame
+        );
+
+
+        createdRoom.innerHTML=`
+
+            <div class="room-code">
+                ODA KODU: ${code}
+            </div>
+
+            <p style="text-align:center">
+                Bu kodu arkadaşına gönder.
+            </p>
+
+        `;
+
+
+        startGame();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        lobbyMessage.textContent =
+        "Oda oluşturulamadı: "+
+        error.message;
+
+    }
+
 }
-window.pokerDo=(a,n)=>pokerAct(a,n);
-function renderMiniGames(d){if(d.casino?.type==="blackjack"){openBJ();bjRender(d)}else if(d.casino?.type==="poker"){startPoker();pokerRender(d)}}
-$("createRoom").onclick=createGame;$("joinRoom").onclick=joinGame;$("rollButton").onclick=rollDice;$("buyButton").onclick=buyProperty;$("declineButton").onclick=declineProperty;$("leaveButton").onclick=leaveGame;
-$("bjClose").onclick=()=>{ $("blackjackModal").classList.remove("show")};$("pokerClose").onclick=()=>{$("pokerModal").classList.remove("show")};
-createBoard();createPropertyList();
+
+
+/* =====================================================
+   JOIN
+===================================================== */
+
+async function joinGame(){
+
+    const code =
+    roomInput.value
+    .trim()
+    .toUpperCase();
+
+
+    if(code.length!==4){
+
+        lobbyMessage.textContent =
+        "4 haneli oda kodu gir.";
+
+        return;
+
+    }
+
+
+    try{
+
+        const roomRef =
+        ref(
+            db,
+            "rooms/"+code
+        );
+
+
+        const snapshot =
+        await get(roomRef);
+
+
+        if(!snapshot.exists()){
+
+            lobbyMessage.textContent =
+            "Oda bulunamadı.";
+
+            return;
+
+        }
+
+
+        const data =
+        snapshot.val();
+
+
+        if(data.players && data.players[1]){
+
+            lobbyMessage.textContent =
+            "Oda dolu.";
+
+            return;
+
+        }
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+code+
+                "/players/1"
+            ),
+            {
+
+                name:"Oyuncu 2",
+
+                money:1500,
+
+                position:0,
+
+                connected:true,
+
+                properties:{}
+
+            }
+        );
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+code+
+                "/gameStarted"
+            ),
+            true
+        );
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+code+
+                "/message"
+            ),
+            "Oyuncu 2 oyuna katıldı. Oyun başladı!"
+        );
+
+
+        roomCode=code;
+
+        playerNumber=1;
+
+        startGame();
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        lobbyMessage.textContent =
+        "Firebase bağlantı hatası: "+
+        error.message;
+
+    }
+
+}
+
+
+/* =====================================================
+   START GAME
+===================================================== */
+
+function startGame(){
+
+    lobby.style.display="none";
+
+    game.style.display="block";
+
+    $("gameRoomCode").textContent =
+    roomCode;
+
+    $("adminBadge").textContent =
+    playerNumber===0
+    ? " 🛠️ ADMIN"
+    : "";
+
+
+    createBoard();
+
+    createPropertyList();
+
+    createTeleportButtons();
+
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    unsubscribe =
+    onValue(
+        roomRef,
+        snapshot=>{
+
+            const data =
+            snapshot.val();
+
+            if(!data){
+                return;
+            }
+
+            renderGame(data);
+
+            renderBlackjack(data);
+
+            renderPoker(data);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function renderGame(data){
+
+    const p0 =
+    data.players &&
+    data.players[0];
+
+    const p1 =
+    data.players &&
+    data.players[1];
+
+
+    $("money0").textContent =
+    p0 ? Math.round(p0.money) : "-";
+
+    $("money1").textContent =
+    p1 ? Math.round(p1.money) : "-";
+
+
+    $("position0").textContent =
+    p0 ? p0.position : "-";
+
+    $("position1").textContent =
+    p1 ? p1.position : "-";
+
+
+    $("properties0").textContent =
+    p0 && p0.properties
+    ? Object.keys(p0.properties).length
+    : 0;
+
+    $("properties1").textContent =
+    p1 && p1.properties
+    ? Object.keys(p1.properties).length
+    : 0;
+
+
+    $("playerPanel0")
+    .classList.toggle(
+        "active",
+        data.turn===0
+    );
+
+
+    $("playerPanel1")
+    .classList.toggle(
+        "active",
+        data.turn===1
+    );
+
+
+    if(!p0 || !p1){
+
+        turnText.textContent =
+        "⏳ Oyuncu 2 bekleniyor...";
+
+        rollButton.disabled=true;
+
+    }
+    else if(data.gameOver){
+
+        const winner =
+        data.winner===0
+        ? "Oyuncu 1"
+        : "Oyuncu 2";
+
+        turnText.textContent =
+        "🏆 OYUN BİTTİ — "+
+        winner+
+        " KAZANDI!";
+
+        rollButton.disabled=true;
+
+    }
+    else if(data.pendingAction){
+
+        if(
+            data.pendingAction.player===
+            playerNumber
+        ){
+
+            turnText.textContent =
+            "🏠 SEÇİM YAPMAN GEREKİYOR";
+
+        }
+        else{
+
+            turnText.textContent =
+            "⏳ Rakip seçim yapıyor...";
+
+        }
+
+        rollButton.disabled=true;
+
+    }
+    else if(data.turn===playerNumber){
+
+        turnText.textContent =
+        "🎲 SENİN SIRAN";
+
+        rollButton.disabled=false;
+
+    }
+    else{
+
+        turnText.textContent =
+        "⏳ KARŞI OYUNCUNUN SIRASI";
+
+        rollButton.disabled=true;
+
+    }
+
+
+    message.textContent =
+    data.message || "";
+
+
+    if(data.lastRoll1){
+
+        die1.textContent =
+        data.lastRoll1;
+
+        die2.textContent =
+        data.lastRoll2;
+
+        diceTotal.textContent =
+        "TOPLAM: "+
+        data.lastRoll;
+
+    }
+
+
+    if(
+        data.diceRollId &&
+        data.diceRollId!==lastDiceAnimationId
+    ){
+
+        lastDiceAnimationId =
+        data.diceRollId;
+
+        die1.classList.remove("rolling");
+        die2.classList.remove("rolling");
+
+        void die1.offsetWidth;
+
+        die1.classList.add("rolling");
+        die2.classList.add("rolling");
+
+    }
+
+
+    buyButton.disabled=true;
+    declineButton.disabled=true;
+
+    actionBox.classList.remove("show");
+
+
+    if(
+        data.pendingAction &&
+        data.pendingAction.player===
+        playerNumber
+    ){
+
+        const position =
+        data.pendingAction.position;
+
+        const space =
+        spaces[position];
+
+
+        if(space){
+
+            actionBox.classList.add("show");
+
+            actionTitle.textContent =
+            "🏠 MÜLK SATIN ALMA";
+
+            actionText.textContent =
+            space.name+
+            " alanına geldin. "+
+            space.price+
+            " ₺ karşılığında satın almak ister misin?";
+
+            buyButton.disabled=false;
+            declineButton.disabled=false;
+
+        }
+
+    }
+
+
+    document
+    .querySelectorAll(".pieces")
+    .forEach(x=>x.innerHTML="");
+
+
+    if(p0){
+
+        addPiece(
+            p0.position,
+            "🧑 P1",
+            false
+        );
+
+    }
+
+
+    if(p1){
+
+        addPiece(
+            p1.position,
+            "👤 P2",
+            true
+        );
+
+    }
+
+
+    document
+    .querySelectorAll(".owner")
+    .forEach(x=>x.textContent="");
+
+
+    document
+    .querySelectorAll(".cell")
+    .forEach(cell=>{
+
+        cell.classList.remove(
+            "property-owned-0",
+            "property-owned-1"
+        );
+
+    });
+
+
+    if(data.properties){
+
+        Object.entries(
+            data.properties
+        ).forEach(
+            ([position,owner])=>{
+
+                const cell =
+                $("cell-"+position);
+
+                if(!cell){
+                    return;
+                }
+
+                const ownerElement =
+                cell.querySelector(".owner");
+
+                if(ownerElement){
+
+                    ownerElement.textContent =
+                    owner===0
+                    ? "👑 P1"
+                    : "👑 P2";
+
+                }
+
+                cell.classList.add(
+                    owner===0
+                    ? "property-owned-0"
+                    : "property-owned-1"
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PIECE
+===================================================== */
+
+function addPiece(
+    position,
+    text,
+    secondPlayer
+){
+
+    const cell =
+    $("cell-"+position);
+
+    if(!cell){
+        return;
+    }
+
+    const piece =
+    document.createElement("span");
+
+    piece.className =
+    secondPlayer
+    ? "piece p2"
+    : "piece";
+
+    piece.textContent=text;
+
+    const pieces =
+    cell.querySelector(".pieces");
+
+    if(pieces){
+        pieces.appendChild(piece);
+    }
+
+}
+
+
+/* =====================================================
+   ROLL
+===================================================== */
+
+async function rollDice(){
+
+    if(!roomCode){
+        return;
+    }
+
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(!data){
+                return;
+            }
+
+            if(data.gameOver){
+                return;
+            }
+
+            if(data.pendingAction){
+                return;
+            }
+
+            if(
+                !data.players ||
+                !data.players[playerNumber]
+            ){
+                return;
+            }
+
+            if(data.turn!==playerNumber){
+                return;
+            }
+
+
+            const opponent =
+            playerNumber===0 ? 1 : 0;
+
+
+            if(!data.players[opponent]){
+                return;
+            }
+
+
+            const player =
+            data.players[playerNumber];
+
+
+            const dice1 =
+            Math.floor(Math.random()*6)+1;
+
+            const dice2 =
+            Math.floor(Math.random()*6)+1;
+
+            const total =
+            dice1+dice2;
+
+
+            const oldPosition =
+            player.position;
+
+
+            const newPosition =
+            (oldPosition+total)%spaces.length;
+
+
+            player.position =
+            newPosition;
+
+
+            data.lastRoll1=dice1;
+            data.lastRoll2=dice2;
+            data.lastRoll=total;
+            data.diceRollId=Date.now();
+
+
+            if(newPosition<oldPosition){
+
+                player.money += 200;
+
+                data.message =
+                player.name+
+                " başlangıçtan geçti ve 200 ₺ aldı.";
+
+            }
+
+
+            const space =
+            spaces[newPosition];
+
+
+            /* PROPERTY */
+
+            if(space.type==="property"){
+
+                const owner =
+                data.properties &&
+                data.properties[newPosition];
+
+
+                if(
+                    owner!==undefined &&
+                    owner!==playerNumber
+                ){
+
+                    player.money -=
+                    space.rent;
+
+                    data.players[owner].money +=
+                    space.rent;
+
+                    data.message =
+                    player.name+
+                    " "+space.name+
+                    " alanına geldi ve "+
+                    space.rent+
+                    " ₺ kira ödedi.";
+
+                }
+                else if(owner===playerNumber){
+
+                    data.message =
+                    player.name+
+                    " kendi mülküne geldi.";
+
+                }
+                else{
+
+                    if(
+                        player.money>=
+                        space.price
+                    ){
+
+                        data.pendingAction={
+
+                            type:"buy",
+
+                            player:
+                            playerNumber,
+
+                            position:
+                            newPosition,
+
+                            price:
+                            space.price
+
+                        };
+
+                        data.message =
+                        player.name+
+                        " "+space.name+
+                        " alanına geldi. Satın almak ister misin?";
+
+                        return data;
+
+                    }
+                    else{
+
+                        data.message =
+                        player.name+
+                        " "+space.name+
+                        " alanını satın almak için yeterli paraya sahip değil.";
+
+                    }
+
+                }
+
+            }
+
+
+            /* TAX */
+
+            if(space.type==="tax"){
+
+                player.money -=
+                space.amount;
+
+                data.message =
+                player.name+
+                " "+space.name+
+                " ödedi: "+
+                space.amount+
+                " ₺";
+
+            }
+
+
+            /* CHANCE */
+
+            if(space.type==="chance"){
+
+                const cards=[
+
+                    {
+                        text:"🎁 +150 ₺ kazandın!",
+                        money:150
+                    },
+
+                    {
+                        text:"💸 100 ₺ kaybettin.",
+                        money:-100
+                    },
+
+                    {
+                        text:"🎉 Büyük kazanç! +200 ₺",
+                        money:200
+                    },
+
+                    {
+                        text:"🚕 Masraf: -75 ₺",
+                        money:-75
+                    }
+
+                ];
+
+
+                const card =
+                cards[
+                    Math.floor(
+                        Math.random()*cards.length
+                    )
+                ];
+
+
+                player.money +=
+                card.money;
+
+
+                data.message =
+                player.name+
+                ": "+
+                card.text;
+
+            }
+
+
+            /* CASINO */
+
+            if(space.type==="casino"){
+
+                if(
+                    Math.random()>=.5
+                ){
+
+                    player.money +=250;
+
+                    data.message =
+                    player.name+
+                    " 🎰 kumarhanede kazandı! +250 ₺";
+
+                }
+                else{
+
+                    player.money -=150;
+
+                    data.message =
+                    player.name+
+                    " 🎰 kumarhanede kaybetti! -150 ₺";
+
+                }
+
+            }
+
+
+            /* BLACKJACK */
+
+            if(space.type==="blackjack"){
+
+                data.message =
+                player.name+
+                " 🃏 BLACKJACK masasına geldi.";
+
+                ensureBlackjackTable(
+                    data,
+                    playerNumber
+                );
+
+                return data;
+
+            }
+
+
+            /* POKER */
+
+            if(space.type==="poker"){
+
+                data.message =
+                player.name+
+                " ♠️ POKER masasına geldi.";
+
+                ensurePokerTable(
+                    data,
+                    playerNumber
+                );
+
+                return data;
+
+            }
+
+
+            /* BANKRUPTCY */
+
+            if(player.money<=0){
+
+                player.money=0;
+
+                data.winner=
+                opponent;
+
+                data.gameOver=true;
+
+                data.message =
+                player.name+
+                " iflas etti! "+
+                data.players[opponent].name+
+                " oyunu kazandı!";
+
+                return data;
+
+            }
+
+
+            data.turn=
+            opponent;
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   BUY
+===================================================== */
+
+async function buyProperty(){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                data.gameOver ||
+                !data.pendingAction ||
+                data.pendingAction.player!==playerNumber
+            ){
+                return;
+            }
+
+
+            const player =
+            data.players[playerNumber];
+
+            const position =
+            data.pendingAction.position;
+
+            const space =
+            spaces[position];
+
+
+            if(
+                !space ||
+                space.type!=="property"
+            ){
+                return;
+            }
+
+
+            if(
+                data.properties &&
+                data.properties[position]!==undefined
+            ){
+
+                data.pendingAction=null;
+
+                return data;
+
+            }
+
+
+            if(
+                player.money<
+                space.price
+            ){
+
+                data.pendingAction=null;
+
+                data.turn=
+                playerNumber===0 ? 1 : 0;
+
+                return data;
+
+            }
+
+
+            player.money -=
+            space.price;
+
+
+            if(!player.properties){
+                player.properties={};
+            }
+
+
+            player.properties[position]=true;
+
+
+            if(!data.properties){
+                data.properties={};
+            }
+
+
+            data.properties[position]=
+            playerNumber;
+
+
+            data.message =
+            player.name+
+            " "+space.name+
+            " mülkünü satın aldı!";
+
+
+            data.pendingAction=null;
+
+            data.turn=
+            playerNumber===0 ? 1 : 0;
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DECLINE
+===================================================== */
+
+async function declineProperty(){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                !data.pendingAction ||
+                data.pendingAction.player!==playerNumber
+            ){
+                return;
+            }
+
+
+            const player =
+            data.players[playerNumber];
+
+            const space =
+            spaces[
+                data.pendingAction.position
+            ];
+
+
+            data.pendingAction=null;
+
+            data.message =
+            player.name+
+            " "+space.name+
+            " mülkünü satın almadı.";
+
+            data.turn=
+            playerNumber===0 ? 1 : 0;
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ADMIN TELEPORT
+===================================================== */
+
+function createTeleportButtons(){
+
+    teleportGrid.innerHTML="";
+
+    spaces.forEach(
+        (space,index)=>{
+
+            const button =
+            document.createElement("button");
+
+            button.textContent =
+            index+
+            " • "+
+            space.name;
+
+            button.addEventListener(
+                "click",
+                ()=>adminTeleport(index)
+            );
+
+            teleportGrid.appendChild(button);
+
+        }
+    );
+
+}
+
+
+adminButton.addEventListener(
+    "click",
+    ()=>{
+
+        if(playerNumber!==0){
+
+            return;
+
+        }
+
+        adminMode=
+        !adminMode;
+
+        adminPanel
+        .classList.toggle(
+            "show",
+            adminMode
+        );
+
+    }
+);
+
+
+async function adminTeleport(position){
+
+    if(playerNumber!==0){
+        return;
+    }
+
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                !data.players ||
+                !data.players[0]
+            ){
+                return;
+            }
+
+
+            data.players[0].position=
+            position;
+
+
+            data.message =
+            "🛠️ ADMIN: Oyuncu 1 "+
+            spaces[position].name+
+            " alanına ışınlandı.";
+
+
+            return data;
+
+        }
+    );
+
+
+    const space =
+    spaces[position];
+
+
+    if(space.type==="blackjack"){
+
+        await runTransaction(
+            roomRef,
+            data=>{
+
+                if(data){
+
+                    ensureBlackjackTable(
+                        data,
+                        0
+                    );
+
+                }
+
+                return data;
+
+            }
+        );
+
+    }
+
+
+    if(space.type==="poker"){
+
+        await runTransaction(
+            roomRef,
+            data=>{
+
+                if(data){
+
+                    ensurePokerTable(
+                        data,
+                        0
+                    );
+
+                }
+
+                return data;
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BLACKJACK ENGINE
+===================================================== */
+
+const blackjackDeckCards = [
+
+    "A♠","2♠","3♠","4♠","5♠","6♠","7♠","8♠","9♠","10♠","J♠","Q♠","K♠",
+
+    "A♥","2♥","3♥","4♥","5♥","6♥","7♥","8♥","9♥","10♥","J♥","Q♥","K♥",
+
+    "A♦","2♦","3♦","4♦","5♦","6♦","7♦","8♦","9♦","10♦","J♦","Q♦","K♦",
+
+    "A♣","2♣","3♣","4♣","5♣","6♣","7♣","8♣","9♣","10♣","J♣","Q♣","K♣"
+
+];
+
+
+function shuffle(array){
+
+    const result =
+    [...array];
+
+    for(
+        let i=result.length-1;
+        i>0;
+        i--
+    ){
+
+        const j =
+        Math.floor(
+            Math.random()*(i+1)
+        );
+
+        [
+            result[i],
+            result[j]
+        ]=
+        [
+            result[j],
+            result[i]
+        ];
+
+    }
+
+    return result;
+
+}
+
+
+function cardValue(card){
+
+    const rank =
+    card.slice(
+        0,
+        -1
+    );
+
+
+    if(rank==="A"){
+        return 11;
+    }
+
+    if(
+        ["K","Q","J"]
+        .includes(rank)
+    ){
+        return 10;
+    }
+
+    return parseInt(rank);
+
+}
+
+
+function handValue(hand){
+
+    let total=0;
+
+    let aces=0;
+
+
+    hand.forEach(card=>{
+
+        total +=
+        cardValue(card);
+
+        if(
+            card.startsWith("A")
+        ){
+            aces++;
+        }
+
+    });
+
+
+    while(
+        total>21 &&
+        aces>0
+    ){
+
+        total-=10;
+        aces--;
+
+    }
+
+
+    return total;
+
+}
+
+
+function ensureBlackjackTable(
+    data,
+    playerId
+){
+
+    if(!data.blackjack){
+
+        data.blackjack={
+
+            active:true,
+
+            players:{},
+
+            dealer:[],
+
+            deck:[],
+
+            currentPlayer:null,
+
+            phase:"waiting",
+
+            message:
+            "Blackjack masası hazır."
+
+        };
+
+    }
+
+
+    if(!data.blackjack.players){
+        data.blackjack.players={};
+    }
+
+
+    if(
+        data.players &&
+        data.players[playerId]
+    ){
+
+        data.blackjack.players[playerId]={
+
+            cards:[],
+
+            bet:50,
+
+            status:"waiting",
+
+            doubled:false,
+
+            result:""
+
+        };
+
+    }
+
+
+    data.blackjack.active=true;
+
+}
+
+
+function startBlackjack(){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    runTransaction(
+        roomRef,
+        data=>{
+
+            if(!data){
+                return;
+            }
+
+
+            if(!data.blackjack){
+                return;
+            }
+
+
+            const bj =
+            data.blackjack;
+
+
+            const ids =
+            Object.keys(
+                bj.players || {}
+            ).filter(
+                id=>
+                data.players &&
+                data.players[id]
+            );
+
+
+            if(ids.length===0){
+                return;
+            }
+
+
+            bj.deck =
+            shuffle(
+                blackjackDeckCards
+            );
+
+
+            bj.dealer=[
+                bj.deck.pop(),
+                bj.deck.pop()
+            ];
+
+
+            ids.forEach(id=>{
+
+                const player =
+                data.players[id];
+
+
+                const bet =
+                Math.min(
+                    50,
+                    Math.max(
+                        1,
+                        Math.floor(player.money)
+                    )
+                );
+
+
+                bj.players[id]={
+
+                    cards:[
+                        bj.deck.pop(),
+                        bj.deck.pop()
+                    ],
+
+                    bet:bet,
+
+                    status:"playing",
+
+                    doubled:false,
+
+                    result:""
+
+                };
+
+            });
+
+
+            bj.phase="players";
+
+            bj.currentPlayer=
+            Number(ids[0]);
+
+            bj.message =
+            "Oyunculara kartlar dağıtıldı.";
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   BLACKJACK HIT
+===================================================== */
+
+function blackjackHit(){
+
+    blackjackPlayerAction("hit");
+
+}
+
+
+/* =====================================================
+   BLACKJACK STAND
+===================================================== */
+
+function blackjackStand(){
+
+    blackjackPlayerAction("stand");
+
+}
+
+
+/* =====================================================
+   BLACKJACK DOUBLE
+===================================================== */
+
+function blackjackDouble(){
+
+    blackjackPlayerAction("double");
+
+}
+
+
+/* =====================================================
+   BLACKJACK PLAYER ACTION
+===================================================== */
+
+async function blackjackPlayerAction(action){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                !data.blackjack
+            ){
+                return;
+            }
+
+
+            const bj =
+            data.blackjack;
+
+
+            if(
+                bj.phase!=="players" ||
+                bj.currentPlayer!==playerNumber
+            ){
+                return;
+            }
+
+
+            const player =
+            bj.players[playerNumber];
+
+
+            if(
+                !player ||
+                player.status!=="playing"
+            ){
+                return;
+            }
+
+
+            if(action==="hit"){
+
+                player.cards.push(
+                    bj.deck.pop()
+                );
+
+
+                const value =
+                handValue(player.cards);
+
+
+                if(value>21){
+
+                    player.status="bust";
+
+                    player.result=
+                    "Bust";
+
+                    advanceBlackjackPlayer(
+                        bj,
+                        data
+                    );
+
+                }
+                else if(value===21){
+
+                    player.status="stand";
+
+                    advanceBlackjackPlayer(
+                        bj,
+                        data
+                    );
+
+                }
+
+            }
+
+
+            if(action==="stand"){
+
+                player.status="stand";
+
+                advanceBlackjackPlayer(
+                    bj,
+                    data
+                );
+
+            }
+
+
+            if(action==="double"){
+
+                if(player.cards.length!==2){
+                    return;
+                }
+
+
+                const gamePlayer =
+                data.players[playerNumber];
+
+
+                if(
+                    gamePlayer.money<
+                    player.bet
+                ){
+                    return;
+                }
+
+
+                player.bet *=2;
+
+                player.doubled=true;
+
+                player.cards.push(
+                    bj.deck.pop()
+                );
+
+
+                const value =
+                handValue(player.cards);
+
+
+                if(value>21){
+
+                    player.status="bust";
+                    player.result="Bust";
+
+                }
+                else{
+
+                    player.status="stand";
+
+                }
+
+
+                advanceBlackjackPlayer(
+                    bj,
+                    data
+                );
+
+            }
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ADVANCE BLACKJACK
+===================================================== */
+
+function advanceBlackjackPlayer(
+    bj,
+    data
+){
+
+    const ids =
+    Object.keys(
+        bj.players || {}
+    )
+    .map(Number)
+    .filter(
+        id=>
+        data.players &&
+        data.players[id]
+    );
+
+
+    const currentIndex =
+    ids.indexOf(
+        bj.currentPlayer
+    );
+
+
+    for(
+        let i=currentIndex+1;
+        i<ids.length;
+        i++
+    ){
+
+        const next =
+        ids[i];
+
+        if(
+            bj.players[next].status===
+            "playing"
+        ){
+
+            bj.currentPlayer=next;
+
+            bj.message =
+            data.players[next].name+
+            " kararını vermeli.";
+
+            return;
+
+        }
+
+    }
+
+
+    finishBlackjack(
+        bj,
+        data
+    );
+
+}
+
+
+/* =====================================================
+   FINISH BLACKJACK
+===================================================== */
+
+function finishBlackjack(
+    bj,
+    data
+){
+
+    bj.phase="dealer";
+
+    bj.currentPlayer=null;
+
+
+    while(
+        handValue(bj.dealer)<17
+    ){
+
+        bj.dealer.push(
+            bj.deck.pop()
+        );
+
+    }
+
+
+    const dealerValue =
+    handValue(bj.dealer);
+
+
+    Object.keys(
+        bj.players
+    ).forEach(id=>{
+
+        const player =
+        bj.players[id];
+
+        if(
+            !data.players ||
+            !data.players[id]
+        ){
+            return;
+        }
+
+
+        const p =
+        data.players[id];
+
+        const value =
+        handValue(player.cards);
+
+
+        let payout=0;
+
+        let result="";
+
+
+        if(value>21){
+
+            result="KAYBETTİ";
+
+            payout=0;
+
+        }
+        else if(
+            value===21 &&
+            player.cards.length===2
+        ){
+
+            result="BLACKJACK";
+
+            payout=
+            player.bet+
+            Math.floor(player.bet*1.5);
+
+        }
+        else if(
+            dealerValue>21
+        ){
+
+            result="KAZANDI";
+
+            payout=
+            player.bet*2;
+
+        }
+        else if(value>dealerValue){
+
+            result="KAZANDI";
+
+            payout=
+            player.bet*2;
+
+        }
+        else if(value===dealerValue){
+
+            result="PUSH";
+
+            payout=
+            player.bet;
+
+        }
+        else{
+
+            result="KAYBETTİ";
+
+            payout=0;
+
+        }
+
+
+        /*
+            Bahis başta düşülür.
+            Kazanırsa 2x, blackjack 2.5x,
+            push ise bahis geri.
+        */
+
+        p.money += payout;
+
+        player.result=result;
+
+    });
+
+
+    bj.phase="finished";
+
+    bj.message =
+    "El tamamlandı. Yeni el başlatılabilir.";
+
+}
+
+
+/* =====================================================
+   BLACKJACK RENDER
+===================================================== */
+
+function renderBlackjack(data){
+
+    const bj =
+    data.blackjack;
+
+
+    if(!bj || !bj.active){
+
+        return;
+
+    }
+
+
+    $("blackjackModal")
+    .classList.add("show");
+
+
+    const dealerCards =
+    $("dealerCards");
+
+    dealerCards.innerHTML="";
+
+
+    if(bj.dealer){
+
+        bj.dealer.forEach(
+            (card,index)=>{
+
+                const div =
+                document.createElement("div");
+
+                div.className="card";
+
+
+                if(
+                    bj.phase==="players" &&
+                    index===1
+                ){
+
+                    div.classList.add("back");
+
+                    div.textContent="🂠";
+
+                }
+                else{
+
+                    div.textContent=card;
+
+                    if(
+                        card.includes("♥") ||
+                        card.includes("♦")
+                    ){
+
+                        div.classList.add("red");
+
+                    }
+
+                }
+
+
+                dealerCards.appendChild(div);
+
+            }
+        );
+
+    }
+
+
+    if(bj.phase==="players"){
+
+        if(bj.dealer && bj.dealer.length){
+
+            $("dealerScore").textContent =
+            "Kurpiyerin açık kartı: "+
+            handValue(
+                [bj.dealer[0]]
+            );
+
+        }
+
+    }
+    else{
+
+        $("dealerScore").textContent =
+        "Kurpiyer toplamı: "+
+        handValue(bj.dealer || []);
+
+    }
+
+
+    const playersContainer =
+    $("blackjackPlayers");
+
+    playersContainer.innerHTML="";
+
+
+    Object.entries(
+        bj.players || {}
+    ).forEach(
+        ([id,player])=>{
+
+            const box =
+            document.createElement("div");
+
+            box.className =
+            "blackjack-player";
+
+
+            const playerName =
+            data.players &&
+            data.players[id]
+            ? data.players[id].name
+            : "Oyuncu";
+
+
+            box.innerHTML = `
+
+                <b>
+                    ${playerName}
+                </b>
+
+                <br>
+
+                Bahis:
+                ${player.bet} ₺
+
+                <div class="cards"
+                     style="margin-top:8px">
+                </div>
+
+                <div style="margin-top:5px">
+                    ${player.status}
+                    ${
+                        player.result
+                        ? " • "+player.result
+                        : ""
+                    }
+                </div>
+
+            `;
+
+
+            const cardsDiv =
+            box.querySelector(".cards");
+
+
+            (player.cards || [])
+            .forEach(card=>{
+
+                const div =
+                document.createElement("div");
+
+                div.className="card";
+
+                /*
+                    Her oyuncunun eli burada genel
+                    olarak UI'da gösteriliyor.
+                    İstersen sonraki aşamada özel
+                    kullanıcı bazlı private node
+                    sistemine taşıyabiliriz.
+                */
+
+                div.textContent=card;
+
+                if(
+                    card.includes("♥") ||
+                    card.includes("♦")
+                ){
+
+                    div.classList.add("red");
+
+                }
+
+                cardsDiv.appendChild(div);
+
+            });
+
+
+            playersContainer.appendChild(box);
+
+        }
+    );
+
+
+    $("blackjackStatus").textContent =
+    bj.message || "";
+
+
+    const mine =
+    bj.players &&
+    bj.players[playerNumber];
+
+
+    const myTurn =
+    bj.phase==="players" &&
+    bj.currentPlayer===playerNumber &&
+    mine &&
+    mine.status==="playing";
+
+
+    $("bjHit").disabled =
+    !myTurn;
+
+    $("bjStand").disabled =
+    !myTurn;
+
+    $("bjDouble").disabled =
+    !myTurn ||
+    !mine ||
+    mine.cards.length!==2;
+
+
+}
+
+
+/* =====================================================
+   POKER ENGINE
+===================================================== */
+
+const pokerSuits=[
+    "♠",
+    "♥",
+    "♦",
+    "♣"
+];
+
+const pokerRanks=[
+    "2","3","4","5","6","7","8","9","10",
+    "J","Q","K","A"
+];
+
+
+function createPokerDeck(){
+
+    const deck=[];
+
+    pokerSuits.forEach(
+        suit=>{
+
+            pokerRanks.forEach(
+                rank=>{
+
+                    deck.push({
+                        rank,
+                        suit
+                    });
+
+                }
+            );
+
+        }
+    );
+
+    return shuffle(deck);
+
+}
+
+
+function pokerCardText(card){
+
+    if(!card){
+        return "";
+    }
+
+    return card.rank+card.suit;
+
+}
+
+
+/* =====================================================
+   ENSURE POKER
+===================================================== */
+
+function ensurePokerTable(
+    data,
+    playerId
+){
+
+    if(!data.poker){
+
+        data.poker={
+
+            active:true,
+
+            players:{},
+
+            deck:[],
+
+            community:[],
+
+            pot:0,
+
+            currentPlayer:null,
+
+            phase:"waiting",
+
+            currentBet:0,
+
+            dealer:0,
+
+            message:
+            "Poker masası hazır."
+
+        };
+
+    }
+
+
+    if(!data.poker.players){
+        data.poker.players={};
+    }
+
+
+    if(
+        data.players &&
+        data.players[playerId]
+    ){
+
+        if(
+            !data.poker.players[playerId]
+        ){
+
+            data.poker.players[playerId]={
+
+                cards:[],
+
+                chips:1000,
+
+                folded:false,
+
+                currentBet:0,
+
+                totalBet:0,
+
+                acted:false
+
+            };
+
+        }
+
+    }
+
+
+    data.poker.active=true;
+
+}
+
+
+/* =====================================================
+   START POKER
+===================================================== */
+
+async function startPoker(){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                !data.poker
+            ){
+                return;
+            }
+
+
+            const poker =
+            data.poker;
+
+
+            const ids =
+            Object.keys(
+                poker.players || {}
+            )
+            .filter(
+                id=>
+                data.players &&
+                data.players[id]
+            );
+
+
+            if(ids.length<2){
+
+                poker.message =
+                "Poker için en az 2 oyuncu gerekir.";
+
+                return data;
+
+            }
+
+
+            poker.deck =
+            createPokerDeck();
+
+            poker.community=[];
+
+            poker.pot=0;
+
+            poker.currentBet=0;
+
+            poker.phase="preflop";
+
+            poker.dealer =
+            ids.includes(
+                String(poker.dealer)
+            )
+            ? poker.dealer
+            : Number(ids[0]);
+
+
+            ids.forEach(
+                id=>{
+
+                    const player =
+                    poker.players[id];
+
+                    player.cards=[
+                        poker.deck.pop(),
+                        poker.deck.pop()
+                    ];
+
+                    player.folded=false;
+
+                    player.currentBet=0;
+
+                    player.totalBet=0;
+
+                    player.acted=false;
+
+                }
+            );
+
+
+            /*
+                Küçük kör ve büyük kör.
+            */
+
+            const ordered =
+            ids.map(Number);
+
+
+            const dealerIndex =
+            ordered.indexOf(
+                Number(poker.dealer)
+            );
+
+
+            const smallBlindPlayer =
+            ordered[
+                (dealerIndex+1)%
+                ordered.length
+            ];
+
+
+            const bigBlindPlayer =
+            ordered[
+                (dealerIndex+2)%
+                ordered.length
+            ];
+
+
+            const sb=25;
+            const bb=50;
+
+
+            poker.players[
+                smallBlindPlayer
+            ].currentBet=sb;
+
+            poker.players[
+                smallBlindPlayer
+            ].totalBet=sb;
+
+
+            poker.players[
+                bigBlindPlayer
+            ].currentBet=bb;
+
+            poker.players[
+                bigBlindPlayer
+            ].totalBet=bb;
+
+
+            poker.pot=
+            sb+bb;
+
+
+            data.players[
+                smallBlindPlayer
+            ].money -= sb;
+
+
+            data.players[
+                bigBlindPlayer
+            ].money -= bb;
+
+
+            poker.currentBet=bb;
+
+
+            /*
+                Preflop'ta büyük blind'dan
+                sonraki oyuncu başlar.
+            */
+
+            const firstPlayer =
+            ordered[
+                (dealerIndex+3)%
+                ordered.length
+            ];
+
+
+            poker.currentPlayer=
+            firstPlayer;
+
+
+            poker.message =
+            "Preflop başladı. Sıra "+
+            data.players[firstPlayer].name+
+            ".";
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   POKER PLAYER ACTION
+===================================================== */
+
+async function pokerAction(
+    action,
+    amount=0
+){
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                !data ||
+                !data.poker
+            ){
+                return;
+            }
+
+
+            const poker =
+            data.poker;
+
+
+            if(
+                poker.phase==="waiting" ||
+                poker.phase==="finished"
+            ){
+                return;
+            }
+
+
+            if(
+                poker.currentPlayer!==playerNumber
+            ){
+                return;
+            }
+
+
+            const me =
+            poker.players[playerNumber];
+
+
+            if(
+                !me ||
+                me.folded
+            ){
+                return;
+            }
+
+
+            const currentBet =
+            poker.currentBet;
+
+
+            const myBet =
+            me.currentBet;
+
+
+            if(action==="fold"){
+
+                me.folded=true;
+
+                poker.message =
+                data.players[playerNumber].name+
+                " fold yaptı.";
+
+                advancePoker(
+                    poker,
+                    data
+                );
+
+                return data;
+
+            }
+
+
+            if(action==="check"){
+
+                if(
+                    myBet!==currentBet
+                ){
+                    return;
+                }
+
+                me.acted=true;
+
+            }
+
+
+            if(action==="call"){
+
+                const needed =
+                currentBet-myBet;
+
+                const available =
+                Math.max(
+                    0,
+                    data.players[playerNumber].money
+                );
+
+                const pay =
+                Math.min(
+                    needed,
+                    available
+                );
+
+
+                data.players[playerNumber].money -=
+                pay;
+
+                me.currentBet +=
+                pay;
+
+                me.totalBet +=
+                pay;
+
+                poker.pot +=
+                pay;
+
+                me.acted=true;
+
+            }
+
+
+            if(action==="bet"){
+
+                if(
+                    currentBet!==0 ||
+                    amount<=0
+                ){
+                    return;
+                }
+
+
+                const available =
+                data.players[playerNumber].money;
+
+
+                const pay =
+                Math.min(
+                    amount,
+                    available
+                );
+
+
+                if(pay<=0){
+                    return;
+                }
+
+
+                data.players[playerNumber].money -=
+                pay;
+
+                me.currentBet +=
+                pay;
+
+                me.totalBet +=
+                pay;
+
+                poker.pot +=
+                pay;
+
+                poker.currentBet=
+                me.currentBet;
+
+
+                resetPokerActions(
+                    poker,
+                    playerNumber
+                );
+
+                me.acted=true;
+
+            }
+
+
+            if(action==="raise"){
+
+                if(amount<=currentBet){
+                    return;
+                }
+
+
+                const target=
+                amount;
+
+
+                const needed =
+                target-myBet;
+
+
+                const available =
+                data.players[playerNumber].money;
+
+
+                if(
+                    needed<=0 ||
+                    available<needed
+                ){
+                    return;
+                }
+
+
+                data.players[playerNumber].money -=
+                needed;
+
+
+                me.currentBet=
+                target;
+
+                me.totalBet +=
+                needed;
+
+                poker.pot +=
+                needed;
+
+
+                poker.currentBet=
+                target;
+
+
+                resetPokerActions(
+                    poker,
+                    playerNumber
+                );
+
+
+                me.acted=true;
+
+            }
+
+
+            poker.message =
+            data.players[playerNumber].name+
+            " "+action+
+            " yaptı.";
+
+
+            advancePoker(
+                poker,
+                data
+            );
+
+
+            return data;
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RESET POKER ACTIONS
+===================================================== */
+
+function resetPokerActions(
+    poker,
+    exceptPlayer
+){
+
+    Object.entries(
+        poker.players
+    ).forEach(
+        ([id,p])=>{
+
+            if(
+                Number(id)!==
+                exceptPlayer &&
+                !p.folded
+            ){
+
+                p.acted=false;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ADVANCE POKER
+===================================================== */
+
+function advancePoker(
+    poker,
+    data
+){
+
+    const ids =
+    Object.keys(
+        poker.players || {}
+    )
+    .map(Number)
+    .filter(
+        id=>
+        data.players &&
+        data.players[id] &&
+        !poker.players[id].folded
+    );
+
+
+    if(ids.length<=1){
+
+        const winner =
+        ids[0];
+
+
+        if(winner!==undefined){
+
+            data.players[winner].money +=
+            poker.pot;
+
+        }
+
+
+        poker.phase="finished";
+
+        poker.message =
+        winner!==undefined
+        ? data.players[winner].name+
+          " potu kazandı."
+        : "Poker eli bitti.";
+
+        return;
+
+    }
+
+
+    const allActed =
+    ids.every(
+        id=>
+        poker.players[id].acted &&
+        poker.players[id].currentBet===
+        poker.currentBet
+    );
+
+
+    if(allActed){
+
+        nextPokerStreet(
+            poker,
+            data
+        );
+
+        return;
+
+    }
+
+
+    const currentIndex =
+    ids.indexOf(
+        poker.currentPlayer
+    );
+
+
+    for(
+        let i=1;
+        i<=ids.length;
+        i++
+    ){
+
+        const next =
+        ids[
+            (currentIndex+i)%
+            ids.length
+        ];
+
+
+        if(
+            !poker.players[next].folded &&
+            (
+                !poker.players[next].acted ||
+                poker.players[next].currentBet<
+                poker.currentBet
+            )
+        ){
+
+            poker.currentPlayer=next;
+
+            return;
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   NEXT POKER STREET
+===================================================== */
+
+function nextPokerStreet(
+    poker,
+    data
+){
+
+    Object.values(
+        poker.players
+    ).forEach(
+        p=>{
+            p.currentBet=0;
+            p.acted=false;
+        }
+    );
+
+
+    poker.currentBet=0;
+
+
+    if(poker.phase==="preflop"){
+
+        poker.deck.pop();
+
+        poker.community.push(
+            poker.deck.pop(),
+            poker.deck.pop(),
+            poker.deck.pop()
+        );
+
+        poker.phase="flop";
+
+    }
+    else if(poker.phase==="flop"){
+
+        poker.deck.pop();
+
+        poker.community.push(
+            poker.deck.pop()
+        );
+
+        poker.phase="turn";
+
+    }
+    else if(poker.phase==="turn"){
+
+        poker.deck.pop();
+
+        poker.community.push(
+            poker.deck.pop()
+        );
+
+        poker.phase="river";
+
+    }
+    else if(poker.phase==="river"){
+
+        finishPoker(
+            poker,
+            data
+        );
+
+        return;
+
+    }
+
+
+    const ids =
+    Object.keys(
+        poker.players
+    )
+    .map(Number)
+    .filter(
+        id=>
+        data.players &&
+        data.players[id] &&
+        !poker.players[id].folded
+    );
+
+
+    const dealerIndex =
+    ids.indexOf(
+        Number(poker.dealer)
+    );
+
+
+    poker.currentPlayer =
+    ids[
+        (dealerIndex+1)%
+        ids.length
+    ];
+
+
+    poker.message =
+    poker.phase.toUpperCase()+
+    " başladı. Sıra "+
+    data.players[poker.currentPlayer].name+".";
+
+}
+
+
+/* =====================================================
+   POKER HAND EVALUATION
+===================================================== */
+
+function rankNumber(rank){
+
+    if(rank==="A"){
+        return 14;
+    }
+
+    if(rank==="K"){
+        return 13;
+    }
+
+    if(rank==="Q"){
+        return 12;
+    }
+
+    if(rank==="J"){
+        return 11;
+    }
+
+    return Number(rank);
+
+}
+
+
+function evaluateFive(cards){
+
+    const values =
+    cards
+    .map(c=>rankNumber(c.rank))
+    .sort((a,b)=>b-a);
+
+
+    const suits =
+    cards.map(c=>c.suit);
+
+
+    const counts={};
+
+    values.forEach(v=>{
+        counts[v]=(counts[v]||0)+1;
+    });
+
+
+    const unique =
+    [...new Set(values)]
+    .sort((a,b)=>b-a);
+
+
+    if(
+        unique.includes(14)
+    ){
+
+        unique.push(1);
+
+    }
+
+
+    let straightHigh=null;
+
+
+    for(
+        let i=0;
+        i<=unique.length-5;
+        i++
+    ){
+
+        if(
+            unique[i]-
+            unique[i+4]===4
+        ){
+
+            straightHigh=
+            unique[i];
+
+            break;
+
+        }
+
+    }
+
+
+    const flush =
+    suits.every(
+        s=>s===suits[0]
+    );
+
+
+    if(
+        straightHigh &&
+        flush
+    ){
+
+        return {
+            rank:8,
+            values:[straightHigh],
+            name:"Straight Flush"
+        };
+
+    }
+
+
+    const groups =
+    Object.entries(counts)
+    .map(
+        ([v,c])=>({
+            value:Number(v),
+            count:c
+        })
+    )
+    .sort(
+        (a,b)=>
+        b.count-a.count ||
+        b.value-a.value
+    );
+
+
+    if(groups[0].count===4){
+
+        return {
+            rank:7,
+            values:[
+                groups[0].value,
+                groups[1].value
+            ],
+            name:"Four of a Kind"
+        };
+
+    }
+
+
+    if(
+        groups[0].count===3 &&
+        groups[1] &&
+        groups[1].count===2
+    ){
+
+        return {
+            rank:6,
+            values:[
+                groups[0].value,
+                groups[1].value
+            ],
+            name:"Full House"
+        };
+
+    }
+
+
+    if(flush){
+
+        return {
+            rank:5,
+            values,
+            name:"Flush"
+        };
+
+    }
+
+
+    if(straightHigh){
+
+        return {
+            rank:4,
+            values:[straightHigh],
+            name:"Straight"
+        };
+
+    }
+
+
+    if(groups[0].count===3){
+
+        return {
+            rank:3,
+            values:[
+                groups[0].value,
+                ...groups
+                .slice(1)
+                .map(x=>x.value)
+                .sort((a,b)=>b-a)
+            ],
+            name:"Three of a Kind"
+        };
+
+    }
+
+
+    const pairs =
+    groups
+    .filter(x=>x.count===2)
+    .sort(
+        (a,b)=>
+        b.value-a.value
+    );
+
+
+    if(
+        pairs.length>=2
+    ){
+
+        const kicker =
+        groups
+        .filter(x=>x.count===1)
+        .map(x=>x.value)
+        .sort((a,b)=>b-a)[0];
+
+
+        return {
+            rank:2,
+            values:[
+                pairs[0].value,
+                pairs[1].value,
+                kicker
+            ],
+            name:"Two Pair"
+        };
+
+    }
+
+
+    if(pairs.length===1){
+
+        const kickers =
+        groups
+        .filter(x=>x.count===1)
+        .map(x=>x.value)
+        .sort((a,b)=>b-a);
+
+
+        return {
+            rank:1,
+            values:[
+                pairs[0].value,
+                ...kickers
+            ],
+            name:"One Pair"
+        };
+
+    }
+
+
+    return {
+        rank:0,
+        values,
+        name:"High Card"
+    };
+
+}
+
+
+function combinations(
+    array,
+    size
+){
+
+    const result=[];
+
+
+    function helper(
+        start,
+        combo
+    ){
+
+        if(
+            combo.length===size
+        ){
+
+            result.push(
+                [...combo]
+            );
+
+            return;
+
+        }
+
+
+        for(
+            let i=start;
+            i<array.length;
+            i++
+        ){
+
+            combo.push(array[i]);
+
+            helper(
+                i+1,
+                combo
+            );
+
+            combo.pop();
+
+        }
+
+    }
+
+
+    helper(
+        0,
+        []
+    );
+
+
+    return result;
+
+}
+
+
+function evaluateSeven(cards){
+
+    const combos =
+    combinations(
+        cards,
+        5
+    );
+
+
+    let best=null;
+
+
+    combos.forEach(
+        combo=>{
+
+            const value =
+            evaluateFive(combo);
+
+
+            if(
+                !best ||
+                comparePokerValues(
+                    value,
+                    best
+                )>0
+            ){
+
+                best=value;
+
+            }
+
+        }
+    );
+
+
+    return best;
+
+}
+
+
+function comparePokerValues(
+    a,
+    b
+){
+
+    if(a.rank!==b.rank){
+
+        return a.rank-b.rank;
+
+    }
+
+
+    for(
+        let i=0;
+        i<
+        Math.max(
+            a.values.length,
+            b.values.length
+        );
+        i++
+    ){
+
+        const av =
+        a.values[i]||0;
+
+        const bv =
+        b.values[i]||0;
+
+
+        if(av!==bv){
+
+            return av-bv;
+
+        }
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =====================================================
+   FINISH POKER
+===================================================== */
+
+function finishPoker(
+    poker,
+    data
+){
+
+    const active =
+    Object.keys(
+        poker.players
+    )
+    .map(Number)
+    .filter(
+        id=>
+        data.players &&
+        data.players[id] &&
+        !poker.players[id].folded
+    );
+
+
+    if(active.length===0){
+
+        poker.phase="finished";
+
+        return;
+
+    }
+
+
+    const evaluations =
+    active.map(
+        id=>{
+
+            const p =
+            poker.players[id];
+
+
+            const cards =
+            [
+                ...p.cards,
+                ...poker.community
+            ];
+
+
+            return {
+
+                id,
+
+                value:
+                evaluateSeven(cards)
+
+            };
+
+        }
+    );
+
+
+    evaluations.sort(
+        (a,b)=>
+        comparePokerValues(
+            b.value,
+            a.value
+        )
+    );
+
+
+    const best =
+    evaluations[0];
+
+
+    const winners =
+    evaluations.filter(
+        x=>
+        comparePokerValues(
+            x.value,
+            best.value
+        )===0
+    );
+
+
+    const share =
+    Math.floor(
+        poker.pot/
+        winners.length
+    );
+
+
+    winners.forEach(
+        winner=>{
+
+            data.players[
+                winner.id
+            ].money +=
+            share;
+
+        }
+    );
+
+
+    poker.phase="finished";
+
+
+    poker.winners =
+    winners.map(
+        x=>x.id
+    );
+
+
+    poker.message =
+    winners.map(
+        x=>
+        data.players[x.id].name
+    ).join(", ")+
+    " kazandı! El: "+
+    best.value.name;
+
+}
+
+
+/* =====================================================
+   POKER RENDER
+===================================================== */
+
+function renderPoker(data){
+
+    const poker =
+    data.poker;
+
+
+    if(
+        !poker ||
+        !poker.active
+    ){
+
+        return;
+
+    }
+
+
+    $("pokerModal")
+    .classList.add("show");
+
+
+    $("pokerPot").textContent =
+    poker.pot || 0;
+
+
+    const community =
+    $("communityCards");
+
+    community.innerHTML="";
+
+
+    (poker.community || [])
+    .forEach(card=>{
+
+        const div =
+        document.createElement("div");
+
+        div.className="card";
+
+        div.textContent =
+        pokerCardText(card);
+
+
+        if(
+            card.suit==="♥" ||
+            card.suit==="♦"
+        ){
+
+            div.classList.add("red");
+
+        }
+
+
+        community.appendChild(div);
+
+    });
+
+
+    const seats =
+    $("pokerSeats");
+
+    seats.innerHTML="";
+
+
+    Object.entries(
+        poker.players || {}
+    ).forEach(
+        ([id,p])=>{
+
+            const box =
+            document.createElement("div");
+
+            box.className=
+            "poker-seat";
+
+
+            const player =
+            data.players &&
+            data.players[id];
+
+
+            const name =
+            player
+            ? player.name
+            : "Oyuncu";
+
+
+            const isMe =
+            Number(id)===
+            playerNumber;
+
+
+            box.innerHTML=`
+
+                <b>
+                    ${name}
+                    ${
+                        isMe
+                        ? " 👁️ SEN"
+                        : ""
+                    }
+                </b>
+
+                <br>
+
+                ${
+                    p.folded
+                    ? "🚫 FOLD"
+                    : "🎯 Oyunda"
+                }
+
+                <div class="cards"
+                     style="margin-top:8px">
+                </div>
+
+            `;
+
+
+            const cardsDiv =
+            box.querySelector(".cards");
+
+
+            (p.cards || [])
+            .forEach(card=>{
+
+                const div =
+                document.createElement("div");
+
+                div.className="card";
+
+
+                if(isMe){
+
+                    div.textContent =
+                    pokerCardText(card);
+
+                    if(
+                        card.suit==="♥" ||
+                        card.suit==="♦"
+                    ){
+
+                        div.classList.add("red");
+
+                    }
+
+                }
+                else{
+
+                    div.classList.add("back");
+
+                    div.textContent="🂠";
+
+                }
+
+
+                cardsDiv.appendChild(div);
+
+            });
+
+
+            seats.appendChild(box);
+
+        }
+    );
+
+
+    $("pokerStatus").textContent =
+    poker.message || "";
+
+
+    const myTurn =
+    poker.phase!=="waiting" &&
+    poker.phase!=="finished" &&
+    poker.currentPlayer===
+    playerNumber;
+
+
+    $("pokerCheck").disabled =
+    !myTurn ||
+    poker.currentBet!==
+    (
+        poker.players[playerNumber]
+        ?.currentBet || 0
+    );
+
+
+    $("pokerBet").disabled =
+    !myTurn ||
+    poker.currentBet!==0;
+
+
+    $("pokerCall").disabled =
+    !myTurn ||
+    poker.currentBet<=
+    (
+        poker.players[playerNumber]
+        ?.currentBet || 0
+    );
+
+
+    $("pokerRaise").disabled =
+    !myTurn;
+
+
+    $("pokerFold").disabled =
+    !myTurn;
+
+
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+createRoom.addEventListener(
+    "click",
+    createGame
+);
+
+joinRoom.addEventListener(
+    "click",
+    joinGame
+);
+
+rollButton.addEventListener(
+    "click",
+    rollDice
+);
+
+buyButton.addEventListener(
+    "click",
+    buyProperty
+);
+
+declineButton.addEventListener(
+    "click",
+    declineProperty
+);
+
+leaveButton.addEventListener(
+    "click",
+    leaveGame
+);
+
+
+/* =====================================================
+   BLACKJACK EVENTS
+===================================================== */
+
+$("bjStart")
+.addEventListener(
+    "click",
+    startBlackjack
+);
+
+$("bjHit")
+.addEventListener(
+    "click",
+    blackjackHit
+);
+
+$("bjStand")
+.addEventListener(
+    "click",
+    blackjackStand
+);
+
+$("bjDouble")
+.addEventListener(
+    "click",
+    blackjackDouble
+);
+
+$("closeBlackjack")
+.addEventListener(
+    "click",
+    ()=>{
+
+        $("blackjackModal")
+        .classList.remove("show");
+
+    }
+);
+
+
+/* =====================================================
+   POKER EVENTS
+===================================================== */
+
+$("pokerStart")
+.addEventListener(
+    "click",
+    startPoker
+);
+
+
+$("pokerCheck")
+.addEventListener(
+    "click",
+    ()=>pokerAction("check")
+);
+
+
+$("pokerBet")
+.addEventListener(
+    "click",
+    ()=>{
+
+        const amount =
+        Number(
+            $("pokerBetAmount").value
+        );
+
+        pokerAction(
+            "bet",
+            amount
+        );
+
+    }
+);
+
+
+$("pokerCall")
+.addEventListener(
+    "click",
+    ()=>pokerAction("call")
+);
+
+
+$("pokerRaise")
+.addEventListener(
+    "click",
+    ()=>{
+
+        const amount =
+        Number(
+            $("pokerBetAmount").value
+        );
+
+        pokerAction(
+            "raise",
+            amount
+        );
+
+    }
+);
+
+
+$("pokerFold")
+.addEventListener(
+    "click",
+    ()=>pokerAction("fold")
+);
+
+
+$("closePoker")
+.addEventListener(
+    "click",
+    ()=>{
+
+        $("pokerModal")
+        .classList.remove("show");
+
+    }
+);
+
+
+/* =====================================================
+   LEAVE
+===================================================== */
+
+async function leaveGame(){
+
+    if(!roomCode){
+        return;
+    }
+
+
+    const roomRef =
+    ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+
+    await runTransaction(
+        roomRef,
+        data=>{
+
+            if(
+                data &&
+                data.players
+            ){
+
+                data.players[
+                    playerNumber
+                ]=null;
+
+            }
+
+            return data;
+
+        }
+    );
+
+
+    if(unsubscribe){
+        unsubscribe();
+    }
+
+
+    location.reload();
+
+}
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+createBoard();
+
+createPropertyList();
+
 </script>
+
 </body>
 </html>
