@@ -845,26 +845,192 @@ window.bjAct = async (act) => {
 /* ===== POKER ===== */
 function pokerInit(){return{type:"poker",phase:"bet",deck:makeDeck(),community:[],players:{0:{hole:[],chips:0,fold:false,bet:0,acted:false},1:{hole:[],chips:0,fold:false,bet:0,acted:false}},pot:0,currentBet:0,turn:0,message:"Buy-in koyun"}}
 
-function renderPoker(g,d){
-  let h=`<h2>♠️ TEXAS HOLD'EM</h2><div class="info">${g.message}</div>`;
-  if(g.phase==="bet"){
-    const my=g.players[playerNumber]?.chips||0;
-    h+=`<div class="info">Paran: ${d.players[playerNumber]?.money||0}₺</div>`;
-    if(!my)h+=`<div class="btn-row"><input type="number" id="pkBet" value="100" min="20"><button class="gold" onclick="pkPlaceBet()">Buy-in</button></div>`;
-    else h+=`<div class="info">Buy-in alındı, rakip bekleniyor</div>`;
-    h+=`<div class="info">P1: ${g.players[0]?.chips||"-"} | P2: ${g.players[1]?.chips||"-"}</div>`;
-  }else{
-    h+=`<h3>Ortak</h3><div class="cards">${(g.community||[]).map(c=>cardHTML(c)).join("")}</div>`;
-    const me=g.players[playerNumber];
-    h+=`<h3>Senin kartların</h3><div class="cards">${(me?.hole||[]).map(c=>cardHTML(c)).join("")}</div>`;
-    h+=`<div class="info">Pot: ${g.pot}₺ | Çip: ${me?.chips||0}₺</div>`;
-    if(g.phase!=="end"&&g.turn===playerNumber&&!me?.fold){
-      h+=`<div class="btn-row"><button class="red" onclick="pkAct('fold')">Fold</button>`;
-      if(me.bet===g.currentBet)h+=`<button class="blue" onclick="pkAct('check')">Check</button>`;
-      else h+=`<button onclick="pkAct('call')">Call</button>`;
-      h+=`<input type="number" id="raiseIn" value="${(g.currentBet||0)+50}" style="width:80px"><button class="gold" onclick="pkRaise()">Raise</button></div>`;
+function renderPoker(g, d) {
+  const key = playerNumber === 0 ? "p0" : "p1";
+  const me = g.players?.[playerNumber] || g.players?.[key] || { hole: [], chips: 0, fold: false, bet: 0 };
+  // Eski yapı (0/1) ile yeni yapı uyumu
+  const p0 = g.players?.[0] || g.players?.p0 || { hole: [], chips: 0, fold: false, bet: 0 };
+  const p1 = g.players?.[1] || g.players?.p1 || { hole: [], chips: 0, fold: false, bet: 0 };
+  const myData = playerNumber === 0 ? p0 : p1;
+  const otherData = playerNumber === 0 ? p1 : p0;
+  const otherNum = playerNumber === 0 ? 1 : 0;
+
+  let h = `
+  <style>
+    .pk-wrap{max-width:680px;margin:0 auto}
+    .pk-table{
+      background:radial-gradient(ellipse 85% 70% at 50% 45%, #0f7a3a 0%, #0a5c2c 50%, #064020 100%);
+      border:10px solid #4a3728;
+      border-radius:120px;
+      padding:22px 20px 28px;
+      box-shadow:inset 0 0 50px #0005, 0 10px 30px #000a, 0 0 0 3px #2a1f14;
+      position:relative;
     }
+    .pk-table::before{
+      content:"";position:absolute;inset:14px;border:2px dashed #ffffff15;
+      border-radius:100px;pointer-events:none;
+    }
+    .pk-label{
+      display:inline-block;background:#1b5e20;color:#c8e6c9;
+      font-size:11px;letter-spacing:2px;padding:3px 12px;border-radius:20px;
+      border:1px solid #4caf5088;margin-bottom:6px;
+    }
+    .pk-community{text-align:center;margin-bottom:8px;position:relative;z-index:1}
+    .pk-pot{
+      display:inline-block;background:#0007;color:#ffd54a;font-weight:bold;
+      padding:4px 16px;border-radius:20px;font-size:15px;margin:8px 0;
+      border:1px solid #ffc10755;
+    }
+    .pk-msg{text-align:center;color:#e8f5e9;font-size:13px;margin:6px 0;min-height:18px}
+    .pk-seats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
+    .pk-seat{
+      background:linear-gradient(180deg,#0a0a0a88,#0006);
+      border:2px solid #2e7d32;border-radius:14px;padding:12px 16px;
+      min-width:160px;text-align:center;
+    }
+    .pk-seat.me{border-color:#ffc107;box-shadow:0 0 0 2px #ffc10744,0 0 16px #ffc10733}
+    .pk-seat.fold{opacity:.55;border-color:#666}
+    .pk-name{font-size:12px;color:#a5d6a7;letter-spacing:1px;margin-bottom:4px}
+    .pk-seat.me .pk-name{color:#ffe082;font-weight:bold}
+    .pk-cards{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;min-height:80px}
+    .pk-chip{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:40px;height:28px;border-radius:14px;padding:0 8px;margin-top:6px;
+      background:radial-gradient(circle at 30% 30%,#ef5350,#b71c1c);
+      border:2px solid #ffc107;color:#fff;font-weight:900;font-size:11px;
+    }
+    .pk-info{font-size:12px;color:#c8e6c9;margin-top:4px}
+    .pk-controls{margin-top:16px;text-align:center}
+    .card{
+      width:54px;height:78px;background:#fff;color:#111;border-radius:7px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;font-size:16px;
+      box-shadow:0 3px 8px #0006;border:1px solid #ddd;
+    }
+    .card.redcard{color:#c62828}
+    .card.back{
+      background:repeating-linear-gradient(45deg,#1a237e 0 5px,#283593 5px 10px);
+      color:#fff;border:3px solid #5c6bc0;font-size:20px;
+    }
+  </style>
+
+  <div class="pk-wrap">
+    <div class="pk-table">
+      <!-- ORTAK KARTLAR + POT -->
+      <div class="pk-community">
+        <div class="pk-label">♠ TEXAS HOLD'EM ♠</div>
+        <div class="pk-cards" style="min-height:84px">`;
+
+  if (g.phase === "bet" || !(g.community || []).length) {
+    // Boş masa / henüz flop yok
+    for (let i = 0; i < 5; i++) h += `<div class="card back" style="opacity:.35">🂠</div>`;
+  } else {
+    h += (g.community || []).map(c => cardHTML(c)).join("");
+    // Kalan kapalı yerler
+    const left = 5 - (g.community || []).length;
+    for (let i = 0; i < left; i++) h += `<div class="card back" style="opacity:.3">🂠</div>`;
   }
+
+  h += `</div>
+        <div class="pk-pot">POT: ${g.pot || 0} ₺</div>
+        <div class="pk-info">${(g.phase || "").toUpperCase()}${g.currentBet ? " · Bahis: " + g.currentBet + "₺" : ""}</div>
+      </div>
+
+      <div class="pk-msg">${g.message || ""}</div>
+
+      <!-- KOLTUKLAR -->
+      <div class="pk-seats">`;
+
+  // Rakip
+  h += `<div class="pk-seat ${otherData.fold ? "fold" : ""}">
+    <div class="pk-name">${d.players?.[otherNum]?.name || "Rakip"}</div>
+    <div class="pk-cards">`;
+  if (g.phase === "bet") {
+    h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  } else if (g.phase === "end") {
+    h += (otherData.hole || []).map(c => cardHTML(c)).join("") || `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  } else {
+    h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  }
+  h += `</div>
+    <div class="pk-info">Çip: ${otherData.chips || 0}₺ ${otherData.fold ? "· FOLD" : ""}</div>
+    ${(otherData.bet || 0) > 0 ? `<div class="pk-chip">${otherData.bet}₺</div>` : ""}
+  </div>`;
+
+  // Sen
+  h += `<div class="pk-seat me ${myData.fold ? "fold" : ""}">
+    <div class="pk-name">★ SEN ★</div>
+    <div class="pk-cards">`;
+  if (g.phase === "bet") {
+    h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  } else {
+    h += (myData.hole || []).map(c => cardHTML(c)).join("") || `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  }
+  h += `</div>
+    <div class="pk-info">Çip: ${myData.chips || 0}₺ ${myData.fold ? "· FOLD" : ""}</div>
+    ${(myData.bet || 0) > 0 ? `<div class="pk-chip">${myData.bet}₺</div>` : ""}
+  </div>`;
+
+  h += `</div></div>`; // seats + table
+
+  // Kontroller
+  h += `<div class="pk-controls">`;
+
+  if (g.phase === "bet") {
+    const myChips = myData.chips || 0;
+    h += `<div class="info">Paran: <b>${d.players?.[playerNumber]?.money || 0}₺</b></div>`;
+    if (!myChips) {
+      h += `<div class="btn-row">
+        <input type="number" id="pkBet" value="100" min="20" style="width:90px">
+        <button class="gold" data-pk-buyin>Buy-in Koy</button>
+      </div>`;
+    } else {
+      h += `<div class="info" style="color:#4ade80">Buy-in alındı (${myChips}₺) — rakip bekleniyor…</div>`;
+    }
+  } else if (g.phase !== "end" && g.turn === playerNumber && !myData.fold) {
+    h += `<div class="btn-row">
+      <button class="red" data-pk-fold>Fold</button>`;
+    if ((myData.bet || 0) === (g.currentBet || 0)) {
+      h += `<button class="blue" data-pk-check>Check</button>`;
+    } else {
+      h += `<button data-pk-call>Call</button>`;
+    }
+    h += `
+      <input type="number" id="raiseIn" value="${(g.currentBet || 0) + 50}" style="width:80px">
+      <button class="gold" data-pk-raise>Raise</button>
+    </div>`;
+  } else if (g.phase !== "end") {
+    h += `<p style="color:#aaa;font-size:14px">Sıra: Oyuncu ${(g.turn || 0) + 1}</p>`;
+  }
+
+  if (g.phase === "end") {
+    h += `<div class="btn-row"><button data-pk-close>Masaya Dön</button></div>`;
+  }
+
+  h += `</div></div>`; // controls + wrap
+
+  $("modalContent").innerHTML = h;
+  $("modal").classList.remove("hidden");
+
+  // Buton bağlama (global onclick hatası olmasın)
+  const buyin = $("modalContent").querySelector("[data-pk-buyin]");
+  if (buyin) buyin.onclick = () => window.pkPlaceBet && window.pkPlaceBet();
+
+  const fold = $("modalContent").querySelector("[data-pk-fold]");
+  if (fold) fold.onclick = () => window.pkAct && window.pkAct("fold");
+
+  const check = $("modalContent").querySelector("[data-pk-check]");
+  if (check) check.onclick = () => window.pkAct && window.pkAct("check");
+
+  const call = $("modalContent").querySelector("[data-pk-call]");
+  if (call) call.onclick = () => window.pkAct && window.pkAct("call");
+
+  const raise = $("modalContent").querySelector("[data-pk-raise]");
+  if (raise) raise.onclick = () => window.pkRaise && window.pkRaise();
+
+  const close = $("modalContent").querySelector("[data-pk-close]");
+  if (close) close.onclick = () => window.closeGame && window.closeGame();
+}
   if(g.phase==="end")h+=`<div class="btn-row"><button onclick="closeGame()">Masaya Dön</button></div>`;
   $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
 }
