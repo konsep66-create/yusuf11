@@ -686,24 +686,26 @@ function renderBJ(g, d) {
   }
 
   h += `</div></div>`; // controls + wrap
+  
 $("modalContent").innerHTML = h;
-$("modal").classList.remove("hidden");
+  $("modal").classList.remove("hidden");
 
-const betBtn = $("modalContent").querySelector("[data-bj-bet]");
-if (betBtn) betBtn.onclick = () => window.bjPlaceBet && window.bjPlaceBet();
+  const betBtn = $("modalContent").querySelector("[data-bj-bet]");
+  if (betBtn) betBtn.onclick = () => window.bjPlaceBet && window.bjPlaceBet();
 
-const hitBtn = $("modalContent").querySelector("[data-bj-hit]");
-if (hitBtn) hitBtn.onclick = () => window.bjAct && window.bjAct("hit");
+  const hitBtn = $("modalContent").querySelector("[data-bj-hit]");
+  if (hitBtn) hitBtn.onclick = () => window.bjAct && window.bjAct("hit");
 
-const standBtn = $("modalContent").querySelector("[data-bj-stand]");
-if (standBtn) standBtn.onclick = () => window.bjAct && window.bjAct("stand");
+  const standBtn = $("modalContent").querySelector("[data-bj-stand]");
+  if (standBtn) standBtn.onclick = () => window.bjAct && window.bjAct("stand");
 
-const doubleBtn = $("modalContent").querySelector("[data-bj-double]");
-if (doubleBtn) doubleBtn.onclick = () => window.bjAct && window.bjAct("double");
+  const doubleBtn = $("modalContent").querySelector("[data-bj-double]");
+  if (doubleBtn) doubleBtn.onclick = () => window.bjAct && window.bjAct("double");
 
-const closeBtn = $("modalContent").querySelector("[data-bj-close]");
-if (closeBtn) closeBtn.onclick = () => window.closeGame && window.closeGame();
-}
+  const closeBtn = $("modalContent").querySelector("[data-bj-close]");
+  if (closeBtn) closeBtn.onclick = () => window.closeGame && window.closeGame();
+}   // ← renderBJ burada BİTER (sadece bir tane })
+  
 window.bjPlaceBet = async () => {
   const bet = Math.max(10, Number(document.getElementById("bjBet")?.value || 50));
   const key = playerNumber === 0 ? "p0" : "p1";
