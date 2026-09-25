@@ -631,7 +631,11 @@ function renderBJ(g, d) {
       <div class="bj-cards">`;
 
     if (g.phase === "bet") {
-      h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+     if (g.phase === "end") {
+  h += `<div class="btn-row" style="margin-top:14px">
+    <button data-bj-close>Masaya Dön</button>
+  </div>`;
+}
     } else if (hand.length) {
       if (showCards) {
         h += hand.map(c => cardHTML(c)).join("");
@@ -662,16 +666,16 @@ function renderBJ(g, d) {
     if (!myBet) {
       h += `<div class="btn-row">
         <input type="number" id="bjBet" value="50" min="10" style="width:90px">
-       <button class="gold" onclick="window.bjPlaceBet()">🎰 Bahis Koy</button>
+       <button class="gold" data-bj-bet>🎰 Bahis Koy</button>
       </div>`;
     } else {
       h += `<div class="info" style="color:#4ade80">Bahsin alındı (${myBet}₺) — rakip bekleniyor…</div>`;
     }
   } else if (g.phase === "play" && g.turn === playerNumber && !g.done?.[key]) {
     h += `<div class="btn-row">
-      <button onclick="window.bjAct('hit')">🃏 Kart Çek</button>
-<button class="blue" onclick="window.bjAct('stand')">✋ Kal</button>
-<button class="gold" onclick="window.bjAct('double')">💰 Double</button>
+      <button data-bj-hit>🃏 Kart Çek</button>
+<button class="blue" data-bj-stand>✋ Kal</button>
+<button class="gold" data-bj-double>💰 Double</button>
     </div>`;
   } else if (g.phase === "play") {
     h += `<p style="color:#aaa;font-size:14px">Sıra: Oyuncu ${(g.turn || 0) + 1}</p>`;
@@ -682,7 +686,24 @@ function renderBJ(g, d) {
   }
 
   h += `</div></div>`; // controls + wrap
+$("modalContent").innerHTML = h;
+$("modal").classList.remove("hidden");
 
+const betBtn = $("modalContent").querySelector("[data-bj-bet]");
+if (betBtn) betBtn.onclick = () => window.bjPlaceBet && window.bjPlaceBet();
+
+const hitBtn = $("modalContent").querySelector("[data-bj-hit]");
+if (hitBtn) hitBtn.onclick = () => window.bjAct && window.bjAct("hit");
+
+const standBtn = $("modalContent").querySelector("[data-bj-stand]");
+if (standBtn) standBtn.onclick = () => window.bjAct && window.bjAct("stand");
+
+const doubleBtn = $("modalContent").querySelector("[data-bj-double]");
+if (doubleBtn) doubleBtn.onclick = () => window.bjAct && window.bjAct("double");
+
+const closeBtn = $("modalContent").querySelector("[data-bj-close]");
+if (closeBtn) closeBtn.onclick = () => window.closeGame && window.closeGame();
+}
   $("modalContent").innerHTML = h;
   $("modal").classList.remove("hidden");
 }
@@ -902,7 +923,19 @@ window.pkRaise=async()=>{
 };
 
 function renderCasino(g,d){if(g.type==="blackjack")renderBJ(g,d);else if(g.type==="poker")renderPoker(g,d)}
-window.closeGame=async()=>{await update(path(),{game:null,message:"Masaya dönüldü"});$("modal").classList.add("hidden")}
+window.closeGame = async () => {
+  try {
+    await update(path(), {
+      game: null,
+      message: "Masaya dönüldü"
+    });
+    const modal = document.getElementById("modal");
+    if (modal) modal.classList.add("hidden");
+  } catch (e) {
+    console.error(e);
+    alert("Kapatma hatası: " + e.message);
+  }
+};
 
 async function leaveGame(){
   if(!roomCode)return;
