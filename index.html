@@ -1025,25 +1025,25 @@ function renderPoker(g, d) {
   const close = $("modalContent").querySelector("[data-pk-close]");
   if (close) close.onclick = () => window.closeGame && window.closeGame();
 }
-  if(g.phase==="end")h+=`<div class="btn-row"><button onclick="closeGame()">Masaya Dön</button></div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-}
-
 window.pkPlaceBet=async()=>{
   const amt=Math.max(20,Number($("pkBet")?.value||100));
-  await runTransaction(path(),d=>
-    if(!d?.game||d.game.type!=="poker"||d.game.phase!=="bet")return;
-    const g=d.game,p=d.players[playerNumber];
-    if(!p||p.money<amt||g.players[playerNumber].chips>0)return;
-    p.money-=amt;g.players[playerNumber].chips=amt;
-    if(g.players[0].chips>0&&g.players[1].chips>0){
-      g.phase="preflop";
-      g.players[0].hole=[g.deck.pop(),g.deck.pop()];
-      g.players[1].hole=[g.deck.pop(),g.deck.pop()];
-      g.turn=0;g.message="Preflop";
-    }else g.message=`Oyuncu ${playerNumber+1} buy-in koydu`;
-    return d;
-  });
+  await runTransaction(path(), d => {
+  if (!d?.game || d.game.type !== "poker" || d.game.phase !== "bet") return;
+  const g = d.game, p = d.players[playerNumber];
+  if (!p || p.money < amt || g.players[playerNumber].chips > 0) return;
+  p.money -= amt;
+  g.players[playerNumber].chips = amt;
+  if (g.players[0].chips > 0 && g.players[1].chips > 0) {
+    g.phase = "preflop";
+    g.players[0].hole = [g.deck.pop(), g.deck.pop()];
+    g.players[1].hole = [g.deck.pop(), g.deck.pop()];
+    g.turn = 0;
+    g.message = "Preflop";
+  } else {
+    g.message = `Oyuncu ${playerNumber + 1} buy-in koydu`;
+  }
+  return d;
+});
 };
 window.pkAct=async(act)=>{
   await runTransaction(path(),d=>{
