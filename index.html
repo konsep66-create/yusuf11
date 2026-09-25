@@ -1031,7 +1031,7 @@ function renderPoker(g, d) {
 
 window.pkPlaceBet=async()=>{
   const amt=Math.max(20,Number($("pkBet")?.value||100));
-  await runTransaction(path(),d=>{
+  await runTransaction(path(),d=>
     if(!d?.game||d.game.type!=="poker"||d.game.phase!=="bet")return;
     const g=d.game,p=d.players[playerNumber];
     if(!p||p.money<amt||g.players[playerNumber].chips>0)return;
