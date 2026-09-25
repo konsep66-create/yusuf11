@@ -662,16 +662,16 @@ function renderBJ(g, d) {
     if (!myBet) {
       h += `<div class="btn-row">
         <input type="number" id="bjBet" value="50" min="10" style="width:90px">
-        <button class="gold" onclick="bjPlaceBet()">🎰 Bahis Koy</button>
+       <button class="gold" onclick="window.bjPlaceBet()">🎰 Bahis Koy</button>
       </div>`;
     } else {
       h += `<div class="info" style="color:#4ade80">Bahsin alındı (${myBet}₺) — rakip bekleniyor…</div>`;
     }
   } else if (g.phase === "play" && g.turn === playerNumber && !g.done?.[key]) {
     h += `<div class="btn-row">
-      <button onclick="bjAct('hit')">🃏 Kart Çek</button>
-      <button class="blue" onclick="bjAct('stand')">✋ Kal</button>
-      <button class="gold" onclick="bjAct('double')">💰 Double</button>
+      <button onclick="window.bjAct('hit')">🃏 Kart Çek</button>
+<button class="blue" onclick="window.bjAct('stand')">✋ Kal</button>
+<button class="gold" onclick="window.bjAct('double')">💰 Double</button>
     </div>`;
   } else if (g.phase === "play") {
     h += `<p style="color:#aaa;font-size:14px">Sıra: Oyuncu ${(g.turn || 0) + 1}</p>`;
@@ -687,61 +687,112 @@ function renderBJ(g, d) {
   $("modal").classList.remove("hidden");
 }
 
+window.bjPlaceBet = async () => {
+  const bet = Math.max(10, Number(document.getElementById("bjBet")?.value || 50));
+  const key = playerNumber === 0 ? "p0" : "p1";
+
+  try {
+    const snap = await get(path());
+    const d = snap.val();
+    if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "bet") {
+      alert("Oyun bahis aşamasında değil");
+      return;
+    }
+
+    const p = d.players?.[playerNumber];
+    if (!p || p.money < bet) {
+      alert("Yetersiz para");
+      return;
+    }
+
+    const bets = (d.game.bets && typeof d.game.bets === "object")
+      ? { ...d.game.bets }
+      : { p0: 0, p1: 0 };
+
+    if ((bets[key] || 0) > 0) {
+      alert("Zaten bahis koydun");
+      return;
+    }
+
+    bets[key] = bet;
+
+    await update(ref(db, "rooms/" + roomCode + "/game"), {
+      bets: bets,
+      message: `Oyuncu ${playerNumber + 1} ${bet}₺ bahis koydu`
+    });
+
+    if ((bets.p0 || 0) > 0 && (bets.p1 || 0) > 0) {
+      let deck = Array.isArray(d.game.deck) && d.game.deck.length > 20
+        ? [...d.game.deck]
+        : makeDeck();
+
+      const dealer = [deck.pop(), deck.pop()];
+      const hands = {
+        p0: [deck.pop(), deck.pop()],
+        p1: [deck.pop(), deck.pop()]
+      };
+
+      await update(ref(db, "rooms/" + roomCode + "/game"), {
+        phase: "play",
+        deck: deck,
+        dealer: dealer,
+        hands: hands,
+        done: { p0: false, p1: false },
+        turn: 0,
+        message: "Kartlar dağıtıldı — Oyuncu 1'in sırası"
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    alert("Bahis hatası: " + e.message);
+  }
+};
+
 window.bjAct = async (act) => {
-  await runTransaction(path(), d => {
-    if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "play" || d.game.turn !== playerNumber) return;
+  const key = playerNumber === 0 ? "p0" : "p1";
+  const otherKey = playerNumber === 0 ? "p1" : "p0";
 
-    const g = d.game;
+  try {
+    const snap = await get(path());
+    let d = snap.val();
+    if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "play") return;
+    if (d.game.turn !== playerNumber) return;
 
-    // Eksik alanları her zaman oluştur (Firebase bazen siliyor)
-    if (!g.bets || typeof g.bets !== "object") g.bets = { "0": 0, "1": 0 };
-    if (!g.hands || typeof g.hands !== "object") g.hands = { "0": [], "1": [] };
-    if (!g.done || typeof g.done !== "object") g.done = { "0": false, "1": false };
+    const g = { ...d.game };
+    if (!g.hands) g.hands = { p0: [], p1: [] };
+    if (!g.bets) g.bets = { p0: 0, p1: 0 };
+    if (!g.done) g.done = { p0: false, p1: false };
     if (!Array.isArray(g.deck)) g.deck = makeDeck();
 
-    const key = String(playerNumber); // "0" veya "1"
-    const h = g.hands[key] || g.hands[playerNumber];
-    if (!h) return;
+    const h = [...(g.hands[key] || [])];
+    if (!h.length && act !== "hit") return;
 
     if (act === "hit") {
       h.push(g.deck.pop());
-      if (hVal(h) >= 21) {
-        g.done[key] = true;
-        g.done[playerNumber] = true;
-      }
+      if (hVal(h) >= 21) g.done[key] = true;
     } else if (act === "stand") {
       g.done[key] = true;
-      g.done[playerNumber] = true;
     } else if (act === "double") {
       h.push(g.deck.pop());
-      g.bets[key] = (g.bets[key] || g.bets[playerNumber] || 0) * 2;
-      g.bets[playerNumber] = g.bets[key];
+      g.bets[key] = (g.bets[key] || 0) * 2;
       g.done[key] = true;
-      g.done[playerNumber] = true;
     } else return;
 
-    // El bitti mi?
-    if (g.done[key] || g.done[playerNumber]) {
-      const next = playerNumber === 0 ? 1 : 0;
-      const nextKey = String(next);
+    g.hands[key] = h;
 
-      if (!(g.done[nextKey] || g.done[next])) {
-        g.turn = next;
-        g.message = `Oyuncu ${next + 1}'in sırası`;
+    if (g.done[key]) {
+      if (!g.done[otherKey]) {
+        g.turn = playerNumber === 0 ? 1 : 0;
+        g.message = `Oyuncu ${g.turn + 1}'in sırası`;
       } else {
-        // Kurpiyer oynar
         while (hVal(g.dealer) < 17) g.dealer.push(g.deck.pop());
         g.phase = "end";
-
         const dv = hVal(g.dealer);
         let msg = "";
-        [0, 1].forEach(i => {
+        ["p0", "p1"].forEach((k, i) => {
           if (!d.players[i]) return;
-          const ik = String(i);
-          const hand = g.hands[ik] || g.hands[i] || [];
-          const pv = hVal(hand);
-          const bet = g.bets[ik] || g.bets[i] || 0;
-
+          const pv = hVal(g.hands[k] || []);
+          const bet = g.bets[k] || 0;
           if (pv > 21) {
             d.players[i].money -= bet;
             msg += ` P${i + 1} battı (-${bet}).`;
@@ -758,8 +809,16 @@ window.bjAct = async (act) => {
         g.message = "Bitti." + msg;
       }
     }
-    return d;
-  });
+
+    await update(ref(db, "rooms/" + roomCode), {
+      game: g,
+      players: d.players,
+      message: g.message
+    });
+  } catch (e) {
+    console.error(e);
+    alert("Aksiyon hatası: " + e.message);
+  }
 };
 
 /* ===== POKER ===== */
