@@ -507,7 +507,19 @@ function cVal(c){return c.r==="A"?11:["K","Q","J"].includes(c.r)?10:+c.r}
 function hVal(h){let n=0,a=0;(h||[]).forEach(c=>{n+=cVal(c);if(c.r==="A")a++});while(n>21&&a){n-=10;a--}return n}
 function cardHTML(c,back=false){if(back)return`<div class="card back">🂠</div>`;const red=["♥","♦"].includes(c.s)?"redcard":"";return`<div class="card ${red}">${c.r}${c.s}</div>`}
 
-function bjInit(){return{type:"blackjack",phase:"bet",deck:makeDeck(),dealer:[],hands:{0:[],1:[]},bets:{0:0,1:0},done:{},turn:0,message:"Bahis koyun (min 10₺)"}}
+function bjInit(){
+  return {
+    type: "blackjack",
+    phase: "bet",
+    deck: makeDeck(),
+    dealer: [],
+    hands: { "0": [], "1": [] },
+    bets: { "0": 0, "1": 0 },
+    done: { "0": false, "1": false },
+    turn: 0,
+    message: "Bahis koyun (min 10₺)"
+  };
+}
 
 function renderBJ(g,d){
   let h=`<h2>🃏 BLACKJACK — Kurpiyere karşı</h2><div class="info">${g.message}</div>`;
@@ -544,29 +556,49 @@ function renderBJ(g,d){
   $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
 }
 
-window.bjPlaceBet=async()=>{
-  const bet=Math.max(10,Number($("bjBet")?.value||50));
-  try{
-    await runTransaction(path(),d=>{
-      if(!d?.game||d.game.type!=="blackjack"||d.game.phase!=="bet")return;
-      const g=d.game,p=d.players[playerNumber];
-      if(!p||p.money<bet)return;
-      if(g.bets[playerNumber]>0)return; // zaten koydu
-      g.bets[playerNumber]=bet;
-      g.message=`Oyuncu ${playerNumber+1} ${bet}₺ bahis koydu`;
-      // İkisi de koyduysa dağıt
-      if((g.bets[0]||0)>0&&(g.bets[1]||0)>0){
-        if(!g.deck||g.deck.length<10)g.deck=makeDeck();
-        g.phase="play";
-        g.dealer=[g.deck.pop(),g.deck.pop()];
-        g.hands[0]=[g.deck.pop(),g.deck.pop()];
-        g.hands[1]=[g.deck.pop(),g.deck.pop()];
-        g.turn=0;g.done={0:false,1:false};
-        g.message="Kartlar dağıtıldı — Oyuncu 1'in sırası";
+window.bjPlaceBet = async () => {
+  const bet = Math.max(10, Number($("bjBet")?.value || 50));
+  try {
+    await runTransaction(path(), d => {
+      if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "bet") return;
+
+      const g = d.game;
+      const p = d.players?.[playerNumber];
+      if (!p || p.money < bet) return;
+
+      // Firebase bazen bu alanları siler → her zaman oluştur
+   if (!g.bets) g.bets = { "0": 0, "1": 0 };
+if (!g.hands) g.hands = { "0": [], "1": [] };
+if (!g.done) g.done = { "0": false, "1": false };
+      if (!Array.isArray(g.deck) || g.deck.length < 15) g.deck = makeDeck();
+
+      const key = String(playerNumber); // "0" veya "1"
+      if ((g.bets[key] || 0) > 0) return; // zaten bahis koymuş
+
+      g.bets[key] = bet;
+      g.message = `Oyuncu ${playerNumber + 1} ${bet}₺ bahis koydu`;
+
+      const b0 = g.bets["0"] || g.bets[0] || 0;
+      const b1 = g.bets["1"] || g.bets[1] || 0;
+
+      // İkisi de bahis koyduysa kartları dağıt
+      if (b0 > 0 && b1 > 0) {
+        g.phase = "play";
+        g.dealer = [g.deck.pop(), g.deck.pop()];
+        g.hands["0"] = [g.deck.pop(), g.deck.pop()];
+        g.hands["1"] = [g.deck.pop(), g.deck.pop()];
+        g.hands[0] = g.hands["0"];
+        g.hands[1] = g.hands["1"];
+        g.turn = 0;
+        g.done = { "0": false, "1": false, 0: false, 1: false };
+        g.message = "Kartlar dağıtıldı — Oyuncu 1'in sırası";
       }
       return d;
     });
-  }catch(e){console.error(e);alert("Bahis hatası: "+e.message)}
+  } catch (e) {
+    console.error(e);
+    alert("Bahis hatası: " + e.message);
+  }
 };
 
 window.bjAct=async(act)=>{
