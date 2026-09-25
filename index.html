@@ -704,10 +704,6 @@ if (doubleBtn) doubleBtn.onclick = () => window.bjAct && window.bjAct("double");
 const closeBtn = $("modalContent").querySelector("[data-bj-close]");
 if (closeBtn) closeBtn.onclick = () => window.closeGame && window.closeGame();
 }
-  $("modalContent").innerHTML = h;
-  $("modal").classList.remove("hidden");
-}
-
 window.bjPlaceBet = async () => {
   const bet = Math.max(10, Number(document.getElementById("bjBet")?.value || 50));
   const key = playerNumber === 0 ? "p0" : "p1";
