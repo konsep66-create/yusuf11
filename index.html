@@ -1007,10 +1007,6 @@ function renderPoker(g, d) {
 
   h += `</div></div>`; // controls + wrap
 
-  $("modalContent").innerHTML = h;
-  $("modal").classList.remove("hidden");
-
-  // Buton bağlama (global onclick hatası olmasın)
   const buyin = $("modalContent").querySelector("[data-pk-buyin]");
   if (buyin) buyin.onclick = () => window.pkPlaceBet && window.pkPlaceBet();
 
