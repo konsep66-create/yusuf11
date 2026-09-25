@@ -601,31 +601,75 @@ if (!g.done) g.done = { "0": false, "1": false };
   }
 };
 
-window.bjAct=async(act)=>{
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.type!=="blackjack"||d.game.phase!=="play"||d.game.turn!==playerNumber)return;
-    const g=d.game,h=g.hands[playerNumber];
-    if(!h)return;
-    if(act==="hit"){h.push(g.deck.pop());if(hVal(h)>=21)g.done[playerNumber]=true}
-    else if(act==="stand")g.done[playerNumber]=true;
-    else if(act==="double"){h.push(g.deck.pop());g.bets[playerNumber]*=2;g.done[playerNumber]=true}
-    else return;
-    if(g.done[playerNumber]){
-      const next=playerNumber===0?1:0;
-      if(!g.done[next]){g.turn=next;g.message=`Oyuncu ${next+1}'in sırası`}
-      else{
-        while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
-        g.phase="end";
-        const dv=hVal(g.dealer);let msg="";
-        [0,1].forEach(i=>{
-          if(!d.players[i])return;
-          const pv=hVal(g.hands[i]),bet=g.bets[i]||0;
-          if(pv>21){d.players[i].money-=bet;msg+=` P${i+1} battı (-${bet}).`}
-          else if(dv>21||pv>dv){d.players[i].money+=bet;msg+=` P${i+1} kazandı (+${bet}).`}
-          else if(pv<dv){d.players[i].money-=bet;msg+=` P${i+1} kaybetti (-${bet}).`}
-          else msg+=` P${i+1} berabere.`;
+window.bjAct = async (act) => {
+  await runTransaction(path(), d => {
+    if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "play" || d.game.turn !== playerNumber) return;
+
+    const g = d.game;
+
+    // Eksik alanları her zaman oluştur (Firebase bazen siliyor)
+    if (!g.bets || typeof g.bets !== "object") g.bets = { "0": 0, "1": 0 };
+    if (!g.hands || typeof g.hands !== "object") g.hands = { "0": [], "1": [] };
+    if (!g.done || typeof g.done !== "object") g.done = { "0": false, "1": false };
+    if (!Array.isArray(g.deck)) g.deck = makeDeck();
+
+    const key = String(playerNumber); // "0" veya "1"
+    const h = g.hands[key] || g.hands[playerNumber];
+    if (!h) return;
+
+    if (act === "hit") {
+      h.push(g.deck.pop());
+      if (hVal(h) >= 21) {
+        g.done[key] = true;
+        g.done[playerNumber] = true;
+      }
+    } else if (act === "stand") {
+      g.done[key] = true;
+      g.done[playerNumber] = true;
+    } else if (act === "double") {
+      h.push(g.deck.pop());
+      g.bets[key] = (g.bets[key] || g.bets[playerNumber] || 0) * 2;
+      g.bets[playerNumber] = g.bets[key];
+      g.done[key] = true;
+      g.done[playerNumber] = true;
+    } else return;
+
+    // El bitti mi?
+    if (g.done[key] || g.done[playerNumber]) {
+      const next = playerNumber === 0 ? 1 : 0;
+      const nextKey = String(next);
+
+      if (!(g.done[nextKey] || g.done[next])) {
+        g.turn = next;
+        g.message = `Oyuncu ${next + 1}'in sırası`;
+      } else {
+        // Kurpiyer oynar
+        while (hVal(g.dealer) < 17) g.dealer.push(g.deck.pop());
+        g.phase = "end";
+
+        const dv = hVal(g.dealer);
+        let msg = "";
+        [0, 1].forEach(i => {
+          if (!d.players[i]) return;
+          const ik = String(i);
+          const hand = g.hands[ik] || g.hands[i] || [];
+          const pv = hVal(hand);
+          const bet = g.bets[ik] || g.bets[i] || 0;
+
+          if (pv > 21) {
+            d.players[i].money -= bet;
+            msg += ` P${i + 1} battı (-${bet}).`;
+          } else if (dv > 21 || pv > dv) {
+            d.players[i].money += bet;
+            msg += ` P${i + 1} kazandı (+${bet}).`;
+          } else if (pv < dv) {
+            d.players[i].money -= bet;
+            msg += ` P${i + 1} kaybetti (-${bet}).`;
+          } else {
+            msg += ` P${i + 1} berabere.`;
+          }
         });
-        g.message="Bitti."+msg;
+        g.message = "Bitti." + msg;
       }
     }
     return d;
