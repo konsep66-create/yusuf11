@@ -521,85 +521,171 @@ function bjInit(){
   };
 }
 
-function renderBJ(g,d){
-  let h=`<h2>🃏 BLACKJACK — Kurpiyere karşı</h2><div class="info">${g.message}</div>`;
-  if(g.phase==="bet"){
-    const myBet=g.bets[playerNumber]||0;
-    h+=`<div class="info">Paran: ${d.players[playerNumber]?.money||0}₺ | Senin bahsin: ${myBet||"yok"}</div>`;
-    if(!myBet){
-      h+=`<div class="btn-row">
-        <input type="number" id="bjBet" value="50" min="10">
-        <button class="gold" onclick="bjPlaceBet()">Bahis Koy</button>
-      </div>`;
-    }else h+=`<div class="info">Bahsin alındı, diğer oyuncu bekleniyor...</div>`;
-    h+=`<div class="info">P1 bahis: ${g.bets[0]||"-"} | P2 bahis: ${g.bets[1]||"-"}</div>`;
-  }else{
-    h+=`<h3>Kurpiyer ${g.phase==="end"?"("+hVal(g.dealer)+")":""}</h3>
-      <div class="cards">${(g.dealer||[]).map((c,i)=>cardHTML(c,g.phase==="play"&&i===1)).join("")}</div>`;
-    // Her iki oyuncunun kartları
-    [0,1].forEach(i=>{
-      if(!d.players[i])return;
-      const hand=g.hands[i]||[];
-      const show=i===playerNumber||g.phase==="end";
-      h+=`<h3>${d.players[i].name} ${show?"("+hVal(hand)+")":""} — Bahis: ${g.bets[i]}₺</h3>
-        <div class="cards">${show?hand.map(c=>cardHTML(c)).join(""):hand.map(()=>cardHTML(null,true)).join("")}</div>`;
-    });
-    if(g.phase==="play"&&g.turn===playerNumber&&!g.done[playerNumber]){
-      h+=`<div class="btn-row">
-        <button onclick="bjAct('hit')">🃏 Kart</button>
-        <button class="blue" onclick="bjAct('stand')">✋ Kal</button>
-        <button class="gold" onclick="bjAct('double')">💰 Double</button>
-      </div>`;
-    }else if(g.phase==="play")h+=`<p>Sıra: Oyuncu ${(g.turn||0)+1}</p>`;
+function renderBJ(g, d) {
+  const key = playerNumber === 0 ? "p0" : "p1";
+
+  let h = `
+  <style>
+    .bj-wrap{max-width:640px;margin:0 auto}
+    .bj-table{
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, #0f7a3a 0%, #0a5c2c 45%, #064020 100%);
+      border:10px solid #4a3728;
+      border-radius:200px 200px 40px 40px;
+      padding:28px 24px 36px;
+      box-shadow:
+        inset 0 0 60px #0005,
+        0 10px 30px #000a,
+        0 0 0 3px #2a1f14;
+      position:relative;
+    }
+    .bj-table::before{
+      content:"";position:absolute;inset:12px;border:2px dashed #ffffff18;
+      border-radius:180px 180px 30px 30px;pointer-events:none;
+    }
+    .bj-dealer{text-align:center;margin-bottom:8px;position:relative;z-index:1}
+    .bj-tag{
+      display:inline-block;background:#1b5e20;color:#c8e6c9;
+      font-size:11px;letter-spacing:2px;padding:3px 14px;border-radius:20px;
+      border:1px solid #4caf5088;margin-bottom:8px;
+    }
+    .bj-msg{
+      text-align:center;color:#e8f5e9;font-size:13px;margin:10px 0 6px;
+      min-height:20px;text-shadow:0 1px 2px #000;
+    }
+    .bj-seats{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
+    .bj-seat{
+      background:linear-gradient(180deg,#0a0a0a88,#0006);
+      border:2px solid #2e7d32;border-radius:16px;padding:14px 18px;
+      min-width:170px;text-align:center;backdrop-filter:blur(4px);
+    }
+    .bj-seat.me{
+      border-color:#ffc107;
+      box-shadow:0 0 0 2px #ffc10744, 0 0 20px #ffc10733;
+    }
+    .bj-name{font-size:12px;color:#a5d6a7;letter-spacing:1px;margin-bottom:6px}
+    .bj-seat.me .bj-name{color:#ffe082;font-weight:bold}
+    .bj-score{
+      margin-top:6px;font-size:15px;color:#fff;font-weight:bold;
+      text-shadow:0 1px 3px #000;
+    }
+    .bj-chip{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:42px;height:42px;border-radius:50%;margin-top:8px;
+      background:radial-gradient(circle at 30% 30%,#ef5350,#b71c1c);
+      border:3px dashed #ffc107;color:#fff;font-weight:900;font-size:11px;
+      box-shadow:0 2px 6px #0008;
+    }
+    .bj-controls{margin-top:18px;text-align:center}
+    .bj-cards{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:88px}
+    .card{
+      width:58px;height:84px;background:#fff;color:#111;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;font-size:18px;
+      box-shadow:0 3px 8px #0006, 0 1px 0 #fff inset;
+      border:1px solid #ddd;
+    }
+    .card.redcard{color:#c62828}
+    .card.back{
+      background:repeating-linear-gradient(45deg,#1a237e 0 6px,#283593 6px 12px);
+      color:#fff;border:3px solid #5c6bc0;font-size:22px;
+    }
+  </style>
+
+  <div class="bj-wrap">
+    <div class="bj-table">
+      <!-- KURPİYER -->
+      <div class="bj-dealer">
+        <div class="bj-tag">♠ KURPİYER ♠</div>
+        <div class="bj-cards">`;
+
+  if (g.phase === "bet") {
+    h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+  } else {
+    h += (g.dealer || []).map((c, i) =>
+      cardHTML(c, g.phase === "play" && i === 1)
+    ).join("");
   }
-  if(g.phase==="end")h+=`<div class="btn-row"><button onclick="closeGame()">Masaya Dön</button></div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-}
 
-window.bjPlaceBet = async () => {
-  const bet = Math.max(10, Number($("bjBet")?.value || 50));
-  try {
-    await runTransaction(path(), d => {
-      if (!d?.game || d.game.type !== "blackjack" || d.game.phase !== "bet") return;
+  h += `</div>
+        <div class="bj-score" style="font-size:13px;color:#c8e6c9;font-weight:normal;margin-top:4px">
+          ${g.phase === "play" ? "Puan: ?" : (g.phase === "end" ? "Puan: " + hVal(g.dealer || []) : "")}
+        </div>
+      </div>
 
-      const g = d.game;
-      const p = d.players?.[playerNumber];
-      if (!p || p.money < bet) return;
+      <div class="bj-msg">${g.message || ""}</div>
 
-      // Firebase bazen bu alanları siler → her zaman oluştur
-   if (!g.bets) g.bets = { "0": 0, "1": 0 };
-if (!g.hands) g.hands = { "0": [], "1": [] };
-if (!g.done) g.done = { "0": false, "1": false };
-      if (!Array.isArray(g.deck) || g.deck.length < 15) g.deck = makeDeck();
+      <!-- OYUNCULAR -->
+      <div class="bj-seats">`;
 
-      const key = String(playerNumber); // "0" veya "1"
-      if ((g.bets[key] || 0) > 0) return; // zaten bahis koymuş
+  [0, 1].forEach(i => {
+    if (!d.players?.[i]) return;
+    const k = i === 0 ? "p0" : "p1";
+    const isMe = i === playerNumber;
+    const hand = g.hands?.[k] || [];
+    const bet = g.bets?.[k] || 0;
+    const showCards = isMe || g.phase === "end";
 
-      g.bets[key] = bet;
-      g.message = `Oyuncu ${playerNumber + 1} ${bet}₺ bahis koydu`;
+    h += `<div class="bj-seat ${isMe ? "me" : ""}">
+      <div class="bj-name">${isMe ? "★ SEN ★" : (d.players[i].name || "Oyuncu " + (i + 1))}</div>
+      <div class="bj-cards">`;
 
-      const b0 = g.bets["0"] || g.bets[0] || 0;
-      const b1 = g.bets["1"] || g.bets[1] || 0;
-
-      // İkisi de bahis koyduysa kartları dağıt
-      if (b0 > 0 && b1 > 0) {
-        g.phase = "play";
-        g.dealer = [g.deck.pop(), g.deck.pop()];
-        g.hands["0"] = [g.deck.pop(), g.deck.pop()];
-        g.hands["1"] = [g.deck.pop(), g.deck.pop()];
-        g.hands[0] = g.hands["0"];
-        g.hands[1] = g.hands["1"];
-        g.turn = 0;
-        g.done = { "0": false, "1": false, 0: false, 1: false };
-        g.message = "Kartlar dağıtıldı — Oyuncu 1'in sırası";
+    if (g.phase === "bet") {
+      h += `<div class="card back">🂠</div><div class="card back">🂠</div>`;
+    } else if (hand.length) {
+      if (showCards) {
+        h += hand.map(c => cardHTML(c)).join("");
+      } else {
+        h += hand.map(() => `<div class="card back">🂠</div>`).join("");
       }
-      return d;
-    });
-  } catch (e) {
-    console.error(e);
-    alert("Bahis hatası: " + e.message);
+    }
+
+    h += `</div>`;
+
+    if (g.phase !== "bet" && showCards && hand.length) {
+      h += `<div class="bj-score">${hVal(hand)}</div>`;
+    }
+    if (bet > 0) {
+      h += `<div class="bj-chip">${bet}</div>`;
+    }
+    h += `</div>`;
+  });
+
+  h += `</div></div>`; // seats + table
+
+  // Kontroller
+  h += `<div class="bj-controls">`;
+
+  if (g.phase === "bet") {
+    const myBet = g.bets?.[key] || 0;
+    h += `<div class="info">Paran: <b>${d.players[playerNumber]?.money || 0}₺</b></div>`;
+    if (!myBet) {
+      h += `<div class="btn-row">
+        <input type="number" id="bjBet" value="50" min="10" style="width:90px">
+        <button class="gold" onclick="bjPlaceBet()">🎰 Bahis Koy</button>
+      </div>`;
+    } else {
+      h += `<div class="info" style="color:#4ade80">Bahsin alındı (${myBet}₺) — rakip bekleniyor…</div>`;
+    }
+  } else if (g.phase === "play" && g.turn === playerNumber && !g.done?.[key]) {
+    h += `<div class="btn-row">
+      <button onclick="bjAct('hit')">🃏 Kart Çek</button>
+      <button class="blue" onclick="bjAct('stand')">✋ Kal</button>
+      <button class="gold" onclick="bjAct('double')">💰 Double</button>
+    </div>`;
+  } else if (g.phase === "play") {
+    h += `<p style="color:#aaa;font-size:14px">Sıra: Oyuncu ${(g.turn || 0) + 1}</p>`;
   }
-};
+
+  if (g.phase === "end") {
+    h += `<div class="btn-row"><button onclick="closeGame()">Masaya Dön</button></div>`;
+  }
+
+  h += `</div></div>`; // controls + wrap
+
+  $("modalContent").innerHTML = h;
+  $("modal").classList.remove("hidden");
+}
 
 window.bjAct = async (act) => {
   await runTransaction(path(), d => {
