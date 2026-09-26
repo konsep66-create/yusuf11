@@ -3,278 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎲 Kumarhane Monopoly 3D</title>
+<title>Kumarhane Monopoly — Three.js 3D</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{
-  height:100%;
-  overflow:hidden;
-  background:
-    radial-gradient(ellipse 120% 80% at 50% 20%, #2a1810 0%, #0d0806 45%, #050303 100%);
-  color:#eee;
-  font-family:Arial,sans-serif;
-}
-body{display:flex;flex-direction:column;max-width:1920px;margin:0 auto}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#141414;border-bottom:1px solid #333;flex-shrink:0;gap:8px}
-.room-code{font-size:20px;font-weight:bold;color:#22c55e;letter-spacing:2px}
-.status-pill{font-size:14px;font-weight:bold;padding:8px 16px;border-radius:20px;background:#222;border:2px solid #444}
-.status-pill.my-turn{background:#14532d;border-color:#22c55e;color:#86efac;animation:pulse 1.2s infinite}
-.status-pill.wait{background:#1c1917;border-color:#57534e;color:#a8a29e}
-.status-pill.debt{background:#450a0a;border-color:#ef4444;color:#fca5a5}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #22c55e66}50%{box-shadow:0 0 12px 4px #22c55e44}}
-.main{flex:1;display:grid;grid-template-columns:240px 1fr 260px;gap:8px;padding:8px;min-height:0}
-.left,.right{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
-.panel{background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:10px}
-.player-card{background:#222;border-radius:8px;padding:8px;margin-bottom:6px;border:2px solid #333;transition:.2s}
-.player-card.active{border-color:#22c55e;background:#0f1f12;box-shadow:0 0 12px #22c55e33}
-.player-card.debt{border-color:#ef4444;background:#2a1010}
-.money{font-size:17px;color:#fbbf24;font-weight:bold}
-.board-area{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:0;
-  perspective:1100px;
-  perspective-origin:50% 10%;
-  overflow:visible;
-  padding:30px 10px 50px;
-  background:
-    radial-gradient(ellipse 70% 50% at 50% 70%, #1a0f0a 0%, transparent 70%),
-    linear-gradient(180deg, transparent 0%, #0a0604 100%);
-}
-  .board-area::before{
-  content:"";
-  position:absolute;
-  width:min(900px,98%);
-  height:min(280px,40%);
-  bottom:8%;
-  left:50%;
-  transform:translateX(-50%);
-  background:radial-gradient(ellipse, #3d2914 0%, #1a1008 60%, transparent 70%);
-  border-radius:50%;
-  box-shadow:0 0 60px #000c;
-  pointer-events:none;
-  z-index:0;
-}
-.board-3d{
-  position:relative;
-  z-index:1;
-  width:min(680px,92%);
-  height:min(680px,92%);
-  transform:rotateX(58deg);
-  transform-style:preserve-3d;
-  transition:transform .3s ease;
-}
-.board{
-  display:grid;
-  grid-template-columns:repeat(9,1fr);
-  grid-template-rows:repeat(9,1fr);
-  width:100%;
-  height:100%;
-  gap:2px;
-  background:linear-gradient(145deg,#2c1810,#1a0e08);
-  border:10px solid #6b4423;
-  border-radius:6px;
-  padding:5px;
-  transform-style:preserve-3d;
-  box-shadow:
-    0 2px 0 #8b5a2b,
-    0 8px 0 #4a2c14,
-    0 16px 0 #2a180c,
-    0 28px 40px #000d,
-    0 50px 80px #000a;
-}
-.cell{
-  border:1px solid #0005;
-  font-size:8px;
-  padding:2px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  text-align:center;
-  position:relative;
-  line-height:1.1;
-  border-radius:2px;
-  transform-style:preserve-3d;
-  transform:translateZ(6px);
-  box-shadow:
-    inset 0 1px 0 #ffffff22,
-    inset 0 -2px 4px #0004,
-    0 3px 0 #0006;
-}
-.cell .name{font-weight:bold;font-size:7px;text-shadow:0 1px 2px #000;position:relative;z-index:1}
-.cell .price,.cell .rent{position:relative;z-index:1}
-.cell .price{font-size:7px;color:#ddd}
-.cell .rent{font-size:7px;color:#86efac}
-.cell .owner{position:absolute;bottom:1px;right:2px;font-size:9px}
-.pieces{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;min-height:22px;transform:translateZ(16px)}
-.pieces{
-  display:flex;
-  flex-wrap:wrap;
-  gap:3px;
-  justify-content:center;
-  align-items:flex-end;
-  min-height:24px;
-  transform:translateZ(20px);
-  position:relative;
-  z-index:5;
-}
-.piece{
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  position:relative;
-  transform:translateZ(24px) rotateX(-58deg);
-  transform-style:preserve-3d;
-  box-shadow:
-    0 6px 8px #0009,
-    inset 0 3px 4px #fff4,
-    inset 0 -3px 4px #0005;
-  border:2px solid #fff8;
-  transition:transform .15s;
-}
-  .piece::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#fff6;
-}
-.piece.p0{
-  background:radial-gradient(circle at 35% 30%, #fde68a, #f59e0b 45%, #b45309 80%);
-}
-.piece.p1{
-  background:radial-gradient(circle at 35% 30%, #93c5fd, #3b82f6 45%, #1e40af 80%);
-}
-.piece.p2{
-  background:radial-gradient(circle at 35% 30%, #86efac, #22c55e 45%, #166534 80%);
-}
-.piece.moving{
-  transform:translateZ(40px) rotateX(-58deg) scale(1.25);
-}
-.start{background:linear-gradient(145deg,#166534,#22c55e)!important}
-.jail{background:linear-gradient(145deg,#7f1d1d,#450a0a)!important}
-.special{background:linear-gradient(145deg,#b45309,#422006)!important}
-.poker{background:linear-gradient(145deg,#7c3aed,#2e1065)!important}
-.center{
-  grid-column:2/9;
-  grid-row:2/9;
-  background:
-    radial-gradient(ellipse at center, #1a3d2a 0%, #0d1f15 50%, #0a0a0a 100%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  border:none;
-  border-radius:4px;
-  box-shadow:inset 0 0 50px #000a;
-  transform:translateZ(2px);
-  color:#5a7a6a;
-}
-.dice-box{display:flex;gap:12px}
-.die{width:52px;height:52px;background:#fff;border-radius:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px;border:2px solid #ccc;box-shadow:0 6px 12px #0006}
-.die span{width:8px;height:8px;background:#111;border-radius:50%;margin:auto}
-.die .d1{grid-area:2/2}
-.die .d2a{grid-area:1/1}.die .d2b{grid-area:3/3}
-.die .d3a{grid-area:1/1}.die .d3b{grid-area:2/2}.die .d3c{grid-area:3/3}
-.die .d4a{grid-area:1/1}.die .d4b{grid-area:1/3}.die .d4c{grid-area:3/1}.die .d4d{grid-area:3/3}
-.die .d5a{grid-area:1/1}.die .d5b{grid-area:1/3}.die .d5c{grid-area:2/2}.die .d5d{grid-area:3/1}.die .d5e{grid-area:3/3}
-.die .d6a{grid-area:1/1}.die .d6b{grid-area:1/3}.die .d6c{grid-area:2/1}.die .d6d{grid-area:2/3}.die .d6e{grid-area:3/1}.die .d6f{grid-area:3/3}
-.dice-total{font-size:22px;font-weight:bold;color:#fbbf24}
-#cell-0{grid-column:1;grid-row:9}#cell-1{grid-column:2;grid-row:9}#cell-2{grid-column:3;grid-row:9}#cell-3{grid-column:4;grid-row:9}
-#cell-4{grid-column:5;grid-row:9}#cell-5{grid-column:6;grid-row:9}#cell-6{grid-column:7;grid-row:9}#cell-7{grid-column:8;grid-row:9}
-#cell-8{grid-column:9;grid-row:9}#cell-9{grid-column:9;grid-row:8}#cell-10{grid-column:9;grid-row:7}#cell-11{grid-column:9;grid-row:6}
-#cell-12{grid-column:9;grid-row:5}#cell-13{grid-column:9;grid-row:4}#cell-14{grid-column:9;grid-row:3}#cell-15{grid-column:9;grid-row:2}
-#cell-16{grid-column:9;grid-row:1}#cell-17{grid-column:8;grid-row:1}#cell-18{grid-column:7;grid-row:1}#cell-19{grid-column:6;grid-row:1}
-#cell-20{grid-column:5;grid-row:1}#cell-21{grid-column:4;grid-row:1}#cell-22{grid-column:3;grid-row:1}#cell-23{grid-column:2;grid-row:1}
-#cell-24{grid-column:1;grid-row:1}#cell-25{grid-column:1;grid-row:2}#cell-26{grid-column:1;grid-row:3}#cell-27{grid-column:1;grid-row:4}
-#cell-28{grid-column:1;grid-row:5}#cell-29{grid-column:1;grid-row:6}#cell-30{grid-column:1;grid-row:7}#cell-31{grid-column:1;grid-row:8}
-button{padding:8px 12px;border:0;border-radius:7px;font-weight:bold;cursor:pointer;font-size:12px;background:#22c55e;color:#fff}
+html,body{height:100%;background:#0a0806;color:#eee;font-family:system-ui,Arial,sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#12100e;border-bottom:1px solid #333;gap:8px}
+.room{font-size:20px;font-weight:700;color:#22c55e;letter-spacing:2px}
+.pill{padding:8px 14px;border-radius:20px;font-weight:700;font-size:13px;border:2px solid #444;background:#1a1a1a}
+.pill.me{border-color:#22c55e;background:#14532d;color:#86efac}
+.pill.wait{color:#a8a29e}
+.main{flex:1;display:grid;grid-template-columns:220px 1fr 240px;min-height:0}
+.side{padding:10px;overflow-y:auto;background:#100e0c;border-right:1px solid #222}
+.side.r{border-right:0;border-left:1px solid #222}
+.card{background:#1c1917;border:1px solid #333;border-radius:10px;padding:10px;margin-bottom:8px}
+.card.on{border-color:#22c55e;box-shadow:0 0 12px #22c55e33}
+.money{font-size:18px;color:#fbbf24;font-weight:700}
+#canvas-wrap{position:relative;min-height:0;background:#0c0a08}
+#c3d{width:100%;height:100%;display:block}
+.hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:11px;color:#666;pointer-events:none}
+button{padding:9px 12px;border:0;border-radius:8px;font-weight:700;cursor:pointer;background:#22c55e;color:#fff;font-size:13px;width:100%;margin-top:6px}
 button:disabled{opacity:.4;cursor:not-allowed}
-.blue{background:#2563eb}.red{background:#dc2626}.gold{background:#b8860b}
-.btn-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
-.admin-toggle{width:100%;background:#b8860b;margin-bottom:4px}
-.teleports{display:none;grid-template-columns:1fr 1fr;gap:3px;max-height:160px;overflow-y:auto}
-.teleports.open{display:grid}
-.teleports button{font-size:10px;padding:4px}
-.log{font-size:11px;color:#999;max-height:120px;overflow-y:auto;background:#111;padding:6px;border-radius:6px}
-.modal{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:100;padding:12px}
-.modal.hidden{display:none}
-.modalbox{background:#1a1a1a;border:1px solid #555;border-radius:12px;padding:16px;width:min(700px,96vw);max-height:90vh;overflow-y:auto}
-.cards{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:6px 0}
-.card{width:50px;height:72px;background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;box-shadow:0 3px 6px #0006}
-.card.redcard{color:#c00}.card.back{background:#173b8f;color:#fff;border:3px solid #7aa2ff}
-.info{background:#111;padding:8px;border-radius:6px;margin:6px 0;font-size:13px}
-input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px solid #555;background:#222;color:#fff}
-#lobby{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:12px}
-#lobby input{padding:12px;font-size:16px;text-align:center;width:200px}
-#game{display:none;height:100%;flex-direction:column}
-.chance-card{background:linear-gradient(145deg,#1e3a5f,#2563eb);border:3px solid #60a5fa;border-radius:14px;padding:18px;text-align:center;max-width:360px;margin:0 auto}
-.debt-box{background:#3f1010;border:2px solid #ef4444;border-radius:12px;padding:14px;text-align:center}
-.bj-natural{color:#fbbf24;font-weight:bold;font-size:13px}
+.red{background:#dc2626}.gold{background:#b8860b}
+.log{font-size:11px;color:#888;max-height:160px;overflow:auto}
+#lobby{position:fixed;inset:0;background:#0a0806;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:20}
+#lobby input{padding:12px;border-radius:8px;border:1px solid #444;background:#1a1a1a;color:#fff;text-align:center;width:200px}
+#game{display:none;flex-direction:column;height:100%}
 </style>
 </head>
 <body>
 <div id="lobby">
-  <h1>🎲 Kumarhane Monopoly</h1>
-  <p style="color:#888;font-size:13px">3 kişilik · 3D tahta</p>
-  <input id="nameInput" type="text" maxlength="16" placeholder="İsmin (zorunlu)">
-  <button id="createRoom" style="font-size:16px;padding:12px 24px">🏠 Oda Oluştur</button>
+  <h1>🎲 Kumarhane Monopoly 3D</h1>
+  <p style="color:#888;font-size:13px">Three.js tahta · 3 oyuncu</p>
+  <input id="nameInput" maxlength="16" placeholder="İsmin">
+  <button id="createRoom" style="width:auto;padding:12px 28px">Oda Oluştur</button>
   <div style="display:flex;gap:8px">
-    <input id="roomInput" maxlength="4" placeholder="Oda Kodu" style="width:120px">
-    <button id="joinRoom">🚪 Katıl</button>
+    <input id="roomInput" maxlength="4" placeholder="Oda kodu" style="width:110px">
+    <button id="joinRoom" style="width:auto">Katıl</button>
   </div>
-  <div id="lobbyMessage" style="color:#f87171"></div>
-  <div id="createdRoom"></div>
+  <div id="lobbyMsg" style="color:#f87171"></div>
+  <div id="created" style="color:#22c55e;font-size:22px;font-weight:700;letter-spacing:3px"></div>
 </div>
 
 <div id="game">
-  <div class="topbar">
-    <div>ODA: <span id="gameRoomCode" class="room-code"></span></div>
-    <div id="turnText" class="status-pill wait">Bağlanıyor...</div>
-    <div id="message" style="font-size:12px;color:#ccc;max-width:360px;text-align:right"></div>
+  <div class="top">
+    <div>ODA: <span class="room" id="roomCode">----</span></div>
+    <div class="pill wait" id="turnPill">Sıra</div>
+    <div id="msg" style="font-size:12px;color:#aaa;max-width:320px;text-align:right"></div>
   </div>
   <div class="main">
-    <div class="left">
-      <div class="panel">
-        <div class="player-card" id="p0card"><div id="name0label">👑 P1</div><div class="money"><span id="money0">1500</span> ₺</div><div>📍 <span id="position0">0</span></div><div id="jail0" style="font-size:11px;color:#f87171"></div><div id="props0" style="font-size:11px;color:#aaa"></div></div>
-        <div class="player-card" id="p1card"><div id="name1label">👤 P2</div><div class="money"><span id="money1">1500</span> ₺</div><div>📍 <span id="position1">0</span></div><div id="jail1" style="font-size:11px;color:#f87171"></div><div id="props1" style="font-size:11px;color:#aaa"></div></div>
-        <div class="player-card" id="p2card"><div id="name2label">👤 P3</div><div class="money"><span id="money2">1500</span> ₺</div><div>📍 <span id="position2">0</span></div><div id="jail2" style="font-size:11px;color:#f87171"></div><div id="props2" style="font-size:11px;color:#aaa"></div></div>
-      </div>
-      <div class="panel" id="adminPanel" style="display:none">
-        <button class="admin-toggle" id="adminToggle">👑 Admin Işınlanma</button>
-        <div id="teleports" class="teleports"></div>
-      </div>
-      <div class="panel">
-        <button id="rollButton" style="width:100%;margin-bottom:6px">🎲 ZAR AT</button>
-        <button id="leaveButton" class="red" style="width:100%">🚪 Çık</button>
+    <div class="side">
+      <div class="card" id="pc0"><div id="n0">P1</div><div class="money"><span id="m0">1500</span> ₺</div><div>Kare <span id="pos0">0</span></div></div>
+      <div class="card" id="pc1"><div id="n1">P2</div><div class="money"><span id="m1">1500</span> ₺</div><div>Kare <span id="pos1">0</span></div></div>
+      <div class="card" id="pc2"><div id="n2">P3</div><div class="money"><span id="m2">1500</span> ₺</div><div>Kare <span id="pos2">0</span></div></div>
+      <button id="rollBtn">🎲 Zar at</button>
+      <button id="leaveBtn" class="red">Çık</button>
+      <div id="adminBox" style="display:none;margin-top:10px">
+        <button class="gold" id="adminToggle">Admin ışınlan</button>
+        <div id="teleports" style="display:none;max-height:140px;overflow:auto;margin-top:6px"></div>
       </div>
     </div>
-    <div class="board-area">
-      <div class="board-3d">
-        <div id="board" class="board">
-          <div class="center">
-            <div style="font-size:15px;color:#666">KUMARHANE</div>
-            <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
-            <div class="dice-total" id="diceTotal">-</div>
-          </div>
-        </div>
-      </div>
+    <div id="canvas-wrap">
+      <canvas id="c3d"></canvas>
+      <div class="hint">Sabit 3D kamera · tahta dönmez</div>
     </div>
-    <div class="right">
-      <div class="panel"><b>📜 Günlük</b><div id="log" class="log"></div></div>
-      <div class="panel"><b>⚡ Aksiyon</b><div id="actionButtons" class="btn-row"></div></div>
+    <div class="side r">
+      <div class="card"><b>Zar</b><div id="diceTxt" style="font-size:22px;color:#fbbf24;margin-top:6px">-</div></div>
+      <div class="card"><b>Günlük</b><div class="log" id="log"></div></div>
     </div>
   </div>
 </div>
-<div id="modal" class="modal hidden"><div class="modalbox" id="modalContent"></div></div>
 
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
 <script type="module">
+import * as THREE from "three";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getDatabase,ref,set,get,onValue,runTransaction,update} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
@@ -288,589 +96,339 @@ const firebaseConfig={
   appId:"1:418982485830:web:ff0b051026d0256f1b0f47"
 };
 const app=initializeApp(firebaseConfig),db=getDatabase(app);
-let roomCode=null,playerNumber=null,unsubscribe=null,playerName="";
-let animating=false,displayPos={0:0,1:0,2:0},lastPos={0:-1,1:-1,2:-1};
-let jailSkipLock=false;
 const $=id=>document.getElementById(id);
-const MAX_P=3;
 
-const CHANCE_EVENTS=[
-  {text:"Banka hatası! +200₺",money:200},{text:"Vergi iadesi: +100₺",money:100},
-  {text:"Doğum günü: +50₺",money:50},{text:"Hisse kârı: +150₺",money:150},
-  {text:"Yol çalışması: -50₺",money:-50},{text:"Doktor: -100₺",money:-100},
-  {text:"Hız cezası: -75₺",money:-75},{text:"Piyango: +250₺!",money:250},
-  {text:"Okul: -80₺",money:-80},{text:"Miras: +120₺",money:120},
-  {text:"Kötü yatırım: -150₺",money:-150},{text:"Bonus: +80₺",money:80}
+const NAMES=[
+  "BAŞLANGIÇ","Kırmızı Sokak","Şans","Mavi Sokak","HAPİS","İstasyon","Vergi","Yeşil Sokak",
+  "BLACKJACK","Sarı Sokak","Otopark","Kumarhane","Mor Sokak","Şans","Elektrik","Turuncu Sokak",
+  "POKER","Kırmızı 2","Vergi","Lacivert","HAPİS!","İstasyon 2","Şans","Yeşil 2",
+  "JACKPOT","Turuncu 2","Vergi","Mavi 2","Şans","Kırmızı 3","İstasyon 3","SON"
+];
+const COLORS=[
+  0x166534,0x7f1d1d,0x1e3a5f,0x1e3a8a,0x450a0a,0x292524,0x3f3f46,0x14532d,
+  0x92400e,0xa16207,0x3f6212,0x5b21b6,0x5b21b6,0x1e3a5f,0x0e7490,0x9a3412,
+  0x4c1d95,0x7f1d1d,0x3f3f46,0x1e3a8a,0x7f1d1d,0x292524,0x1e3a5f,0x14532d,
+  0x854d0e,0x9a3412,0x3f3f46,0x1e3a8a,0x1e3a5f,0x7f1d1d,0x292524,0x166534
 ];
 
-const cells=[
-  {name:"BAŞLANGIÇ",type:"go",bg:"#14532d"},
-  {name:"Kırmızı Sokak",type:"prop",price:60,rent:6,color:"#dc2626",bg:"#450a0a"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Mavi Sokak",type:"prop",price:80,rent:8,color:"#2563eb",bg:"#172554"},
-  {name:"HAPİS / ZİYARET",type:"jail",bg:"#450a0a"},
-  {name:"İstasyon",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"Vergi",type:"tax",amount:100,bg:"#3f3f46"},
-  {name:"Yeşil Sokak",type:"prop",price:100,rent:10,color:"#16a34a",bg:"#14532d"},
-  {name:"BLACKJACK",type:"blackjack",bg:"#422006"},
-  {name:"Sarı Sokak",type:"prop",price:120,rent:12,color:"#ca8a04",bg:"#422006"},
-  {name:"Ücretsiz Otopark",type:"free",bg:"#365314"},
-  {name:"Kumarhane",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Mor Sokak",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Elektrik",type:"utility",price:150,rent:40,bg:"#0c4a6e"},
-  {name:"Turuncu Sokak",type:"prop",price:160,rent:16,color:"#ea580c",bg:"#7c2d12"},
-  {name:"POKER",type:"poker",bg:"#2e1065"},
-  {name:"Kırmızı 2",type:"prop",price:180,rent:18,color:"#dc2626",bg:"#450a0a"},
-  {name:"Vergi",type:"tax",amount:150,bg:"#3f3f46"},
-  {name:"Lacivert Sokak",type:"prop",price:200,rent:20,color:"#1e3a8a",bg:"#1e3a8a"},
-  {name:"HAPİS",type:"gotojail",bg:"#7f1d1d"},
-  {name:"İstasyon 2",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Yeşil 2",type:"prop",price:220,rent:22,color:"#16a34a",bg:"#14532d"},
-  {name:"JACKPOT",type:"jackpot",bg:"#713f12"},
-  {name:"Turuncu 2",type:"prop",price:240,rent:24,color:"#ea580c",bg:"#7c2d12"},
-  {name:"Vergi",type:"tax",amount:200,bg:"#3f3f46"},
-  {name:"Mavi 2",type:"prop",price:260,rent:26,color:"#2563eb",bg:"#172554"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Kırmızı 3",type:"prop",price:280,rent:28,color:"#dc2626",bg:"#450a0a"},
-  {name:"İstasyon 3",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"SON",type:"go",bg:"#14532d"}
-];
+let roomCode=null,playerNumber=null,unsub=null,playerName="";
+let scene,camera,renderer,boardGroup,pieceMeshes=[null,null,null];
+let cellWorld=[]; // {x,z} for each cell index
+let animating=false;
 
-const boardEl=$("board");
-for(let i=0;i<32;i++){
-  const c=cells[i];
-  const div=document.createElement("div");
-  div.className="cell";div.id="cell-"+i;
-  if(c.bg)div.style.background=c.bg;
-  if(c.type==="go")div.classList.add("start");
-  if(c.type==="jail"||c.type==="gotojail")div.classList.add("jail");
-  if(c.type==="blackjack")div.classList.add("special");
-  if(c.type==="poker")div.classList.add("poker");
-  let extra="";
-  if(c.price)extra+=`<div class="price">Alım:${c.price}₺</div>`;
-  if(c.rent)extra+=`<div class="rent">Kira:${c.rent}₺</div>`;
-  if(c.amount)extra+=`<div class="price">-${c.amount}₺</div>`;
-  div.innerHTML=`<div class="name">${c.name}</div>${extra}<div class="pieces"></div><div class="owner" id="owner-${i}"></div>`;
-  if(c.color)div.style.borderTop=`3px solid ${c.color}`;
-  boardEl.appendChild(div);
-}
-
-function drawDie(el,n){
-  el.innerHTML="";
-  const map={1:["d1"],2:["d2a","d2b"],3:["d3a","d3b","d3c"],4:["d4a","d4b","d4c","d4d"],5:["d5a","d5b","d5c","d5d","d5e"],6:["d6a","d6b","d6c","d6d","d6e","d6f"]};
-  (map[n]||[]).forEach(cls=>{const s=document.createElement("span");s.className=cls;el.appendChild(s)});
-}
-function showDice(a,b){drawDie($("die1"),a);drawDie($("die2"),b);$("diceTotal").textContent=(a+b)+" ("+a+"+"+b+")"}
 function path(){return ref(db,"rooms/"+roomCode)}
-function log(t){const d=document.createElement("div");d.textContent=new Date().toLocaleTimeString("tr-TR")+" — "+t;$("log").prepend(d)}
-function setMsg(t){$("message").textContent=t||""}
-function ensureProps(d){if(!d.properties)d.properties={};for(let i=0;i<32;i++)if(!d.properties[i])d.properties[i]={owner:null};return d}
-function generateCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*ch.length)];return c}
-function getName(){return ($("nameInput").value||"").trim().slice(0,16)}
-function nextTurn(d,from){for(let i=1;i<=MAX_P;i++){const t=(from+i)%MAX_P;if(d.players?.[t])return t}return from}
-function activePlayers(d){return [0,1,2].filter(i=>d.players?.[i])}
-function pieceIcon(w){return w===0?"♚":w===1?"♛":"♜"}
+function code4(){const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+function nextTurn(d,from){for(let i=1;i<=3;i++){const t=(from+i)%3;if(d.players?.[t])return t}return from}
+function log(t){const e=document.createElement("div");e.textContent=new Date().toLocaleTimeString("tr-TR")+" — "+t;$("log").prepend(e)}
 
-function tryCharge(d,payerIdx,amount,receiverIdx=null,reason=""){
-  const p=d.players[payerIdx];if(!p||amount<=0)return true;
-  if(p.money>=amount){p.money-=amount;if(receiverIdx!=null&&d.players[receiverIdx])d.players[receiverIdx].money+=amount;return true}
-  const paid=p.money;p.money=0;
-  if(receiverIdx!=null&&d.players[receiverIdx]&&paid>0)d.players[receiverIdx].money+=paid;
-  const remaining=amount-paid;
-  if((p.props||[]).length>0){d.debt={player:payerIdx,remaining,reason:reason||"Borç",receiver:receiverIdx};d.message=`${p.name} ödeyemedi! ${remaining}₺ borç — mal sat.`;return false}
-  d.message=`${p.name} iflas (mal yok).`;return false;
-}
-function applyDebtFromMoney(d){
-  if(!d.debt)return;
-  const p=d.players[d.debt.player];if(!p){d.debt=null;return}
-  if(p.money<=0)return;
-  const pay=Math.min(p.money,d.debt.remaining);p.money-=pay;d.debt.remaining-=pay;
-  if(d.debt.receiver!=null&&d.players[d.debt.receiver])d.players[d.debt.receiver].money+=pay;
-  if(d.debt.remaining<=0){d.message=`${p.name} borcunu kapattı.`;d.debt=null}
-  else d.message=`${p.name} kalan borç: ${d.debt.remaining}₺`;
-}
-
-/* Doğal blackjack: ilk 2 kart, As + 10 değer */
-function isNaturalBJ(hand){
-  if(!hand||hand.length!==2)return false;
-  return hVal(hand)===21;
-}
-
-const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-function makeDeck(){const d=[];for(const s of suits)for(const r of ranks)d.push({s,r});return d.sort(()=>Math.random()-0.5)}
-function cVal(c){return c.r==="A"?11:["K","Q","J"].includes(c.r)?10:+c.r}
-function hVal(h){let n=0,a=0;(h||[]).forEach(c=>{n+=cVal(c);if(c.r==="A")a++});while(n>21&&a){n-=10;a--}return n}
-function cardHTML(c,back=false){if(back||!c)return`<div class="card back">🂠</div>`;return`<div class="card ${["♥","♦"].includes(c.s)?"redcard":""}">${c.r}${c.s}</div>`}
-
-function clearPieces(){document.querySelectorAll(".pieces").forEach(x=>x.innerHTML="")}
-function placePiece(pos,who,moving=false){
-  const cell=$("cell-"+pos);if(!cell)return;
-  const s=document.createElement("span");s.className="piece p"+who+(moving?" moving":"");s.textContent=pieceIcon(who);
-  cell.querySelector(".pieces").appendChild(s);
-}
-async function animateMove(who,from,to){
-  if(from===to){displayPos[who]=to;return}
-  animating=true;let cur=from,steps=[];
-  while(cur!==to){cur=(cur+1)%32;steps.push(cur)}
-  for(const step of steps){
-    clearPieces();displayPos[who]=step;
-    [0,1,2].forEach(w=>{if(displayPos[w]!=null)placePiece(displayPos[w],w,w===who)});
-    await new Promise(r=>setTimeout(r,200));
+/* ========== THREE.JS 3D TAHTA ========== */
+function cellXZ(i){
+  // 32 hücre, kare halka (Business Tour tarzı masa)
+  const side=8; // her kenar 8 hücre (köşeler paylaşımlı mantık: 0..7 alt, 8..15 sağ, 16..23 üst, 24..31 sol)
+  const span=7; // merkezden uzaklık
+  const step=(span*2)/7;
+  if(i>=0&&i<=7){ // alt: sol → sağ
+    return {x:-span+i*step, z:span};
   }
-  displayPos[who]=to;animating=false;clearPieces();[0,1,2].forEach(w=>placePiece(displayPos[w],w));
+  if(i>=8&&i<=15){ // sağ: alt → üst
+    return {x:span, z:span-(i-7)*step};
+  }
+  if(i>=16&&i<=23){ // üst: sağ → sol
+    return {x:span-(i-15)*step, z:-span};
+  }
+  // sol: üst → alt
+  return {x:-span, z:-span+(i-23)*step};
 }
 
-/* HAPİS: sıra gelince OTOMATİK atla (zar butonu kapalı olduğu için takılı kalıyordu) */
-async function autoSkipJail(d){
-  const t=d.turn;
-  const p=d.players?.[t];
-  if(!p||!(p.jailTurns>0))return;
-  if(d.game||d.auction||d.pending||d.chance||d.debt)return;
-  if(jailSkipLock)return;
-  jailSkipLock=true;
+function init3D(){
+  const wrap=$("canvas-wrap");
+  const canvas=$("c3d");
+  const w=wrap.clientWidth,h=wrap.clientHeight;
+
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x0c0a08);
+  scene.fog=new THREE.Fog(0x0c0a08,18,42);
+
+  camera=new THREE.PerspectiveCamera(42,w/h,0.1,100);
+  // Sabit açı — tahta dönmez
+  camera.position.set(0,16,14);
+  camera.lookAt(0,0,0);
+
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setSize(w,h);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;
+
+  // Işıklar
+  const amb=new THREE.AmbientLight(0xffe6c8,0.45);
+  scene.add(amb);
+  const dir=new THREE.DirectionalLight(0xfff0dd,1.15);
+  dir.position.set(6,20,8);
+  dir.castShadow=true;
+  dir.shadow.mapSize.set(1024,1024);
+  scene.add(dir);
+  const fill=new THREE.PointLight(0x88aaff,0.35,40);
+  fill.position.set(-8,8,-6);
+  scene.add(fill);
+
+  // Masa (altı)
+  const tableGeo=new THREE.CylinderGeometry(13,13.5,0.6,64);
+  const tableMat=new THREE.MeshStandardMaterial({color:0x3d2914,roughness:0.65,metalness:0.05});
+  const table=new THREE.Mesh(tableGeo,tableMat);
+  table.position.y=-0.4;
+  table.receiveShadow=true;
+  scene.add(table);
+
+  // Keçe / tahta zemini
+  const felt=new THREE.Mesh(
+    new THREE.BoxGeometry(11.2,0.15,11.2),
+    new THREE.MeshStandardMaterial({color:0x0d3d24,roughness:0.9})
+  );
+  felt.position.y=0.05;
+  felt.receiveShadow=true;
+  scene.add(felt);
+
+  boardGroup=new THREE.Group();
+  scene.add(boardGroup);
+  cellWorld=[];
+
+  const tileW=1.15,tileH=0.28,tileD=1.15;
+  for(let i=0;i<32;i++){
+    const {x,z}=cellXZ(i);
+    cellWorld.push({x,z});
+    const geo=new THREE.BoxGeometry(tileW,tileH,tileD);
+    const mat=new THREE.MeshStandardMaterial({
+      color:COLORS[i],
+      roughness:0.55,
+      metalness:0.08
+    });
+    const mesh=new THREE.Mesh(geo,mat);
+    mesh.position.set(x,tileH/2+0.12,z);
+    mesh.castShadow=true;
+    mesh.receiveShadow=true;
+    boardGroup.add(mesh);
+
+    // İnce çerçeve
+    const edge=new THREE.LineSegments(
+      new THREE.EdgesGeometry(geo),
+      new THREE.LineBasicMaterial({color:0x000000,transparent:true,opacity:0.35})
+    );
+    edge.position.copy(mesh.position);
+    boardGroup.add(edge);
+
+    // Küçük numara (sprite yerine basit üst işaret)
+    if(i===0||i===8||i===16||i===24){
+      const corner=new THREE.Mesh(
+        new THREE.BoxGeometry(0.2,0.08,0.2),
+        new THREE.MeshStandardMaterial({color:0xfbbf24})
+      );
+      corner.position.set(x,tileH+0.2,z);
+      boardGroup.add(corner);
+    }
+  }
+
+  // Piyonlar — 3D silindir fiş
+  const pieceColors=[0xf59e0b,0x3b82f6,0x22c55e];
+  for(let p=0;p<3;p++){
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(
+      new THREE.CylinderGeometry(0.28,0.32,0.35,24),
+      new THREE.MeshStandardMaterial({color:pieceColors[p],roughness:0.35,metalness:0.25})
+    );
+    body.castShadow=true;
+    body.position.y=0.35;
+    const top=new THREE.Mesh(
+      new THREE.CylinderGeometry(0.22,0.22,0.12,24),
+      new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.4,metalness:0.1})
+    );
+    top.position.y=0.58;
+    top.castShadow=true;
+    g.add(body);g.add(top);
+    g.position.set(cellWorld[0].x + (p-1)*0.35, 0.2, cellWorld[0].z);
+    g.visible=false;
+    scene.add(g);
+    pieceMeshes[p]=g;
+  }
+
+  window.addEventListener("resize",()=>{
+    const w2=wrap.clientWidth,h2=wrap.clientHeight;
+    camera.aspect=w2/h2;camera.updateProjectionMatrix();
+    renderer.setSize(w2,h2);
+  });
+
+  function loop(){
+    requestAnimationFrame(loop);
+    renderer.render(scene,camera);
+  }
+  loop();
+}
+
+function setPiecePos(p,cellIndex,instant=false){
+  const mesh=pieceMeshes[p];
+  if(!mesh||!cellWorld[cellIndex])return;
+  const base=cellWorld[cellIndex];
+  const ox=(p-1)*0.32;
+  const target=new THREE.Vector3(base.x+ox,0.2,base.z);
+  if(instant){mesh.position.copy(target);return}
+  // Basit animasyon
+  const start=mesh.position.clone();
+  const t0=performance.now();
+  const dur=280;
+  function step(now){
+    const t=Math.min(1,(now-t0)/dur);
+    const e=t*t*(3-2*t);
+    mesh.position.lerpVectors(start,target,e);
+    mesh.position.y=0.2+Math.sin(e*Math.PI)*0.45;
+    if(t<1)requestAnimationFrame(step);
+    else mesh.position.copy(target);
+  }
+  requestAnimationFrame(step);
+}
+
+async function animatePath(p,from,to){
+  if(from===to){setPiecePos(p,to,true);return}
+  animating=true;
+  let cur=from;
+  while(cur!==to){
+    cur=(cur+1)%32;
+    await new Promise(r=>{
+      setPiecePos(p,cur,false);
+      setTimeout(r,220);
+    });
+  }
+  animating=false;
+}
+
+/* ========== OYUN ========== */
+async function createGame(){
+  playerName=($("nameInput").value||"").trim();
+  if(!playerName){$("lobbyMsg").textContent="İsim yaz";return}
   try{
-    await runTransaction(path(),data=>{
+    let code;while(true){code=code4();if(!(await get(ref(db,"rooms/"+code))).exists())break}
+    roomCode=code;playerNumber=0;
+    const props={};for(let i=0;i<32;i++)props[i]={owner:null};
+    await set(ref(db,"rooms/"+code),{
+      players:{0:{name:playerName,money:1500,position:0,props:[],jailTurns:0},1:null,2:null},
+      properties:props,turn:0,message:playerName+" oda kurdu",lastDice:[0,0],game:null
+    });
+    $("created").textContent="ODA: "+code;
+    enterGame();
+  }catch(e){$("lobbyMsg").textContent=e.message}
+}
+
+async function joinGame(){
+  playerName=($("nameInput").value||"").trim();
+  if(!playerName){$("lobbyMsg").textContent="İsim yaz";return}
+  const code=$("roomInput").value.trim().toUpperCase();
+  if(code.length!==4){$("lobbyMsg").textContent="4 haneli kod";return}
+  try{
+    const snap=await get(ref(db,"rooms/"+code));
+    if(!snap.exists()){$("lobbyMsg").textContent="Oda yok";return}
+    const d=snap.val();
+    if(d.players?.[1]&&d.players?.[2]){$("lobbyMsg").textContent="Dolu 3/3";return}
+    const slot=d.players?.[1]?2:1;
+    await set(ref(db,"rooms/"+code+"/players/"+slot),{name:playerName,money:1500,position:0,props:[],jailTurns:0});
+    await update(ref(db,"rooms/"+code),{message:playerName+" katıldı"});
+    roomCode=code;playerNumber=slot;enterGame();
+  }catch(e){$("lobbyMsg").textContent=e.message}
+}
+
+function enterGame(){
+  $("lobby").style.display="none";
+  $("game").style.display="flex";
+  $("roomCode").textContent=roomCode;
+  $("adminBox").style.display=playerNumber===0?"block":"none";
+  init3D();
+  buildAdmin();
+  unsub=onValue(path(),snap=>{const d=snap.val();if(d)render(d)});
+}
+
+let lastPos={0:-1,1:-1,2:-1};
+async function render(d){
+  // Hapiste sıra otomatik atla
+  const tp=d.players?.[d.turn];
+  if(tp&&(tp.jailTurns||0)>0&&!d.game){
+    runTransaction(path(),data=>{
       if(!data)return;
       const pl=data.players?.[data.turn];
       if(!pl||!(pl.jailTurns>0))return;
-      if(data.game||data.auction||data.pending||data.chance||data.debt)return;
       pl.jailTurns-=1;
-      const next=nextTurn(data,data.turn);
-      data.message=`${pl.name} hapiste — tur atlandı. Kalan ceza: ${pl.jailTurns}. Sıra: ${data.players[next]?.name||""}`;
-      data.turn=next;
+      data.turn=nextTurn(data,data.turn);
+      data.message=`${pl.name} hapiste atlandı → ${data.players[data.turn]?.name||""}`;
       return data;
     });
-  }finally{setTimeout(()=>{jailSkipLock=false},500)}
-}
-
-async function createGame(){
-  playerName=getName();if(!playerName){$("lobbyMessage").textContent="İsim yaz";return}
-  try{
-    let code;while(true){code=generateCode();if(!(await get(ref(db,"rooms/"+code))).exists())break}
-    roomCode=code;playerNumber=0;
-    const props={};for(let i=0;i<32;i++)props[i]={owner:null};
-    await set(ref(db,"rooms/"+roomCode),{
-      players:{0:{name:playerName,money:1500,position:0,props:[],jailTurns:0},1:null,2:null},
-      properties:props,turn:0,message:playerName+" oda kurdu.",
-      game:null,auction:null,pending:null,chance:null,debt:null,lastDice:[0,0]
-    });
-    $("createdRoom").innerHTML=`<div class="room-code">ODA: ${code}</div>`;startGame();
-  }catch(e){$("lobbyMessage").textContent=e.message}
-}
-async function joinGame(){
-  playerName=getName();if(!playerName){$("lobbyMessage").textContent="İsim yaz";return}
-  const code=$("roomInput").value.trim().toUpperCase();
-  if(code.length!==4){$("lobbyMessage").textContent="4 haneli kod";return}
-  try{
-    const snap=await get(ref(db,"rooms/"+code));if(!snap.exists()){$("lobbyMessage").textContent="Oda yok";return}
-    const d=snap.val();
-    if(d.players?.[1]&&d.players?.[2]){$("lobbyMessage").textContent="Oda dolu (3/3)";return}
-    const slot=d.players?.[1]?2:1;
-    const props=d.properties||{};for(let i=0;i<32;i++)if(!props[i])props[i]={owner:null};
-    await set(ref(db,"rooms/"+code+"/players/"+slot),{name:playerName,money:1500,position:0,props:[],jailTurns:0});
-    await update(ref(db,"rooms/"+code),{message:playerName+" katıldı!",properties:props});
-    roomCode=code;playerNumber=slot;startGame();
-  }catch(e){$("lobbyMessage").textContent=e.message}
-}
-function startGame(){
-  $("lobby").style.display="none";$("game").style.display="flex";
-  $("gameRoomCode").textContent=roomCode;
-  $("adminPanel").style.display=playerNumber===0?"block":"none";
-  buildAdmin();
-  unsubscribe=onValue(path(),async snap=>{const d=snap.val();if(d)await render(d)});
-}
-
-async function render(d){
-  // Hapisteki oyuncunun sırasını otomatik atla
-  await autoSkipJail(d);
+  }
 
   [0,1,2].forEach(i=>{
     const p=d.players?.[i];
-    $("name"+i+"label").textContent=(i===0?"👑 ":"👤 ")+(p?.name||("P"+(i+1)));
-    $("money"+i).textContent=p?.money??"-";
-    $("position"+i).textContent=p?.position??"-";
-    $("jail"+i).textContent=(p?.jailTurns>0)?`🔒 Hapiste (${p.jailTurns})`:"";
-    $("props"+i).textContent=p?.props?.length?`Mal: ${p.props.length}`:"";
-    $("p"+i+"card").classList.toggle("active",d.turn===i);
-    $("p"+i+"card").classList.toggle("debt",d.debt?.player===i);
-    $("p"+i+"card").style.display=p?"block":"none";
+    $("pc"+i).style.display=p?"block":"none";
+    $("pc"+i).classList.toggle("on",d.turn===i);
+    if(!p){if(pieceMeshes[i])pieceMeshes[i].visible=false;return}
+    $("n"+i).textContent=(i===0?"👑 ":"👤 ")+p.name;
+    $("m"+i).textContent=p.money;
+    $("pos"+i).textContent=p.position;
+    if(pieceMeshes[i]){
+      pieceMeshes[i].visible=true;
+      const pos=p.position||0;
+      if(lastPos[i]<0){setPiecePos(i,pos,true);lastPos[i]=pos}
+      else if(lastPos[i]!==pos&&!animating){
+        const from=lastPos[i];lastPos[i]=pos;
+        animatePath(i,from,pos);
+      }
+    }
   });
 
-  const me=d.players?.[playerNumber];
-  const turnName=d.players?.[d.turn]?.name||("Oyuncu "+((d.turn||0)+1));
-  const el=$("turnText");
-  el.classList.remove("my-turn","wait","debt");
-  if(d.debt?.player===playerNumber){el.textContent="⚠️ BORÇ — Mal sat!";el.classList.add("debt")}
-  else if(d.turn===playerNumber){el.textContent="🎲 SENİN SIRAN";el.classList.add("my-turn")}
-  else{el.textContent="⏳ Sıra: "+turnName;el.classList.add("wait")}
-
-  $("rollButton").disabled=d.turn!==playerNumber||!!d.game||!!d.auction||!!d.pending||!!d.chance||!!d.debt||animating||(me?.jailTurns>0);
-  setMsg(d.message);
-  if(d.lastDice?.[0])showDice(d.lastDice[0],d.lastDice[1]);
-
-  for(const who of [0,1,2]){
-    const p=d.players?.[who];if(!p)continue;
-    const target=p.position||0;
-    if(lastPos[who]===-1){displayPos[who]=target;lastPos[who]=target}
-    else if(lastPos[who]!==target&&!animating){const from=lastPos[who];lastPos[who]=target;await animateMove(who,from,target)}
-    else if(!animating)displayPos[who]=target;
-  }
-  if(!animating){clearPieces();[0,1,2].forEach(w=>{if(d.players?.[w])placePiece(displayPos[w],w)})}
-
-  const props=d.properties||{};
-  for(let i=0;i<32;i++){const o=props[i]?.owner;const el=$("owner-"+i);if(el)el.textContent=o===0?"♚":o===1?"♛":o===2?"♜":""}
-  renderActions(d);
-
-  if(d.debt)renderDebt(d);
-  else if(d.chance)renderChance(d.chance,d);
-  else if(d.game)renderCasino(d.game,d);
-  else if(d.pending)renderPending(d.pending,d);
-  else if(d.auction)renderAuction(d.auction,d);
-  else $("modal").classList.add("hidden");
-}
-
-function renderDebt(d){
-  const deb=d.debt,p=d.players[deb.player],isMe=deb.player===playerNumber;
-  let h=`<div class="debt-box"><h2>⚠️ BORÇ</h2><p><b>${p?.name}</b></p>
-    <p style="font-size:20px;color:#fbbf24">Kalan: <b>${deb.remaining}₺</b></p><p style="color:#ccc">${deb.reason||""}</p>`;
-  if(isMe){
-    h+=`<div class="btn-row">`;
-    (p.props||[]).forEach(idx=>{h+=`<button class="gold" data-debt-sell="${idx}">Sat: ${cells[idx].name}</button>`});
-    if(!(p.props||[]).length)h+=`<button class="red" id="debtBankrupt">İflas / Devam</button>`;
-    h+=`</div>`;
-  }else h+=`<p style="color:#aaa">${p?.name} mal satıyor...</p>`;
-  h+=`</div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  $("modalContent").querySelectorAll("[data-debt-sell]").forEach(btn=>{btn.onclick=()=>startAuction(Number(btn.dataset.debtSell),true)});
-  const br=$("debtBankrupt");
-  if(br)br.onclick=async()=>{await runTransaction(path(),data=>{if(!data?.debt||data.debt.player!==playerNumber)return;data.debt=null;data.turn=nextTurn(data,playerNumber);data.message="İflas";return data})};
-}
-
-function renderActions(d){
-  const box=$("actionButtons");box.innerHTML="";
-  if(d.game||d.auction||d.pending||d.chance||d.debt)return;
-  const me=d.players?.[playerNumber];if(!me?.props?.length)return;
-  me.props.forEach(idx=>{
-    const b=document.createElement("button");b.className="gold";b.style.fontSize="10px";
-    b.textContent="Artırma: "+cells[idx].name;b.onclick=()=>startAuction(idx,false);box.appendChild(b);
-  });
+  const pill=$("turnPill");
+  if(d.turn===playerNumber){pill.textContent="🎲 SENİN SIRAN";pill.className="pill me"}
+  else{pill.textContent="⏳ Sıra: "+(d.players?.[d.turn]?.name||"-");pill.className="pill wait"}
+  $("msg").textContent=d.message||"";
+  $("rollBtn").disabled=d.turn!==playerNumber||animating||!!d.game||(d.players?.[playerNumber]?.jailTurns>0);
+  if(d.lastDice?.[0])$("diceTxt").textContent=d.lastDice[0]+" + "+d.lastDice[1]+" = "+(d.lastDice[0]+d.lastDice[1]);
 }
 
 async function rollDice(){
-  try{
-    await runTransaction(path(),d=>{
-      if(!d)return;d=ensureProps(d);
-      if(d.turn!==playerNumber||!d.players?.[playerNumber]||d.game||d.auction||d.pending||d.chance||d.debt)return;
-      const p=d.players[playerNumber];
-      // Hapisteyse burada da atla (yedek)
-      if((p.jailTurns||0)>0){
-        p.jailTurns-=1;d.turn=nextTurn(d,playerNumber);
-        d.message=`${p.name} hapiste atlandı. Sıra: ${d.players[d.turn]?.name||""}`;return d;
-      }
-      const d1=Math.floor(Math.random()*6)+1,d2=Math.floor(Math.random()*6)+1,total=d1+d2;
-      d.lastDice=[d1,d2];
-      const old=p.position||0;p.position=(old+total)%32;
-      if(p.position<old)p.money=(p.money||0)+200;
-      d.message=`${p.name} ${d1}+${d2}=${total} → ${cells[p.position].name}`;
-      d.turn=nextTurn(d,playerNumber);
-      const cell=cells[p.position],prop=d.properties[p.position];
-      if(cell.type==="blackjack"){d.game=bjInit(d);d.message="🃏 BLACKJACK!"}
-      else if(cell.type==="poker"){d.game=pokerInit(d);d.message="♠️ POKER!"}
-      else if(cell.type==="tax")tryCharge(d,playerNumber,cell.amount,null,"Vergi");
-      else if(cell.type==="gotojail"){p.position=4;p.jailTurns=1;d.message=`${p.name} hapse girdi! 1 tur atlanacak.`}
-      else if(cell.type==="chance"){
-        const ev=CHANCE_EVENTS[Math.floor(Math.random()*CHANCE_EVENTS.length)];
-        if(ev.money>0)p.money+=ev.money;else tryCharge(d,playerNumber,-ev.money,null,"Şans");
-        d.chance={text:ev.text,money:ev.money,player:playerNumber,name:p.name};d.turn=playerNumber;
-      }
-      else if((cell.type==="prop"||cell.type==="station"||cell.type==="utility")&&prop){
-        if(prop.owner==null){d.pending={type:"buy",pos:p.position,player:playerNumber,price:cell.price};d.turn=playerNumber}
-        else if(prop.owner!==playerNumber)tryCharge(d,playerNumber,cell.rent||25,prop.owner,"Kira");
-      }
-      return d;
-    });
-  }catch(e){setMsg(e.message)}
-}
-
-function renderChance(ch,d){
-  $("modalContent").innerHTML=`<div class="chance-card"><h2>🎴 ŞANS</h2><div style="color:#93c5fd">${ch.name||""}</div>
-    <div style="font-size:16px;margin:12px 0">${ch.text}</div>
-    <div style="font-size:20px;font-weight:bold;color:${(ch.money||0)>=0?"#4ade80":"#f87171"}">${(ch.money||0)>=0?"+":""}${ch.money}₺</div>
-    <div class="btn-row"><button id="chanceOk">Tamam</button></div></div>`;
-  $("modal").classList.remove("hidden");
-  $("chanceOk").onclick=async()=>{await runTransaction(path(),data=>{if(!data?.chance)return;const who=data.chance.player;data.chance=null;data.turn=nextTurn(data,who);return data})};
+  await runTransaction(path(),d=>{
+    if(!d||d.turn!==playerNumber||!d.players?.[playerNumber])return;
+    const p=d.players[playerNumber];
+    if((p.jailTurns||0)>0){
+      p.jailTurns-=1;d.turn=nextTurn(d,playerNumber);
+      d.message=`${p.name} hapiste atlandı`;return d;
+    }
+    const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
+    d.lastDice=[a,b];
+    const old=p.position||0;
+    p.position=(old+a+b)%32;
+    if(p.position<old)p.money+=200;
+    d.message=`${p.name} ${a}+${b} → ${NAMES[p.position]}`;
+    d.turn=nextTurn(d,playerNumber);
+    if(NAMES[p.position]==="HAPİS!"||p.position===20){p.position=4;p.jailTurns=1;d.message=`${p.name} hapse girdi`}
+    return d;
+  });
 }
 
 function buildAdmin(){
-  const t=$("teleports");t.innerHTML="";
-  cells.forEach((c,i)=>{const b=document.createElement("button");b.textContent=i+" "+c.name;
-    if(c.type==="blackjack")b.className="gold";if(c.type==="poker")b.className="blue";
-    b.onclick=()=>teleport(i);t.appendChild(b)});
-}
-$("adminToggle").onclick=()=>$("teleports").classList.toggle("open");
-async function teleport(idx){
-  if(playerNumber!==0)return;
-  await runTransaction(path(),d=>{
-    if(!d?.players?.[0])return;d=ensureProps(d);d.players[0].position=idx;
-    if(cells[idx].type==="blackjack")d.game=bjInit(d);
-    else if(cells[idx].type==="poker")d.game=pokerInit(d);
-    else if(cells[idx].type==="gotojail"){d.players[0].position=4;d.players[0].jailTurns=1}
-    d.message="Admin → "+cells[idx].name;return d;
+  const box=$("teleports");box.innerHTML="";
+  NAMES.forEach((n,i)=>{
+    const b=document.createElement("button");
+    b.textContent=i+" "+n;b.style.fontSize="10px";b.style.marginTop="3px";
+    b.onclick=()=>runTransaction(path(),d=>{
+      if(!d?.players?.[0])return;
+      d.players[0].position=i;d.message="Admin → "+n;return d;
+    });
+    box.appendChild(b);
   });
 }
-
-function renderPending(pend,d){
-  if(pend.player!==playerNumber){$("modalContent").innerHTML=`<h3>Bekleniyor</h3><p>${d.players[pend.player]?.name}</p>`;$("modal").classList.remove("hidden");return}
-  const c=cells[pend.pos];
-  $("modalContent").innerHTML=`<h2>🏠 ${c.name}</h2><div class="info">Alım: ${c.price}₺ | Kira: ${c.rent||0}₺</div>
-    <div class="info">Paran: ${d.players[playerNumber].money}₺</div>
-    <div class="btn-row"><button id="btnBuy">Satın Al</button><button class="red" id="btnSkip">Alma</button><button class="gold" id="btnAuc">Artırma</button></div>`;
-  $("modal").classList.remove("hidden");
-  $("btnBuy").onclick=doBuy;$("btnSkip").onclick=doSkipBuy;$("btnAuc").onclick=doAuctionBuy;
-}
-async function doBuy(){await runTransaction(path(),d=>{if(!d?.pending||d.pending.player!==playerNumber)return;d=ensureProps(d);const pos=d.pending.pos,price=d.pending.price,p=d.players[playerNumber];if(p.money<price)return d;p.money-=price;d.properties[pos].owner=playerNumber;if(!p.props)p.props=[];if(!p.props.includes(pos))p.props.push(pos);d.pending=null;d.turn=nextTurn(d,playerNumber);d.message=`${p.name} aldı`;return d})}
-async function doSkipBuy(){await runTransaction(path(),d=>{if(!d?.pending)return;d.pending=null;d.turn=nextTurn(d,playerNumber);return d})}
-async function doAuctionBuy(){await runTransaction(path(),d=>{if(!d?.pending)return;const pos=d.pending.pos;d.auction={pos,seller:null,highest:0,highestBy:null,minBid:cells[pos].price||50,active:true,fromDebt:false};d.pending=null;return d})}
-async function startAuction(pos,fromDebt=false){await runTransaction(path(),d=>{if(!d)return;const me=d.players[playerNumber];if(!me?.props?.includes(pos))return;d.auction={pos,seller:playerNumber,highest:0,highestBy:null,minBid:Math.floor((cells[pos].price||100)*0.4),active:true,fromDebt:!!fromDebt};return d})}
-function renderAuction(a,d){
-  const c=cells[a.pos];
-  let h=`<h2>📢 Artırma ${a.fromDebt?"(BORÇ)":""}</h2><div class="info"><b>${c.name}</b> Min:${a.minBid}₺</div>
-    <div class="info">En yüksek: <b>${a.highest}₺</b></div>`;
-  if(a.seller!==playerNumber)h+=`<div class="btn-row"><input type="number" id="bidInput" value="${Math.max((a.highest||0)+10,a.minBid||50)}"><button class="gold" id="btnBid">Teklif</button></div>`;
-  if(a.seller===playerNumber)h+=`<div class="btn-row"><button class="blue" id="btnAccept" ${a.highestBy==null?"disabled":""}>Kabul</button>${a.fromDebt?"":`<button class="red" id="btnCancelAuc">İptal</button>`}</div>`;
-  if(a.seller==null)h+=`<div class="btn-row"><button class="blue" id="btnFinishAuc" ${a.highestBy==null?"disabled":""}>Bitir</button><button class="red" id="btnCancelAuc2">İptal</button></div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("btnBid"))$("btnBid").onclick=placeBid;if($("btnAccept"))$("btnAccept").onclick=acceptBid;
-  if($("btnFinishAuc"))$("btnFinishAuc").onclick=finishBankAuction;
-  if($("btnCancelAuc"))$("btnCancelAuc").onclick=cancelAuction;if($("btnCancelAuc2"))$("btnCancelAuc2").onclick=cancelAuction;
-}
-async function placeBid(){const amount=Number($("bidInput")?.value||0);await runTransaction(path(),d=>{if(!d?.auction?.active)return;const a=d.auction;if(a.seller===playerNumber||amount<=(a.highest||0)||amount<(a.minBid||0))return;if((d.players[playerNumber]?.money||0)<amount)return;a.highest=amount;a.highestBy=playerNumber;return d})}
-async function acceptBid(){await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!==playerNumber)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null)return;const buyer=d.players[a.highestBy],seller=d.players[a.seller];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;seller.money+=a.highest;d.properties[a.pos].owner=a.highestBy;seller.props=(seller.props||[]).filter(x=>x!==a.pos);if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;if(d.debt&&d.debt.player===a.seller)applyDebtFromMoney(d);return d})}
-async function finishBankAuction(){await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!=null)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null){d.auction=null;return d}const buyer=d.players[a.highestBy];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;d.properties[a.pos].owner=a.highestBy;if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;return d})}
-async function cancelAuction(){await runTransaction(path(),d=>{if(!d?.auction||d.auction.fromDebt)return;if(d.auction.seller!=null&&d.auction.seller!==playerNumber)return;d.auction=null;return d})}
-
-/* BLACKJACK — doğal BJ 3:2 öder */
-function bjInit(d){
-  const hands={},bets={},done={};
-  activePlayers(d||{players:{0:1,1:1,2:1}}).forEach(i=>{hands["p"+i]=[];bets["p"+i]=0;done["p"+i]=false});
-  return{type:"blackjack",phase:"bet",deck:makeDeck(),dealer:[],hands,bets,done,turn:0,message:"Bahis koyun"};
-}
-function renderBJ(g,d){
-  const key="p"+playerNumber,seats=activePlayers(d);
-  let h=`<style>.bj-table{background:radial-gradient(ellipse,#0d5c2e,#064e22);border:8px solid #5c4033;border-radius:30%;padding:18px}
-  .bj-seat{background:#0005;border:2px solid #2e7d32;border-radius:10px;padding:8px;min-width:120px;text-align:center}
-  .bj-seat.me{border-color:#ffc107}.bj-chip{display:inline-block;background:#c62828;color:#fff;border-radius:50%;width:32px;height:32px;line-height:32px;font-size:10px;font-weight:bold;border:2px solid #ffc107;margin-top:4px}</style>
-  <div class="bj-table"><div style="text-align:center"><div style="color:#c8e6c9;font-size:12px">♠ KURPİYER ♠</div><div class="cards">`;
-  if(g.phase==="bet")h+=cardHTML(null,true)+cardHTML(null,true);
-  else h+=(g.dealer||[]).map((c,i)=>cardHTML(c,g.phase==="play"&&i===1)).join("");
-  h+=`</div><div class="info" style="display:inline-block">${g.phase==="end"?"Puan: "+hVal(g.dealer||[]):(g.phase==="play"?"?":"")}</div></div>
-  <div class="info" style="text-align:center">${g.message||""}</div>
-  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px">`;
-  seats.forEach(i=>{
-    const k="p"+i,hand=g.hands?.[k]||[],bet=g.bets?.[k]||0,nat=isNaturalBJ(hand);
-    h+=`<div class="bj-seat ${i===playerNumber?"me":""}"><div style="font-size:11px;color:#a5d6a7">${i===playerNumber?"★ SEN":(d.players[i]?.name||"")}</div>
-      <div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):hand.map(c=>cardHTML(c)).join("")}</div>
-      ${g.phase!=="bet"&&hand.length?`<div style="color:#fff;font-weight:bold">${hVal(hand)}${nat?' <span class="bj-natural">BLACKJACK!</span>':""}</div>`:""}
-      ${bet?`<div class="bj-chip">${bet}</div>`:""}</div>`;
-  });
-  h+=`</div></div><div style="margin-top:12px;text-align:center">`;
-  if(g.phase==="bet"){
-    const myBet=g.bets?.[key]||0;
-    h+=`<div class="info">Paran: ${d.players[playerNumber]?.money||0}₺ · Doğal BJ → 3:2 öder</div>`;
-    if(!myBet)h+=`<div class="btn-row"><input type="number" id="bjBet" value="50" min="10"><button class="gold" id="bjBetBtn">Bahis Koy</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Bahis alındı</div>`;
-  }else if(g.phase==="play"&&g.turn===playerNumber&&!g.done?.[key]){
-    // Doğal BJ varsa otomatik stand gibi davranabilir; yine de buton ver
-    if(isNaturalBJ(g.hands?.[key]))h+=`<div class="bj-natural">BLACKJACK! Bekleniyor...</div>`;
-    h+=`<div class="btn-row"><button id="bjHit">Kart</button><button class="blue" id="bjStand">Kal</button><button class="gold" id="bjDouble">Double</button></div>`;
-  }else if(g.phase==="play")h+=`<p style="color:#aaa">Sıra: ${d.players[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<div class="btn-row"><button id="bjClose">Masaya Dön</button></div>`;
-  h+=`</div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("bjBetBtn"))$("bjBetBtn").onclick=()=>window.bjPlaceBet();
-  if($("bjHit"))$("bjHit").onclick=()=>window.bjAct("hit");
-  if($("bjStand"))$("bjStand").onclick=()=>window.bjAct("stand");
-  if($("bjDouble"))$("bjDouble").onclick=()=>window.bjAct("double");
-  if($("bjClose"))$("bjClose").onclick=()=>window.closeGame();
-}
-window.bjPlaceBet=async()=>{
-  const bet=Math.max(10,Number($("bjBet")?.value||50)),key="p"+playerNumber;
-  try{
-    const snap=await get(path());const d=snap.val();
-    if(!d?.game||d.game.phase!=="bet")return;
-    const p=d.players[playerNumber];if(!p||p.money<bet){alert("Yetersiz para");return}
-    const bets={...(d.game.bets||{})};if((bets[key]||0)>0)return;bets[key]=bet;
-    await update(ref(db,"rooms/"+roomCode+"/game"),{bets,message:`${p.name} ${bet}₺`});
-    const seats=activePlayers(d);
-    if(seats.every(i=>(bets["p"+i]||0)>0)){
-      let deck=Array.isArray(d.game.deck)&&d.game.deck.length>20?[...d.game.deck]:makeDeck();
-      const hands={},done={};
-      seats.forEach(i=>{hands["p"+i]=[deck.pop(),deck.pop()];done["p"+i]=isNaturalBJ(hands["p"+i])}); // doğal BJ otomatik biter
-      const first=seats.find(i=>!done["p"+i]);
-      await update(ref(db,"rooms/"+roomCode+"/game"),{
-        phase:first==null?"end":"play",deck,dealer:[deck.pop(),deck.pop()],hands,done,
-        turn:first??seats[0],message:first==null?"Doğal BJ'ler var — sonuç":"Kartlar dağıtıldı"
-      });
-      // Hepsi natural veya dealer çözümü için play fazında end'e gerekirse bjAct stand zinciri
-      if(first==null){
-        // herkes natural — dealer aç ve sonuç
-        const snap2=await get(path());const d2=snap2.val();const g={...d2.game};
-        while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
-        g.phase="end";const dv=hVal(g.dealer);const dNat=isNaturalBJ(g.dealer);let msg="";
-        seats.forEach(i=>{
-          const hand=g.hands["p"+i],bet=g.bets["p"+i]||0,pNat=isNaturalBJ(hand),pv=hVal(hand);
-          if(pNat&&dNat)msg+=` ${d2.players[i].name} berabere (BJ).`;
-          else if(pNat){const win=Math.floor(bet*1.5);d2.players[i].money+=win;msg+=` ${d2.players[i].name} BLACKJACK +${win}!`}
-          else if(dNat){tryCharge(d2,i,bet,null,"BJ");msg+=` ${d2.players[i].name} kaybetti.`}
-          else if(pv>dv||dv>21){d2.players[i].money+=bet;msg+=` ${d2.players[i].name} +${bet}.`}
-          else if(pv<dv){tryCharge(d2,i,bet,null,"BJ");msg+=` ${d2.players[i].name} kaybetti.`}
-          else msg+=` ${d2.players[i].name} berabere.`;
-        });
-        g.message="Bitti."+msg;
-        await update(ref(db,"rooms/"+roomCode),{game:g,players:d2.players,debt:d2.debt||null,message:g.message});
-      }
-    }
-  }catch(e){alert(e.message)}
-};
-window.bjAct=async(act)=>{
-  const key="p"+playerNumber;
-  try{
-    const snap=await get(path());let d=snap.val();
-    if(!d?.game||d.game.phase!=="play"||d.game.turn!==playerNumber)return;
-    const g={...d.game};if(!Array.isArray(g.deck))g.deck=makeDeck();
-    const h=[...(g.hands[key]||[])];
-    if(isNaturalBJ(h)){g.done[key]=true} // natural zaten bitti
-    else if(act==="hit"){h.push(g.deck.pop());if(hVal(h)>=21)g.done[key]=true}
-    else if(act==="stand")g.done[key]=true;
-    else if(act==="double"){h.push(g.deck.pop());g.bets[key]=(g.bets[key]||0)*2;g.done[key]=true}
-    else return;
-    g.hands[key]=h;
-    const seats=activePlayers(d);
-    if(g.done[key]){
-      const next=seats.find(i=>seats.indexOf(i)>seats.indexOf(playerNumber)&&!g.done["p"+i])
-        ??seats.find(i=>!g.done["p"+i]&&i!==playerNumber);
-      if(next!=null&&!g.done["p"+next]){g.turn=next;g.message=`Sıra: ${d.players[next]?.name}`}
-      else{
-        while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
-        g.phase="end";const dv=hVal(g.dealer);const dNat=isNaturalBJ(g.dealer);let msg="";
-        seats.forEach(i=>{
-          const hand=g.hands["p"+i]||[],bet=g.bets["p"+i]||0,pv=hVal(hand),pNat=isNaturalBJ(hand);
-          if(pv>21){tryCharge(d,i,bet,null,"BJ");msg+=` ${d.players[i].name} battı.`}
-          else if(pNat&&dNat)msg+=` ${d.players[i].name} berabere (BJ).`;
-          else if(pNat){const win=Math.floor(bet*1.5);d.players[i].money+=win;msg+=` ${d.players[i].name} BLACKJACK +${win}!`}
-          else if(dNat){tryCharge(d,i,bet,null,"BJ");msg+=` ${d.players[i].name} kaybetti.`}
-          else if(dv>21||pv>dv){d.players[i].money+=bet;msg+=` ${d.players[i].name} +${bet}.`}
-          else if(pv<dv){tryCharge(d,i,bet,null,"BJ");msg+=` ${d.players[i].name} kaybetti.`}
-          else msg+=` ${d.players[i].name} berabere.`;
-        });
-        g.message="Bitti."+msg;
-      }
-    }
-    await update(ref(db,"rooms/"+roomCode),{game:g,players:d.players,debt:d.debt||null,message:g.message});
-  }catch(e){alert(e.message)}
+$("adminToggle").onclick=()=>{
+  const t=$("teleports");t.style.display=t.style.display==="none"?"block":"none";
 };
 
-function pokerInit(d){
-  const players={};activePlayers(d||{players:{0:1,1:1,2:1}}).forEach(i=>{players[i]={hole:[],chips:0,fold:false,bet:0,acted:false}});
-  return{type:"poker",phase:"bet",deck:makeDeck(),community:[],players,pot:0,currentBet:0,turn:0,message:"Buy-in"};
-}
-function renderPoker(g,d){
-  const seats=activePlayers(d),me=g.players?.[playerNumber]||{hole:[],chips:0,fold:false,bet:0};
-  let h=`<style>.pk-table{background:radial-gradient(ellipse,#0f7a3a,#064020);border:8px solid #4a3728;border-radius:70px;padding:14px}
-  .pk-seat{background:#0005;border:2px solid #2e7d32;border-radius:10px;padding:8px;min-width:110px;text-align:center}
-  .pk-seat.me{border-color:#ffc107}.pk-pot{display:inline-block;background:#0007;color:#ffd54a;font-weight:bold;padding:4px 12px;border-radius:14px;margin:6px 0}</style>
-  <div class="pk-table"><div style="text-align:center"><div style="color:#c8e6c9;font-size:11px">♠ HOLD'EM ♠</div><div class="cards">`;
-  if(!(g.community||[]).length)for(let i=0;i<5;i++)h+=cardHTML(null,true);
-  else{h+=(g.community||[]).map(c=>cardHTML(c)).join("");for(let i=0;i<5-(g.community||[]).length;i++)h+=`<div class="card back" style="opacity:.3">🂠</div>`}
-  h+=`</div><div class="pk-pot">POT: ${g.pot||0}₺</div></div><div class="info" style="text-align:center">${g.message||""}</div>
-  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px">`;
-  seats.forEach(i=>{const pl=g.players?.[i]||{};
-    h+=`<div class="pk-seat ${i===playerNumber?"me":""}"><div style="font-size:11px;color:#a5d6a7">${i===playerNumber?"★ SEN":(d.players[i]?.name||"")}</div>
-      <div class="cards">${i===playerNumber&&g.phase!=="bet"?(pl.hole||[]).map(c=>cardHTML(c)).join(""):(g.phase==="end"?(pl.hole||[]).map(c=>cardHTML(c)).join(""):cardHTML(null,true)+cardHTML(null,true))}</div>
-      <div style="font-size:11px;color:#c8e6c9">Çip:${pl.chips||0} ${pl.fold?"·ÇEKİLDİ":""}</div></div>`});
-  h+=`</div></div><div style="margin-top:12px;text-align:center">`;
-  if(g.phase==="bet"){
-    h+=`<div class="info">Paran: ${d.players[playerNumber]?.money||0}₺</div>`;
-    if(!(me.chips>0))h+=`<div class="btn-row"><input type="number" id="pkBet" value="100" min="20"><button class="gold" id="pkBuyin">Masaya Gir</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Buy-in alındı</div>`;
-  }else if(g.phase!=="end"&&g.turn===playerNumber&&!me.fold){
-    h+=`<div class="btn-row"><button class="red" id="pkFold">Çekil</button>
-      ${(me.bet||0)===(g.currentBet||0)?`<button class="blue" id="pkCheck">Pas</button>`:`<button id="pkCall">Gör</button>`}
-      <input type="number" id="raiseIn" value="${(g.currentBet||0)+50}" style="width:70px"><button class="gold" id="pkRaise">Rais Yap</button></div>`;
-  }else if(g.phase!=="end")h+=`<p style="color:#aaa">Sıra: ${d.players[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<div class="btn-row"><button id="pkClose">Masaya Dön</button></div>`;
-  h+=`</div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("pkBuyin"))$("pkBuyin").onclick=()=>window.pkPlaceBet();
-  if($("pkFold"))$("pkFold").onclick=()=>window.pkAct("fold");
-  if($("pkCheck"))$("pkCheck").onclick=()=>window.pkAct("check");
-  if($("pkCall"))$("pkCall").onclick=()=>window.pkAct("call");
-  if($("pkRaise"))$("pkRaise").onclick=()=>window.pkRaise();
-  if($("pkClose"))$("pkClose").onclick=()=>window.closeGame();
-}
-window.pkPlaceBet=async()=>{
-  const amt=Math.max(20,Number($("pkBet")?.value||100));
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.phase!=="bet")return;
-    const g=d.game,p=d.players[playerNumber];
-    if(!p||p.money<amt||(g.players[playerNumber]?.chips||0)>0)return;
-    p.money-=amt;g.players[playerNumber].chips=amt;
-    const seats=activePlayers(d);
-    if(seats.every(i=>(g.players[i]?.chips||0)>0)){
-      g.phase="preflop";seats.forEach(i=>{g.players[i].hole=[g.deck.pop(),g.deck.pop()]});
-      g.turn=seats[0];g.message="Preflop";
-    }else g.message=`${p.name} buy-in`;return d;
-  });
+$("createRoom").onclick=createGame;
+$("joinRoom").onclick=joinGame;
+$("rollBtn").onclick=rollDice;
+$("leaveBtn").onclick=async()=>{
+  if(roomCode)await runTransaction(path(),d=>{if(d?.players)d.players[playerNumber]=null;return d});
+  location.reload();
 };
-window.pkAct=async(act)=>{
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.phase==="end"||d.game.turn!==playerNumber)return;
-    const g=d.game,p=g.players[playerNumber];
-    if(act==="fold")p.fold=true;
-    else if(act==="check"){if(p.bet!==g.currentBet)return}
-    else if(act==="call"){const add=Math.min(p.chips,g.currentBet-p.bet);p.chips-=add;p.bet+=add;g.pot+=add}
-    else return;
-    p.acted=true;
-    const alive=activePlayers(d).filter(i=>g.players[i]&&!g.players[i].fold);
-    if(alive.length===1){
-      const win=alive[0];g.players[win].chips+=g.pot;
-      activePlayers(d).forEach(i=>{d.players[i].money+=g.players[i].chips});
-      g.phase="end";g.message=`${d.players[win]?.name} kazandı`;return d;
-    }
-    if(alive.every(i=>g.players[i].acted&&g.players[i].bet===g.currentBet)){
-      alive.forEach(i=>{g.players[i].acted=false;g.players[i].bet=0});g.currentBet=0;
-      if(g.phase==="preflop"){g.community=[g.deck.pop(),g.deck.pop(),g.deck.pop()];g.phase="flop"}
-      else if(g.phase==="flop"){g.community.push(g.deck.pop());g.phase="turn"}
-      else if(g.phase==="turn"){g.community.push(g.deck.pop());g.phase="river"}
-      else{const win=alive[0];g.players[win].chips+=g.pot;activePlayers(d).forEach(i=>{d.players[i].money+=g.players[i].chips});g.phase="end";g.message="El bitti";return d}
-    }
-    if(g.phase!=="end"){
-      for(let k=1;k<=3;k++){const n=(playerNumber+k)%3;if(d.players[n]&&g.players[n]&&!g.players[n].fold){g.turn=n;break}}
-      g.message=`Sıra: ${d.players[g.turn]?.name||""}`;
-    }
-    return d;
-  });
-};
-window.pkRaise=async()=>{
-  const target=Number($("raiseIn")?.value||100);
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.turn!==playerNumber)return;
-    const g=d.game,p=g.players[playerNumber];
-    const add=Math.min(p.chips,Math.max(0,target-p.bet));
-    p.chips-=add;p.bet+=add;g.pot+=add;g.currentBet=p.bet;p.acted=true;
-    for(let k=1;k<=3;k++){const n=(playerNumber+k)%3;if(d.players[n]&&g.players[n]&&!g.players[n].fold){g.turn=n;break}}
-    g.message=`Sıra: ${d.players[g.turn]?.name||""}`;return d;
-  });
-};
-
-function renderCasino(g,d){if(g.type==="blackjack")renderBJ(g,d);else if(g.type==="poker")renderPoker(g,d)}
-window.closeGame=async()=>{await update(path(),{game:null,message:"Masaya dönüldü"});$("modal").classList.add("hidden")}
-async function leaveGame(){if(!roomCode)return;await runTransaction(path(),d=>{if(!d)return;if(d.players)d.players[playerNumber]=null;return d});if(unsubscribe)unsubscribe();location.reload()}
-
-$("createRoom").onclick=createGame;$("joinRoom").onclick=joinGame;
-$("rollButton").onclick=rollDice;$("leaveButton").onclick=leaveGame;
 </script>
 </body>
 </html>
