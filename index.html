@@ -26,17 +26,18 @@ body{
 
 /* ===== ELMAS TAHTA (görseldeki açı) ===== */
 .board-area{
-  display:flex;align-items:center;justify-content:center;
-  perspective:1600px;perspective-origin:50% 35%;
-  min-height:0;overflow:visible;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:0;
+  overflow:auto;
+  perspective:none;
 }
 .board-iso{
-  width:min(720px,92%);
-  height:min(720px,92%);
-  transform:rotateX(42deg) rotateZ(45deg);
-  transform-style:preserve-3d;
-  filter:drop-shadow(0 28px 24px #0007);
-  overflow:visible;
+  width:min(780px,96%);
+  height:min(780px,96%);
+  transform:none;              /* rotateX / rotateZ YOK */
+  filter:drop-shadow(0 12px 20px #0005);
 }
 .board{
   display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);
@@ -68,88 +69,53 @@ body{
   z-index:3;
   pointer-events:none;
 }
+.cell .label{
+  transform:none;
+  width:100%;
+  text-align:center;
+  margin-top:2px;
+  position:relative;
+  z-index:2;
+}
 .cell .name{
   font-weight:900;
-  font-size:11px;
+  font-size:10px;
   line-height:1.15;
-  color:#0f172a;
-  text-shadow:
-    0 0 4px #fff,
-    0 0 4px #fff,
-    1px 1px 0 #fff,
-   -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-   -1px 1px 0 #fff;
+  color:#fff;
+  text-shadow:0 1px 2px #000,0 0 3px #000;
 }
 .cell .meta{
-  font-size:9px;
-  font-weight:800;
-  color:#1e3a8a;
-  text-shadow:0 0 3px #fff,0 0 3px #fff;
-}
-.cell .meta{
-  font-size:8px;font-weight:800;color:#1e3a5f;
-  text-shadow:0 0 2px #fff;
+  font-size:8px;
+  font-weight:700;
+  color:#fef08a;
+  text-shadow:0 1px 2px #000;
 }
 .pieces{
-  position:absolute;left:0;right:0;bottom:2px;
-  display:flex;justify-content:center;gap:2px;
-  transform:translateZ(14px) rotate(-45deg);
+  position:relative;
+  transform:none;
+  display:flex;
+  justify-content:center;
+  gap:2px;
+  margin-top:auto;
+  min-height:22px;
   z-index:5;
 }
 .piece{
-  width:26px;
-  height:30px;
-  border-radius:50% 50% 45% 45% / 55% 55% 40% 40%;
-  border:2px solid #fff9;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:2px solid #fff;
   font-size:11px;
   font-weight:900;
   display:flex;
   align-items:center;
   justify-content:center;
+  box-shadow:0 2px 4px #0008;
   position:relative;
-  transform:translateZ(16px);
-  box-shadow:
-    0 1px 0 #fff6,
-    0 6px 0 #0003,
-    0 8px 10px #0007,
-    inset 0 3px 4px #fff5,
-    inset 0 -4px 6px #0004;
+  transform:none;
 }
-  /* ★ BURALARI YENİ EKLE — .piece ile .piece.p0 ARASINA ★ */
-.piece::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  bottom:-5px;
-  transform:translateX(-50%);
-  width:22px;
-  height:7px;
-  border-radius:50%;
-  background:#0005;
-  z-index:-1;
-}
-.piece::after{
-  content:"";
-  position:absolute;
-  top:4px;
-  left:50%;
-  transform:translateX(-50%);
-  width:12px;
-  height:8px;
-  border-radius:50%;
-  background:#fff5;
-  pointer-events:none;
-}
-  piece.p0{
-  background:
-    radial-gradient(circle at 35% 28%, #fef3c7 0%, #fbbf24 35%, #d97706 70%, #92400e 100%);
-  color:#422006;
-}
-.piece.p1{
-  background:
-    radial-gradient(circle at 35% 28%, #dbeafe 0%, #60a5fa 35%, #2563eb 70%, #1e3a8a 100%);
-  color:#fff;
+ .piece.p0{background:linear-gradient(180deg,#fbbf24,#b45309);color:#111}
+.piece.p1{background:linear-gradient(180deg,#60a5fa,#1d4ed8);color:#fff}
 .piece.jump{
   animation:jmp .22s ease;
 @keyframes jmp{
