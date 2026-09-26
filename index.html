@@ -6,103 +6,126 @@
 <title>🎲 Kumarhane Monopoly</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;font-family:Arial,sans-serif;color:#eee}
+html,body{height:100%;overflow:hidden;font-family:Segoe UI,Arial,sans-serif;color:#1e293b}
 body{
   display:flex;flex-direction:column;max-width:1920px;margin:0 auto;
-  background:
-    radial-gradient(ellipse 100% 80% at 50% 0%, #7dd3fc 0%, #38bdf8 25%, #0ea5e9 45%, #0369a1 70%, #0c4a6e 100%);
+  background:linear-gradient(180deg,#e8a87c 0%,#c38d5f 40%,#8b5e3c 100%);
 }
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#0f172aee;border-bottom:1px solid #334155;flex-shrink:0;gap:8px}
-.room-code{font-size:22px;font-weight:bold;color:#4ade80;letter-spacing:3px}
-.status-pill{font-size:14px;font-weight:bold;padding:8px 18px;border-radius:20px;border:2px solid #475569;background:#1e293b}
-.status-pill.me{background:#14532d;border-color:#22c55e;color:#bbf7d0;animation:pulse 1.2s infinite}
-.status-pill.wait{color:#cbd5e1}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #22c55e55}50%{box-shadow:0 0 14px 3px #22c55e44}}
-.main{flex:1;display:grid;grid-template-columns:260px 1fr 280px;gap:10px;padding:10px;min-height:0}
-.left,.right{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-.panel{background:#0f172acc;border:1px solid #334155;border-radius:12px;padding:12px;backdrop-filter:blur(8px)}
-.player-card{background:#1e293b;border-radius:10px;padding:10px;margin-bottom:8px;border:2px solid #334155;transition:.2s}
-.player-card.active{border-color:#22c55e;box-shadow:0 0 16px #22c55e44}
-.money{font-size:20px;color:#fbbf24;font-weight:bold}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#1c1917ee;color:#f5f5f4;border-bottom:1px solid #444;flex-shrink:0;gap:8px}
+.room-code{font-size:20px;font-weight:800;color:#4ade80;letter-spacing:2px}
+.pill{font-size:13px;font-weight:800;padding:8px 16px;border-radius:20px;border:2px solid #57534e;background:#292524}
+.pill.me{background:#14532d;border-color:#22c55e;color:#bbf7d0;animation:pulse 1.2s infinite}
+.pill.wait{color:#d6d3d1}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #22c55e55}50%{box-shadow:0 0 12px 3px #22c55e44}}
+.main{flex:1;display:grid;grid-template-columns:240px 1fr 250px;gap:8px;padding:8px;min-height:0}
+.side{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.panel{background:#1c1917dd;color:#fafaf9;border:1px solid #44403c;border-radius:12px;padding:10px}
+.pcard{background:#292524;border-radius:10px;padding:10px;margin-bottom:6px;border:2px solid #44403c}
+.pcard.on{border-color:#22c55e;box-shadow:0 0 14px #22c55e44}
+.money{font-size:18px;color:#fbbf24;font-weight:800}
 
-/* ===== BUSINESS TOUR TARZI İZOMETRİK TAHTA ===== */
+/* ===== ELMAS TAHTA (görseldeki açı) ===== */
 .board-area{
   display:flex;align-items:center;justify-content:center;
-  perspective:1400px;perspective-origin:50% 20%;
+  perspective:1600px;perspective-origin:50% 35%;
   min-height:0;overflow:visible;
 }
 .board-iso{
-  transform:rotateX(58deg);
+  width:min(720px,92%);
+  height:min(720px,92%);
+  transform:rotateX(60deg) rotateZ(45deg);
   transform-style:preserve-3d;
-  width:min(780px,96%);
-  height:min(780px,96%);
-  filter:drop-shadow(0 40px 30px #0008);
+  filter:drop-shadow(0 28px 24px #0007);
 }
 .board{
   display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);
-  width:100%;height:100%;gap:2px;
-  background:linear-gradient(145deg,#166534,#14532d);
-  border:8px solid #854d0e;
-  border-radius:6px;padding:4px;
+  width:100%;height:100%;gap:0;
+  background:#5a8f3c;
+  border:10px solid #d6d3d1;
+  border-radius:4px;
   transform-style:preserve-3d;
-  box-shadow:
-    0 2px 0 #a16207,
-    0 6px 0 #713f12,
-    0 12px 0 #451a03,
-    inset 0 0 20px #0004;
+  box-shadow:0 4px 0 #a8a29e,0 10px 0 #78716c,0 18px 0 #57534e;
 }
 .cell{
-  border:1px solid #0005;padding:3px;
-  display:flex;flex-direction:column;justify-content:flex-start;text-align:center;
-  position:relative;border-radius:3px;min-height:0;
-  transform:translateZ(8px);
-  box-shadow:inset 0 1px 0 #fff3,0 3px 0 #0005;
+  position:relative;padding:2px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  border:1px solid #a8a29e;
+  background:#f5f5f4;
+  transform:translateZ(6px);
+  box-shadow:inset 0 1px 0 #fff,0 2px 0 #78716c;
+  overflow:hidden;
+}
+/* Yazı — tahta 45° dönük; içeriği ters çevir ki ekranda düz okunsun */
+.cell .label{
+  transform:rotate(-45deg);
+  transform-origin:center center;
+  width:130%;
+  text-align:center;
+  margin-top:8%;
+  pointer-events:none;
 }
 .cell .name{
-  font-weight:900;font-size:10px;line-height:1.15;
-  color:#fff;text-shadow:0 0 3px #000,0 1px 2px #000,1px 1px 0 #000;
-  letter-spacing:.2px;
+  font-weight:900;font-size:9px;line-height:1.1;
+  color:#0f172a;
+  text-shadow:0 0 2px #fff,0 1px 0 #fff;
 }
-.cell .price{font-size:9px;font-weight:700;color:#fef08a;text-shadow:0 1px 2px #000}
-.cell .rent{font-size:9px;font-weight:700;color:#86efac;text-shadow:0 1px 2px #000}
-.cell .owner{position:absolute;bottom:2px;right:3px;font-size:11px;text-shadow:0 1px 2px #000}
-.pieces{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;align-items:flex-end;min-height:26px;margin-top:auto;transform:translateZ(18px)}
+.cell .meta{
+  font-size:8px;font-weight:800;color:#1e3a5f;
+  text-shadow:0 0 2px #fff;
+}
+.pieces{
+  position:absolute;left:0;right:0;bottom:2px;
+  display:flex;justify-content:center;gap:2px;
+  transform:translateZ(14px) rotate(-45deg);
+  z-index:5;
+}
 .piece{
-  width:24px;height:28px;border-radius:50% 50% 40% 40% / 60% 60% 40% 40%;
+  width:22px;height:26px;border-radius:50% 50% 40% 40%;
+  border:2px solid #fff;font-size:10px;font-weight:900;
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:900;border:2px solid #fff;
-  box-shadow:0 4px 6px #0009,inset 0 2px 3px #fff5;
-  transform:translateZ(12px);
+  box-shadow:0 4px 6px #0008,inset 0 2px 2px #fff6;
 }
-.piece.p0{background:radial-gradient(circle at 35% 25%,#fde68a,#f59e0b 50%,#b45309)}
-.piece.p1{background:radial-gradient(circle at 35% 25%,#93c5fd,#3b82f6 50%,#1d4ed8);color:#fff}
-.piece.jump{animation:jump .22s ease}
-@keyframes jump{0%{transform:translateZ(12px) translateY(0)}50%{transform:translateZ(28px) translateY(-14px)}100%{transform:translateZ(12px) translateY(0)}}
-.start{background:linear-gradient(145deg,#15803d,#22c55e)!important}
-.jail{background:linear-gradient(145deg,#7f1d1d,#450a0a)!important}
-.special{background:linear-gradient(145deg,#b45309,#78350f)!important}
-.poker{background:linear-gradient(145deg,#6d28d9,#4c1d95)!important}
-.chance-cell{background:linear-gradient(145deg,#2563eb,#1e3a8a)!important}
-.tax-cell{background:linear-gradient(145deg,#57534e,#292524)!important}
-.station-cell{background:linear-gradient(145deg,#44403c,#1c1917)!important}
-.free-cell{background:linear-gradient(145deg,#65a30d,#3f6212)!important}
+.piece.p0{background:radial-gradient(circle at 30% 25%,#fde68a,#f59e0b 55%,#b45309)}
+.piece.p1{background:radial-gradient(circle at 30% 25%,#93c5fd,#3b82f6 55%,#1d4ed8);color:#fff}
+.piece.jump{animation:jmp .2s ease}
+@keyframes jmp{0%{transform:translateY(0)}50%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+
+.cell.go{background:linear-gradient(145deg,#86efac,#22c55e)}
+.cell.jail{background:linear-gradient(145deg,#fca5a5,#dc2626);color:#fff}
+.cell.jail .name,.cell.special .name,.cell.poker .name{color:#fff;text-shadow:0 1px 2px #000}
+.cell.special{background:linear-gradient(145deg,#fcd34d,#d97706)}
+.cell.poker{background:linear-gradient(145deg,#c4b5fd,#7c3aed)}
+.cell.chance{background:linear-gradient(145deg,#93c5fd,#2563eb)}
+.cell.tax{background:linear-gradient(145deg,#d6d3d1,#78716c)}
+.cell.station{background:linear-gradient(145deg,#e7e5e4,#a8a29e)}
+.cell.free{background:linear-gradient(145deg,#bef264,#65a30d)}
+
 .center{
   grid-column:2/9;grid-row:2/9;
-  background:radial-gradient(ellipse,#22c55e44,#14532d 70%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  border:none;border-radius:4px;color:#dcfce7;
-  box-shadow:inset 0 0 40px #0005;
+  background:
+    linear-gradient(#0000 49%,#0001 50%,#0000 51%),
+    linear-gradient(90deg,#0000 49%,#0001 50%,#0000 51%),
+    #6b9e45;
+  background-size:20% 20%,20% 20%,auto;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  border:none;transform:translateZ(2px);
 }
-.dice-box{display:flex;gap:14px}
-.die{width:56px;height:56px;background:#fff;border-radius:10px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px;border:2px solid #ccc;box-shadow:0 6px 12px #0005}
-.die span{width:9px;height:9px;background:#111;border-radius:50%;margin:auto}
+.center-inner{
+  transform:rotate(-45deg);
+  text-align:center;
+}
+.center-inner h2{font-size:14px;color:#14532d;text-shadow:0 1px 0 #fff;font-weight:900}
+.dice-box{display:flex;gap:10px;justify-content:center}
+.die{width:44px;height:44px;background:#fff;border-radius:8px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px;border:2px solid #ccc;box-shadow:0 4px 8px #0004}
+.die span{width:7px;height:7px;background:#111;border-radius:50%;margin:auto}
 .die .d1{grid-area:2/2}
 .die .d2a{grid-area:1/1}.die .d2b{grid-area:3/3}
 .die .d3a{grid-area:1/1}.die .d3b{grid-area:2/2}.die .d3c{grid-area:3/3}
 .die .d4a{grid-area:1/1}.die .d4b{grid-area:1/3}.die .d4c{grid-area:3/1}.die .d4d{grid-area:3/3}
 .die .d5a{grid-area:1/1}.die .d5b{grid-area:1/3}.die .d5c{grid-area:2/2}.die .d5d{grid-area:3/1}.die .d5e{grid-area:3/3}
 .die .d6a{grid-area:1/1}.die .d6b{grid-area:1/3}.die .d6c{grid-area:2/1}.die .d6d{grid-area:2/3}.die .d6e{grid-area:3/1}.die .d6f{grid-area:3/3}
-.dice-total{font-size:26px;font-weight:bold;color:#fde68a;text-shadow:0 2px 4px #000}
+.dice-total{font-size:18px;font-weight:900;color:#14532d;text-shadow:0 1px 0 #fff}
+
 #cell-0{grid-column:1;grid-row:9}#cell-1{grid-column:2;grid-row:9}#cell-2{grid-column:3;grid-row:9}#cell-3{grid-column:4;grid-row:9}
 #cell-4{grid-column:5;grid-row:9}#cell-5{grid-column:6;grid-row:9}#cell-6{grid-column:7;grid-row:9}#cell-7{grid-column:8;grid-row:9}
 #cell-8{grid-column:9;grid-row:9}#cell-9{grid-column:9;grid-row:8}#cell-10{grid-column:9;grid-row:7}#cell-11{grid-column:9;grid-row:6}
@@ -111,90 +134,82 @@ body{
 #cell-20{grid-column:5;grid-row:1}#cell-21{grid-column:4;grid-row:1}#cell-22{grid-column:3;grid-row:1}#cell-23{grid-column:2;grid-row:1}
 #cell-24{grid-column:1;grid-row:1}#cell-25{grid-column:1;grid-row:2}#cell-26{grid-column:1;grid-row:3}#cell-27{grid-column:1;grid-row:4}
 #cell-28{grid-column:1;grid-row:5}#cell-29{grid-column:1;grid-row:6}#cell-30{grid-column:1;grid-row:7}#cell-31{grid-column:1;grid-row:8}
-button{padding:9px 14px;border:0;border-radius:8px;font-weight:bold;cursor:pointer;font-size:13px;background:#22c55e;color:#fff}
+
+button{padding:9px 12px;border:0;border-radius:8px;font-weight:800;cursor:pointer;font-size:13px;background:#22c55e;color:#fff;width:100%}
 button:disabled{opacity:.4;cursor:not-allowed}
 .blue{background:#2563eb}.red{background:#dc2626}.gold{background:#b8860b}
 .btn-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
-.admin-toggle{width:100%;background:#b8860b;margin-bottom:6px}
-.teleports{display:none;grid-template-columns:1fr 1fr;gap:4px;max-height:200px;overflow-y:auto}
+.btn-row button{width:auto}
+.admin-toggle{background:#b8860b;margin-bottom:4px}
+.teleports{display:none;grid-template-columns:1fr 1fr;gap:3px;max-height:160px;overflow-y:auto}
 .teleports.open{display:grid}
-.teleports button{font-size:11px;padding:6px 4px}
-.log{font-size:11px;color:#94a3b8;max-height:150px;overflow-y:auto;background:#020617;padding:6px;border-radius:6px}
-.modal{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:100;padding:12px}
+.teleports button{font-size:10px;padding:5px 3px}
+.log{font-size:11px;color:#a8a29e;max-height:120px;overflow-y:auto}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:100;padding:12px}
 .modal.hidden{display:none}
-.modalbox{background:#0f172a;border:1px solid #475569;border-radius:14px;padding:18px;width:min(720px,96vw);max-height:90vh;overflow-y:auto}
-.cards{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
-.card{width:54px;height:76px;background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;box-shadow:0 2px 6px #0005}
-.card.redcard{color:#c00}.card.back{background:#173b8f;color:#fff;border:3px solid #7aa2ff}
-.info{background:#020617;padding:8px;border-radius:6px;margin:6px 0;font-size:13px}
-input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px solid #475569;background:#1e293b;color:#fff}
-#lobby{position:fixed;inset:0;background:radial-gradient(ellipse at top,#0ea5e9,#0c4a6e 60%,#0f172a);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:12px}
+.modalbox{background:#1c1917;color:#fafaf9;border:1px solid #57534e;border-radius:14px;padding:16px;width:min(700px,96vw);max-height:90vh;overflow-y:auto}
+.cards{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.card{width:52px;height:74px;background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;box-shadow:0 2px 6px #0005}
+.card.redcard{color:#c00}.card.back{background:#1e3a8a;color:#fff;border:3px solid #60a5fa}
+.info{background:#0c0a09;padding:8px;border-radius:6px;margin:6px 0;font-size:13px}
+input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px solid #57534e;background:#292524;color:#fff}
+#lobby{position:fixed;inset:0;background:linear-gradient(180deg,#e8a87c,#8b5e3c);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:12px;color:#1c1917}
 #lobby input{padding:12px;font-size:16px;text-align:center;width:200px}
 #game{display:none;height:100%;flex-direction:column}
-.chance-card{background:linear-gradient(145deg,#1e3a5f,#2563eb);border:3px solid #60a5fa;border-radius:16px;padding:22px;text-align:center;max-width:400px;margin:0 auto}
+.chance-card{background:linear-gradient(145deg,#1e3a5f,#2563eb);border:3px solid #60a5fa;border-radius:14px;padding:20px;text-align:center;max-width:380px;margin:0 auto}
 .bj-natural{color:#fbbf24;font-weight:bold}
 </style>
 </head>
 <body>
 <div id="lobby">
-  <h1 style="text-shadow:0 2px 8px #0006">🎲 Kumarhane Monopoly</h1>
-  <input id="nameInput" type="text" maxlength="16" placeholder="İsmin (zorunlu)">
-  <button id="createRoom" style="font-size:16px;padding:12px 24px;width:auto">🏠 Oda Oluştur</button>
-  <div style="display:flex;gap:8px;align-items:center">
-    <input id="roomInput" maxlength="4" placeholder="Oda Kodu" style="width:120px">
+  <h1>🎲 Kumarhane Monopoly</h1>
+  <input id="nameInput" maxlength="16" placeholder="İsmin (zorunlu)">
+  <button id="createRoom" style="width:auto;padding:12px 28px;font-size:16px">🏠 Oda Oluştur</button>
+  <div style="display:flex;gap:8px">
+    <input id="roomInput" maxlength="4" placeholder="Oda kodu" style="width:110px">
     <button id="joinRoom" style="width:auto">🚪 Katıl</button>
   </div>
-  <div id="lobbyMessage" style="color:#fecaca"></div>
+  <div id="lobbyMessage" style="color:#7f1d1d;font-weight:700"></div>
   <div id="createdRoom"></div>
 </div>
 
 <div id="game">
   <div class="topbar">
     <div>ODA: <span id="gameRoomCode" class="room-code"></span></div>
-    <div id="turnText" class="status-pill wait">Bağlanıyor...</div>
-    <div id="message" style="font-size:13px;color:#cbd5e1;max-width:400px;text-align:right"></div>
+    <div id="turnText" class="pill wait">Sıra</div>
+    <div id="message" style="font-size:12px;color:#d6d3d1;max-width:360px;text-align:right"></div>
   </div>
   <div class="main">
-    <div class="left">
+    <div class="side">
       <div class="panel">
-        <div class="player-card" id="p0card">
-          <div id="name0label">👑 Oyuncu 1</div>
-          <div class="money"><span id="money0">1500</span> ₺</div>
-          <div>📍 Kare <span id="position0">0</span></div>
-          <div id="jail0" style="font-size:12px;color:#f87171"></div>
-          <div id="props0" style="font-size:11px;margin-top:4px;color:#94a3b8"></div>
-        </div>
-        <div class="player-card" id="p1card">
-          <div id="name1label">👤 Oyuncu 2</div>
-          <div class="money"><span id="money1">1500</span> ₺</div>
-          <div>📍 Kare <span id="position1">0</span></div>
-          <div id="jail1" style="font-size:12px;color:#f87171"></div>
-          <div id="props1" style="font-size:11px;margin-top:4px;color:#94a3b8"></div>
-        </div>
+        <div class="pcard" id="p0card"><div id="name0label">👑 P1</div><div class="money"><span id="money0">1500</span> ₺</div><div>📍 <span id="position0">0</span></div><div id="jail0" style="font-size:11px;color:#f87171"></div></div>
+        <div class="pcard" id="p1card"><div id="name1label">👤 P2</div><div class="money"><span id="money1">1500</span> ₺</div><div>📍 <span id="position1">0</span></div><div id="jail1" style="font-size:11px;color:#f87171"></div></div>
       </div>
       <div class="panel" id="adminPanel" style="display:none">
-        <button class="admin-toggle" id="adminToggle">👑 Admin Işınlanma</button>
+        <button class="admin-toggle" id="adminToggle">👑 Admin</button>
         <div id="teleports" class="teleports"></div>
       </div>
       <div class="panel">
-        <button id="rollButton" style="width:100%;margin-bottom:6px">🎲 ZAR AT</button>
-        <button id="leaveButton" class="red" style="width:100%">🚪 Odadan Çık</button>
+        <button id="rollButton">🎲 Zar at</button>
+        <button id="leaveButton" class="red" style="margin-top:6px">🚪 Çık</button>
       </div>
     </div>
     <div class="board-area">
       <div class="board-iso">
         <div id="board" class="board">
           <div class="center">
-            <div style="font-size:16px;font-weight:bold;text-shadow:0 2px 4px #000">KUMARHANE</div>
-            <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
-            <div class="dice-total" id="diceTotal">-</div>
+            <div class="center-inner">
+              <h2>KUMARHANE</h2>
+              <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
+              <div class="dice-total" id="diceTotal">-</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="right">
-      <div class="panel"><b>📜 Günlük</b><div id="log" class="log"></div></div>
-      <div class="panel"><b>⚡ Aksiyonlar</b><div id="actionButtons" class="btn-row"></div></div>
+    <div class="side">
+      <div class="panel"><b>📜 Günlük</b><div class="log" id="log"></div></div>
+      <div class="panel"><b>⚡ Aksiyon</b><div id="actionButtons" class="btn-row"></div></div>
     </div>
   </div>
 </div>
@@ -219,48 +234,47 @@ let animating=false,displayPos={0:0,1:0},jailSkipLock=false;
 const $=id=>document.getElementById(id);
 
 const CHANCE_EVENTS=[
-  {text:"Banka hatası! +200₺",money:200},{text:"Vergi iadesi: +100₺",money:100},
-  {text:"Doğum günü: +50₺",money:50},{text:"Hisse kârı: +150₺",money:150},
-  {text:"Yol çalışması: -50₺",money:-50},{text:"Doktor: -100₺",money:-100},
-  {text:"Hız cezası: -75₺",money:-75},{text:"Piyango: +250₺!",money:250},
-  {text:"Okul: -80₺",money:-80},{text:"Miras: +120₺",money:120},
-  {text:"Kötü yatırım: -150₺",money:-150},{text:"Bonus: +80₺",money:80}
+  {text:"Banka hatası! +200₺",money:200},{text:"Vergi iadesi +100₺",money:100},
+  {text:"Doğum günü +50₺",money:50},{text:"Hisse +150₺",money:150},
+  {text:"Yol -50₺",money:-50},{text:"Doktor -100₺",money:-100},
+  {text:"Hız cezası -75₺",money:-75},{text:"Piyango +250₺",money:250},
+  {text:"Okul -80₺",money:-80},{text:"Miras +120₺",money:120},
+  {text:"Kötü yatırım -150₺",money:-150},{text:"Bonus +80₺",money:80}
 ];
 
-/* Tek vergi (index 6). 18 ve 26 → yeni arsa */
 const cells=[
-  {name:"BAŞLANGIÇ",type:"go",bg:"#14532d"},
-  {name:"Kırmızı Sokak",type:"prop",price:60,rent:6,color:"#dc2626",bg:"#450a0a"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Mavi Sokak",type:"prop",price:80,rent:8,color:"#2563eb",bg:"#172554"},
-  {name:"HAPİS / ZİYARET",type:"jail",bg:"#450a0a"},
-  {name:"İstasyon",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"VERGİ",type:"tax",amount:150,bg:"#3f3f46"},
-  {name:"Yeşil Sokak",type:"prop",price:100,rent:10,color:"#16a34a",bg:"#14532d"},
-  {name:"BLACKJACK",type:"blackjack",bg:"#422006"},
-  {name:"Sarı Sokak",type:"prop",price:120,rent:12,color:"#ca8a04",bg:"#422006"},
-  {name:"Ücretsiz Otopark",type:"free",bg:"#365314"},
-  {name:"Kumarhane",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Mor Sokak",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Elektrik",type:"utility",price:150,rent:40,bg:"#0c4a6e"},
-  {name:"Turuncu Sokak",type:"prop",price:160,rent:16,color:"#ea580c",bg:"#7c2d12"},
-  {name:"POKER",type:"poker",bg:"#2e1065"},
-  {name:"Kırmızı 2",type:"prop",price:180,rent:18,color:"#dc2626",bg:"#450a0a"},
-  {name:"Antalya Sahil",type:"prop",price:200,rent:20,color:"#0ea5e9",bg:"#0c4a6e"},
-  {name:"Lacivert Sokak",type:"prop",price:200,rent:20,color:"#1e3a8a",bg:"#1e3a8a"},
-  {name:"HAPİS",type:"gotojail",bg:"#7f1d1d"},
-  {name:"İstasyon 2",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Yeşil 2",type:"prop",price:220,rent:22,color:"#16a34a",bg:"#14532d"},
-  {name:"JACKPOT",type:"jackpot",bg:"#713f12"},
-  {name:"Turuncu 2",type:"prop",price:240,rent:24,color:"#ea580c",bg:"#7c2d12"},
-  {name:"İstanbul Cad.",type:"prop",price:280,rent:28,color:"#e11d48",bg:"#881337"},
-  {name:"Mavi 2",type:"prop",price:260,rent:26,color:"#2563eb",bg:"#172554"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Kırmızı 3",type:"prop",price:280,rent:28,color:"#dc2626",bg:"#450a0a"},
-  {name:"İstasyon 3",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"SON",type:"go",bg:"#14532d"}
+  {name:"BAŞLANGIÇ",type:"go"},
+  {name:"Kırmızı Sokak",type:"prop",price:60,rent:6,color:"#dc2626"},
+  {name:"Şans",type:"chance"},
+  {name:"Mavi Sokak",type:"prop",price:80,rent:8,color:"#2563eb"},
+  {name:"HAPİS",type:"jail"},
+  {name:"İstasyon",type:"station",price:200,rent:25},
+  {name:"VERGİ",type:"tax",amount:150},
+  {name:"Yeşil Sokak",type:"prop",price:100,rent:10,color:"#16a34a"},
+  {name:"BLACKJACK",type:"blackjack"},
+  {name:"Sarı Sokak",type:"prop",price:120,rent:12,color:"#ca8a04"},
+  {name:"Otopark",type:"free"},
+  {name:"Kumarhane",type:"prop",price:140,rent:14,color:"#7c3aed"},
+  {name:"Mor Sokak",type:"prop",price:140,rent:14,color:"#7c3aed"},
+  {name:"Şans",type:"chance"},
+  {name:"Elektrik",type:"utility",price:150,rent:40},
+  {name:"Turuncu Sokak",type:"prop",price:160,rent:16,color:"#ea580c"},
+  {name:"POKER",type:"poker"},
+  {name:"Kırmızı 2",type:"prop",price:180,rent:18,color:"#dc2626"},
+  {name:"Antalya Sahil",type:"prop",price:200,rent:20,color:"#0ea5e9"},
+  {name:"Lacivert Sokak",type:"prop",price:200,rent:20,color:"#1e3a8a"},
+  {name:"HAPİS!",type:"gotojail"},
+  {name:"İstasyon 2",type:"station",price:200,rent:25},
+  {name:"Şans",type:"chance"},
+  {name:"Yeşil 2",type:"prop",price:220,rent:22,color:"#16a34a"},
+  {name:"JACKPOT",type:"jackpot"},
+  {name:"Turuncu 2",type:"prop",price:240,rent:24,color:"#ea580c"},
+  {name:"İstanbul Cad.",type:"prop",price:280,rent:28,color:"#e11d48"},
+  {name:"Mavi 2",type:"prop",price:260,rent:26,color:"#2563eb"},
+  {name:"Şans",type:"chance"},
+  {name:"Kırmızı 3",type:"prop",price:280,rent:28,color:"#dc2626"},
+  {name:"İstasyon 3",type:"station",price:200,rent:25},
+  {name:"SON",type:"go"}
 ];
 
 const boardEl=$("board");
@@ -268,21 +282,20 @@ for(let i=0;i<32;i++){
   const c=cells[i];
   const div=document.createElement("div");
   div.className="cell";div.id="cell-"+i;
-  if(c.bg)div.style.background=c.bg;
-  if(c.type==="go")div.classList.add("start");
+  if(c.type==="go")div.classList.add("go");
   if(c.type==="jail"||c.type==="gotojail")div.classList.add("jail");
   if(c.type==="blackjack")div.classList.add("special");
   if(c.type==="poker")div.classList.add("poker");
-  if(c.type==="chance")div.classList.add("chance-cell");
-  if(c.type==="tax")div.classList.add("tax-cell");
-  if(c.type==="station")div.classList.add("station-cell");
-  if(c.type==="free")div.classList.add("free-cell");
-  let extra="";
-  if(c.price)extra+=`<div class="price">${c.price}₺</div>`;
-  if(c.rent)extra+=`<div class="rent">Kira ${c.rent}₺</div>`;
-  if(c.amount)extra+=`<div class="price">-${c.amount}₺</div>`;
-  div.innerHTML=`<div class="name">${c.name}</div>${extra}<div class="pieces"></div><div class="owner" id="owner-${i}"></div>`;
+  if(c.type==="chance")div.classList.add("chance");
+  if(c.type==="tax")div.classList.add("tax");
+  if(c.type==="station"||c.type==="utility")div.classList.add("station");
+  if(c.type==="free")div.classList.add("free");
   if(c.color)div.style.borderTop=`4px solid ${c.color}`;
+  let meta="";
+  if(c.price)meta=`${c.price}₺`;
+  if(c.rent)meta+=` · K${c.rent}`;
+  if(c.amount)meta=`-${c.amount}₺`;
+  div.innerHTML=`<div class="label"><div class="name">${c.name}</div>${meta?`<div class="meta">${meta}</div>`:""}</div><div class="pieces"></div>`;
   boardEl.appendChild(div);
 }
 
@@ -291,52 +304,42 @@ function drawDie(el,n){
   const map={1:["d1"],2:["d2a","d2b"],3:["d3a","d3b","d3c"],4:["d4a","d4b","d4c","d4d"],5:["d5a","d5b","d5c","d5d","d5e"],6:["d6a","d6b","d6c","d6d","d6e","d6f"]};
   (map[n]||[]).forEach(cls=>{const s=document.createElement("span");s.className=cls;el.appendChild(s)});
 }
-function showDice(a,b){drawDie($("die1"),a);drawDie($("die2"),b);$("diceTotal").textContent=(a+b)+" ("+a+"+"+b+")"}
+function showDice(a,b){drawDie($("die1"),a);drawDie($("die2"),b);$("diceTotal").textContent=(a+b)}
 function path(){return ref(db,"rooms/"+roomCode)}
-function log(t){const d=document.createElement("div");d.textContent=new Date().toLocaleTimeString("tr-TR")+" — "+t;$("log").prepend(d)}
-function setMsg(t){$("message").textContent=t||""}
 function ensureProps(d){if(!d.properties)d.properties={};for(let i=0;i<32;i++)if(!d.properties[i])d.properties[i]={owner:null};return d}
 function generateCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*ch.length)];return c}
 function getName(){return ($("nameInput").value||"").trim().slice(0,16)||"Oyuncu"}
-function isNaturalBJ(hand){return hand&&hand.length===2&&hVal(hand)===21}
+function isNaturalBJ(h){return h&&h.length===2&&hVal(h)===21}
+function setMsg(t){$("message").textContent=t||""}
 
 const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 function makeDeck(){const d=[];for(const s of suits)for(const r of ranks)d.push({s,r});return d.sort(()=>Math.random()-0.5)}
 function cVal(c){return c.r==="A"?11:["K","Q","J"].includes(c.r)?10:+c.r}
 function hVal(h){let n=0,a=0;(h||[]).forEach(c=>{n+=cVal(c);if(c.r==="A")a++});while(n>21&&a){n-=10;a--}return n}
-function cardHTML(c,back=false){
-  if(back||!c)return`<div class="card back">🂠</div>`;
-  return`<div class="card ${["♥","♦"].includes(c.s)?"redcard":""}">${c.r}${c.s}</div>`;
-}
+function cardHTML(c,back=false){if(back||!c)return`<div class="card back">🂠</div>`;return`<div class="card ${["♥","♦"].includes(c.s)?"redcard":""}">${c.r}${c.s}</div>`}
 
 function clearPieces(){document.querySelectorAll(".pieces").forEach(x=>x.innerHTML="")}
-function placePiece(pos,who,moving=false){
+function placePiece(pos,who,jump=false){
   const cell=$("cell-"+pos);if(!cell)return;
   const s=document.createElement("span");
-  s.className="piece p"+who+(moving?" jump":"");
-  s.textContent=who===0?"1":"2";
-  s.title=who===0?"Oyuncu 1":"Oyuncu 2";
+  s.className="piece p"+who+(jump?" jump":"");
+  s.textContent=String(who+1);
   cell.querySelector(".pieces").appendChild(s);
 }
 async function animateMove(who,from,to){
   if(from===to){displayPos[who]=to;return}
-  animating=true;
-  let cur=from;
+  animating=true;let cur=from;
   while(cur!==to){
-    cur=(cur+1)%32;
-    clearPieces();
-    displayPos[who]=cur;
-    placePiece(displayPos[0],0,who===0);
-    placePiece(displayPos[1],1,who===1);
-    await new Promise(r=>setTimeout(r,200));
+    cur=(cur+1)%32;clearPieces();displayPos[who]=cur;
+    placePiece(displayPos[0],0,who===0);placePiece(displayPos[1],1,who===1);
+    await new Promise(r=>setTimeout(r,190));
   }
-  displayPos[who]=to;animating=false;
-  clearPieces();placePiece(displayPos[0],0);placePiece(displayPos[1],1);
+  displayPos[who]=to;animating=false;clearPieces();
+  placePiece(displayPos[0],0);placePiece(displayPos[1],1);
 }
 
-/* HAPİS: sıra gelince otomatik atla */
 async function autoSkipJail(d){
-  const t=d.turn,p=d.players?.[t];
+  const p=d.players?.[d.turn];
   if(!p||!(p.jailTurns>0)||d.game||d.auction||d.pending||d.chance||jailSkipLock)return;
   jailSkipLock=true;
   try{
@@ -344,43 +347,37 @@ async function autoSkipJail(d){
       if(!data)return;
       const pl=data.players?.[data.turn];
       if(!pl||!(pl.jailTurns>0)||data.game||data.auction||data.pending||data.chance)return;
-      pl.jailTurns-=1;
-      data.turn=data.turn===0?1:0;
-      data.message=`${pl.name} hapiste — tur atlandı. Sıra: ${data.players[data.turn]?.name||""}`;
+      pl.jailTurns-=1;data.turn=data.turn===0?1:0;
+      data.message=`${pl.name} hapiste atlandı → ${data.players[data.turn]?.name||""}`;
       return data;
     });
   }finally{setTimeout(()=>{jailSkipLock=false},400)}
 }
 
 async function createGame(){
-  playerName=getName();
-  if(!playerName){$("lobbyMessage").textContent="Önce ismini yaz";return}
+  playerName=getName();if(!playerName){$("lobbyMessage").textContent="İsim yaz";return}
   try{
     let code;while(true){code=generateCode();if(!(await get(ref(db,"rooms/"+code))).exists())break}
     roomCode=code;playerNumber=0;
     const props={};for(let i=0;i<32;i++)props[i]={owner:null};
     await set(ref(db,"rooms/"+roomCode),{
       players:{0:{name:playerName,money:1500,position:0,props:[],jailTurns:0},1:null},
-      properties:props,turn:0,message:playerName+" oda kurdu. Oyuncu 2 bekleniyor...",
-      game:null,auction:null,pending:null,chance:null,lastDice:[0,0]
+      properties:props,turn:0,message:playerName+" oda kurdu",game:null,auction:null,pending:null,chance:null,lastDice:[0,0]
     });
-    $("createdRoom").innerHTML=`<div class="room-code">ODA: ${code}</div>`;
+    $("createdRoom").innerHTML=`<b style="font-size:22px;letter-spacing:3px">ODA: ${code}</b>`;
     startGame();
   }catch(e){$("lobbyMessage").textContent=e.message}
 }
 async function joinGame(){
-  playerName=getName();
-  if(!playerName){$("lobbyMessage").textContent="Önce ismini yaz";return}
+  playerName=getName();if(!playerName){$("lobbyMessage").textContent="İsim yaz";return}
   const code=$("roomInput").value.trim().toUpperCase();
-  if(code.length!==4){$("lobbyMessage").textContent="4 haneli kod gir";return}
+  if(code.length!==4){$("lobbyMessage").textContent="4 haneli kod";return}
   try{
-    const snap=await get(ref(db,"rooms/"+code));
-    if(!snap.exists()){$("lobbyMessage").textContent="Oda yok";return}
-    const d=snap.val();
-    if(d.players?.[1]){$("lobbyMessage").textContent="Oda dolu";return}
+    const snap=await get(ref(db,"rooms/"+code));if(!snap.exists()){$("lobbyMessage").textContent="Oda yok";return}
+    const d=snap.val();if(d.players?.[1]){$("lobbyMessage").textContent="Oda dolu";return}
     const props=d.properties||{};for(let i=0;i<32;i++)if(!props[i])props[i]={owner:null};
     await set(ref(db,"rooms/"+code+"/players/1"),{name:playerName,money:1500,position:0,props:[],jailTurns:0});
-    await update(ref(db,"rooms/"+code),{message:playerName+" katıldı!",properties:props});
+    await update(ref(db,"rooms/"+code),{message:playerName+" katıldı",properties:props});
     roomCode=code;playerNumber=1;startGame();
   }catch(e){$("lobbyMessage").textContent=e.message}
 }
@@ -395,44 +392,31 @@ function startGame(){
 let lastPos={0:-1,1:-1};
 async function render(d){
   await autoSkipJail(d);
-
   const p0=d.players?.[0],p1=d.players?.[1];
-  $("name0label").textContent="👑 "+(p0?.name||"Oyuncu 1");
-  $("name1label").textContent="👤 "+(p1?.name||"Oyuncu 2");
+  $("name0label").textContent="👑 "+(p0?.name||"P1");
+  $("name1label").textContent="👤 "+(p1?.name||"P2");
   $("money0").textContent=p0?.money??"-";$("position0").textContent=p0?.position??"-";
   $("money1").textContent=p1?.money??"-";$("position1").textContent=p1?.position??"-";
   $("jail0").textContent=(p0?.jailTurns>0)?`🔒 Hapiste (${p0.jailTurns})`:"";
   $("jail1").textContent=(p1?.jailTurns>0)?`🔒 Hapiste (${p1.jailTurns})`:"";
-  $("props0").textContent=p0?.props?.length?`Mal: ${p0.props.length}`:"";
-  $("props1").textContent=p1?.props?.length?`Mal: ${p1.props.length}`:"";
-  $("p0card").classList.toggle("active",d.turn===0);
-  $("p1card").classList.toggle("active",d.turn===1);
-
-  const turnName=d.players?.[d.turn]?.name||"";
-  const el=$("turnText");
-  el.classList.remove("me","wait");
+  $("p0card").classList.toggle("on",d.turn===0);
+  $("p1card").classList.toggle("on",d.turn===1);
+  const el=$("turnText");el.classList.remove("me","wait");
   if(d.turn===playerNumber){el.textContent="🎲 SENİN SIRAN";el.classList.add("me")}
-  else{el.textContent="⏳ Sıra: "+turnName;el.classList.add("wait")}
-
+  else{el.textContent="⏳ Sıra: "+(d.players?.[d.turn]?.name||"");el.classList.add("wait")}
   const me=d.players?.[playerNumber];
   $("rollButton").disabled=d.turn!==playerNumber||!!d.game||!!d.auction||!!d.pending||!!d.chance||animating||(me?.jailTurns>0);
-  setMsg(d.message);
-  if(d.lastDice?.[0])showDice(d.lastDice[0],d.lastDice[1]);
-
+  setMsg(d.message);if(d.lastDice?.[0])showDice(d.lastDice[0],d.lastDice[1]);
   for(const who of [0,1]){
     const p=d.players?.[who];if(!p)continue;
     const target=p.position||0;
-    if(lastPos[who]===-1){displayPos[who]=target;lastPos[who]=target}
+    if(lastPos[who]<0){displayPos[who]=target;lastPos[who]=target}
     else if(lastPos[who]!==target&&!animating){const from=lastPos[who];lastPos[who]=target;await animateMove(who,from,target)}
     else if(!animating)displayPos[who]=target;
   }
   if(!animating){clearPieces();if(p0)placePiece(displayPos[0],0);if(p1)placePiece(displayPos[1],1)}
-
-  const props=d.properties||{};
-  for(let i=0;i<32;i++){const o=props[i]?.owner;const el=$("owner-"+i);if(el)el.textContent=o===0?"👑":o===1?"👤":""}
   renderActions(d);
-
-  if(d.chance)renderChance(d.chance,d);
+  if(d.chance)renderChance(d.chance);
   else if(d.game)renderCasino(d.game,d);
   else if(d.pending)renderPending(d.pending,d);
   else if(d.auction)renderAuction(d.auction,d);
@@ -444,158 +428,108 @@ function renderActions(d){
   if(d.game||d.auction||d.pending||d.chance)return;
   const me=d.players?.[playerNumber];if(!me?.props?.length)return;
   me.props.forEach(idx=>{
-    const b=document.createElement("button");b.className="gold";b.style.fontSize="11px";
-    b.textContent="Artırma: "+cells[idx].name;b.onclick=()=>startAuction(idx);box.appendChild(b);
+    const b=document.createElement("button");b.className="gold";b.style.fontSize="11px";b.style.width="auto";
+    b.textContent=cells[idx].name;b.onclick=()=>startAuction(idx);box.appendChild(b);
   });
 }
 
 async function rollDice(){
-  try{
-    await runTransaction(path(),d=>{
-      if(!d)return;d=ensureProps(d);
-      if(d.turn!==playerNumber||!d.players?.[playerNumber]||d.game||d.auction||d.pending||d.chance)return;
-      const p=d.players[playerNumber];
-      if((p.jailTurns||0)>0){
-        p.jailTurns-=1;d.turn=playerNumber===0?1:0;
-        d.message=`${p.name} hapiste atlandı → ${d.players[d.turn]?.name||""}`;return d;
-      }
-      const d1=Math.floor(Math.random()*6)+1,d2=Math.floor(Math.random()*6)+1,total=d1+d2;
-      d.lastDice=[d1,d2];
-      const old=p.position||0;p.position=(old+total)%32;
-      if(p.position<old)p.money=(p.money||1500)+200;
-      d.message=`${p.name} ${d1}+${d2}=${total} → ${cells[p.position].name}`;
-      d.turn=playerNumber===0?1:0;
-      const cell=cells[p.position],prop=d.properties[p.position];
-      if(cell.type==="blackjack"){d.game=bjInit();d.message="🃏 BLACKJACK!"}
-      else if(cell.type==="poker"){d.game=pokerInit();d.message="♠️ POKER!"}
-      else if(cell.type==="tax"){p.money-=cell.amount;d.message+=` (-${cell.amount}₺ vergi)`}
-      else if(cell.type==="gotojail"){p.position=4;p.jailTurns=1;d.message=`${p.name} hapse girdi!`}
-      else if(cell.type==="chance"){
-        const ev=CHANCE_EVENTS[Math.floor(Math.random()*CHANCE_EVENTS.length)];
-        p.money+=(ev.money||0);
-        d.chance={text:ev.text,money:ev.money,player:playerNumber,name:p.name};
-        d.turn=playerNumber;d.message=`Şans: ${p.name} — ${ev.text}`;
-      }
-      else if((cell.type==="prop"||cell.type==="station"||cell.type==="utility")&&prop){
-        if(prop.owner==null){d.pending={type:"buy",pos:p.position,player:playerNumber,price:cell.price};d.turn=playerNumber;d.message=`${cell.name} satılık (${cell.price}₺)`}
-        else if(prop.owner!==playerNumber){
-          const rent=cell.rent||25;p.money-=rent;
-          if(d.players[prop.owner])d.players[prop.owner].money+=rent;
-          d.message+=` → ${rent}₺ kira`;
-        }
-      }
-      return d;
-    });
-  }catch(e){setMsg("Zar hatası: "+e.message)}
-}
-
-function renderChance(ch,d){
-  $("modalContent").innerHTML=`<div class="chance-card"><h2 style="color:#93c5fd">🎴 ŞANS</h2>
-    <div style="color:#93c5fd">${ch.name||""}</div>
-    <div style="font-size:18px;margin:14px 0">${ch.text}</div>
-    <div style="font-size:22px;font-weight:bold;color:${(ch.money||0)>=0?"#4ade80":"#f87171"}">${(ch.money||0)>=0?"+":""}${ch.money}₺</div>
-    <div class="btn-row"><button id="chanceOk">Tamam</button></div></div>`;
-  $("modal").classList.remove("hidden");
-  $("chanceOk").onclick=async()=>{
-    await runTransaction(path(),data=>{
-      if(!data?.chance)return;
-      const who=data.chance.player;data.chance=null;data.turn=who===0?1:0;data.message="Şans okundu.";return data;
-    });
-  };
-}
-
-function buildAdmin(){
-  const t=$("teleports");t.innerHTML="";
-  cells.forEach((c,i)=>{
-    const b=document.createElement("button");b.textContent=i+" "+c.name;
-    if(c.type==="blackjack")b.className="gold";if(c.type==="poker")b.className="blue";
-    b.onclick=()=>teleport(i);t.appendChild(b);
-  });
-}
-$("adminToggle").onclick=()=>$("teleports").classList.toggle("open");
-async function teleport(idx){
-  if(playerNumber!==0)return;
   await runTransaction(path(),d=>{
-    if(!d?.players?.[0])return;d=ensureProps(d);
-    d.players[0].position=idx;d.message="Admin → "+cells[idx].name;
-    if(cells[idx].type==="blackjack"){d.game=bjInit();d.message="🃏 BLACKJACK"}
-    else if(cells[idx].type==="poker"){d.game=pokerInit();d.message="♠️ POKER"}
-    else if(cells[idx].type==="chance"){
+    if(!d)return;d=ensureProps(d);
+    if(d.turn!==playerNumber||!d.players?.[playerNumber]||d.game||d.auction||d.pending||d.chance)return;
+    const p=d.players[playerNumber];
+    if((p.jailTurns||0)>0){p.jailTurns-=1;d.turn=playerNumber===0?1:0;d.message=`${p.name} hapiste atlandı`;return d}
+    const d1=1+Math.floor(Math.random()*6),d2=1+Math.floor(Math.random()*6),total=d1+d2;
+    d.lastDice=[d1,d2];
+    const old=p.position||0;p.position=(old+total)%32;
+    if(p.position<old)p.money+=200;
+    d.message=`${p.name} ${d1}+${d2}=${total} → ${cells[p.position].name}`;
+    d.turn=playerNumber===0?1:0;
+    const cell=cells[p.position],prop=d.properties[p.position];
+    if(cell.type==="blackjack"){d.game=bjInit();d.message="🃏 BLACKJACK"}
+    else if(cell.type==="poker"){d.game=pokerInit();d.message="♠️ POKER"}
+    else if(cell.type==="tax"){p.money-=cell.amount;d.message+=` (-${cell.amount}₺)`}
+    else if(cell.type==="gotojail"){p.position=4;p.jailTurns=1;d.message=`${p.name} hapse girdi`}
+    else if(cell.type==="chance"){
       const ev=CHANCE_EVENTS[Math.floor(Math.random()*CHANCE_EVENTS.length)];
-      d.players[0].money+=(ev.money||0);
-      d.chance={text:ev.text,money:ev.money,player:0,name:d.players[0].name};
+      p.money+=ev.money;d.chance={text:ev.text,money:ev.money,player:playerNumber,name:p.name};d.turn=playerNumber;
     }
-    else if(cells[idx].type==="gotojail"){d.players[0].position=4;d.players[0].jailTurns=1}
-    else if((cells[idx].type==="prop"||cells[idx].type==="station")&&d.properties[idx].owner==null){
-      d.pending={type:"buy",pos:idx,player:0,price:cells[idx].price};d.turn=0;
+    else if((cell.type==="prop"||cell.type==="station"||cell.type==="utility")&&prop){
+      if(prop.owner==null){d.pending={pos:p.position,player:playerNumber,price:cell.price};d.turn=playerNumber}
+      else if(prop.owner!==playerNumber){const r=cell.rent||25;p.money-=r;if(d.players[prop.owner])d.players[prop.owner].money+=r;d.message+=` kira ${r}₺`}
     }
     return d;
   });
 }
 
-function renderPending(pend,d){
-  if(pend.player!==playerNumber){
-    $("modalContent").innerHTML=`<h3>Bekleniyor</h3><p>${d.players[pend.player]?.name} karar veriyor.</p>`;
-    $("modal").classList.remove("hidden");return;
-  }
-  const c=cells[pend.pos];
-  $("modalContent").innerHTML=`<h2>🏠 ${c.name}</h2>
-    <div class="info">Alım: <b>${c.price}₺</b> | Kira: <b style="color:#4ade80">${c.rent||0}₺</b></div>
-    <div class="info">Paran: ${d.players[playerNumber].money}₺</div>
-    <div class="btn-row"><button id="btnBuy">✅ Satın Al</button><button class="red" id="btnSkip">❌ Alma</button><button class="gold" id="btnAuc">📢 Artırma</button></div>`;
+function renderChance(ch){
+  $("modalContent").innerHTML=`<div class="chance-card"><h2 style="color:#93c5fd">🎴 ŞANS</h2><div>${ch.name||""}</div>
+    <div style="font-size:17px;margin:12px 0">${ch.text}</div>
+    <div style="font-size:22px;font-weight:bold;color:${ch.money>=0?"#4ade80":"#f87171"}">${ch.money>=0?"+":""}${ch.money}₺</div>
+    <div class="btn-row"><button id="chanceOk">Tamam</button></div></div>`;
   $("modal").classList.remove("hidden");
-  $("btnBuy").onclick=doBuy;$("btnSkip").onclick=doSkipBuy;$("btnAuc").onclick=doAuctionBuy;
+  $("chanceOk").onclick=async()=>{await runTransaction(path(),data=>{if(!data?.chance)return;const w=data.chance.player;data.chance=null;data.turn=w===0?1:0;return data})};
 }
-async function doBuy(){await runTransaction(path(),d=>{if(!d?.pending||d.pending.player!==playerNumber)return;d=ensureProps(d);const pos=d.pending.pos,price=d.pending.price,p=d.players[playerNumber];if(p.money<price){d.message="Yetersiz para!";return d}p.money-=price;d.properties[pos].owner=playerNumber;if(!p.props)p.props=[];if(!p.props.includes(pos))p.props.push(pos);d.message=`${p.name} ${cells[pos].name} aldı`;d.pending=null;d.turn=playerNumber===0?1:0;return d})}
-async function doSkipBuy(){await runTransaction(path(),d=>{if(!d?.pending)return;d.pending=null;d.turn=playerNumber===0?1:0;d.message="Alınmadı";return d})}
-async function doAuctionBuy(){await runTransaction(path(),d=>{if(!d?.pending)return;const pos=d.pending.pos;d.auction={pos,seller:null,highest:0,highestBy:null,minBid:cells[pos].price||50,active:true};d.pending=null;return d})}
+
+function buildAdmin(){
+  const t=$("teleports");t.innerHTML="";
+  cells.forEach((c,i)=>{const b=document.createElement("button");b.textContent=i+" "+c.name;
+    b.onclick=()=>runTransaction(path(),d=>{if(!d?.players?.[0])return;d=ensureProps(d);d.players[0].position=i;
+      if(c.type==="blackjack")d.game=bjInit();else if(c.type==="poker")d.game=pokerInit();
+      else if(c.type==="gotojail"){d.players[0].position=4;d.players[0].jailTurns=1}
+      d.message="Admin → "+c.name;return d});t.appendChild(b)});
+}
+$("adminToggle").onclick=()=>$("teleports").classList.toggle("open");
+
+function renderPending(pend,d){
+  if(pend.player!==playerNumber){$("modalContent").innerHTML=`<p>${d.players[pend.player]?.name} karar veriyor...</p>`;$("modal").classList.remove("hidden");return}
+  const c=cells[pend.pos];
+  $("modalContent").innerHTML=`<h2>${c.name}</h2><div class="info">Alım ${c.price}₺ · Kira ${c.rent||0}₺</div>
+    <div class="info">Paran: ${d.players[playerNumber].money}₺</div>
+    <div class="btn-row"><button id="btnBuy">Satın Al</button><button class="red" id="btnSkip">Alma</button><button class="gold" id="btnAuc">Artırma</button></div>`;
+  $("modal").classList.remove("hidden");
+  $("btnBuy").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.pending||d.pending.player!==playerNumber)return;d=ensureProps(d);const pos=d.pending.pos,pr=d.pending.price,p=d.players[playerNumber];if(p.money<pr)return d;p.money-=pr;d.properties[pos].owner=playerNumber;if(!p.props)p.props=[];if(!p.props.includes(pos))p.props.push(pos);d.pending=null;d.turn=playerNumber===0?1:0;return d})};
+  $("btnSkip").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.pending)return;d.pending=null;d.turn=playerNumber===0?1:0;return d})};
+  $("btnAuc").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.pending)return;const pos=d.pending.pos;d.auction={pos,seller:null,highest:0,highestBy:null,minBid:cells[pos].price||50,active:true};d.pending=null;return d})};
+}
 async function startAuction(pos){await runTransaction(path(),d=>{if(!d)return;const me=d.players[playerNumber];if(!me?.props?.includes(pos))return;d.auction={pos,seller:playerNumber,highest:0,highestBy:null,minBid:Math.floor((cells[pos].price||100)*0.5),active:true};return d})}
 function renderAuction(a,d){
   const c=cells[a.pos];
-  let h=`<h2>📢 Açık Artırma</h2><div class="info"><b>${c.name}</b> | Min: ${a.minBid||0}₺</div><div class="info">En yüksek: <b>${a.highest}₺</b></div>`;
+  let h=`<h2>📢 ${c.name}</h2><div class="info">Min ${a.minBid}₺ · En yüksek ${a.highest}₺</div>`;
   if(a.seller!==playerNumber)h+=`<div class="btn-row"><input type="number" id="bidInput" value="${Math.max((a.highest||0)+10,a.minBid||50)}"><button class="gold" id="btnBid">Teklif</button></div>`;
-  if(a.seller===playerNumber)h+=`<div class="btn-row"><button class="blue" id="btnAccept" ${a.highestBy==null?"disabled":""}>✅ Kabul</button><button class="red" id="btnCancelAuc">❌ İptal</button></div>`;
-  if(a.seller==null)h+=`<div class="btn-row"><button class="blue" id="btnFinishAuc" ${a.highestBy==null?"disabled":""}>✅ Bitir</button><button class="red" id="btnCancelAuc2">❌ İptal</button></div>`;
+  if(a.seller===playerNumber)h+=`<div class="btn-row"><button class="blue" id="btnAccept" ${a.highestBy==null?"disabled":""}>Kabul</button><button class="red" id="btnCancelAuc">İptal</button></div>`;
+  if(a.seller==null)h+=`<div class="btn-row"><button class="blue" id="btnFinishAuc" ${a.highestBy==null?"disabled":""}>Bitir</button><button class="red" id="btnCancelAuc2">İptal</button></div>`;
   $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("btnBid"))$("btnBid").onclick=placeBid;if($("btnAccept"))$("btnAccept").onclick=acceptBid;
-  if($("btnFinishAuc"))$("btnFinishAuc").onclick=finishBankAuction;
-  if($("btnCancelAuc"))$("btnCancelAuc").onclick=cancelAuction;if($("btnCancelAuc2"))$("btnCancelAuc2").onclick=cancelAuction;
+  if($("btnBid"))$("btnBid").onclick=async()=>{const amount=Number($("bidInput")?.value||0);await runTransaction(path(),d=>{if(!d?.auction?.active)return;const a=d.auction;if(a.seller===playerNumber||amount<=(a.highest||0))return;if((d.players[playerNumber]?.money||0)<amount)return;a.highest=amount;a.highestBy=playerNumber;return d})};
+  if($("btnAccept"))$("btnAccept").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!==playerNumber)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null)return;const buyer=d.players[a.highestBy],seller=d.players[a.seller];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;seller.money+=a.highest;d.properties[a.pos].owner=a.highestBy;seller.props=(seller.props||[]).filter(x=>x!==a.pos);if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;return d})};
+  if($("btnFinishAuc"))$("btnFinishAuc").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!=null)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null){d.auction=null;return d}const buyer=d.players[a.highestBy];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;d.properties[a.pos].owner=a.highestBy;if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;return d})};
+  if($("btnCancelAuc"))$("btnCancelAuc").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.auction)return;if(d.auction.seller!=null&&d.auction.seller!==playerNumber)return;d.auction=null;return d})};
+  if($("btnCancelAuc2"))$("btnCancelAuc2").onclick=async()=>{await runTransaction(path(),d=>{if(!d?.auction)return;d.auction=null;return d})};
 }
-async function placeBid(){const amount=Number($("bidInput")?.value||0);await runTransaction(path(),d=>{if(!d?.auction?.active)return;const a=d.auction;if(a.seller===playerNumber||amount<=(a.highest||0)||amount<(a.minBid||0))return;if((d.players[playerNumber]?.money||0)<amount)return;a.highest=amount;a.highestBy=playerNumber;return d})}
-async function acceptBid(){await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!==playerNumber)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null)return;const buyer=d.players[a.highestBy],seller=d.players[a.seller];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;seller.money+=a.highest;d.properties[a.pos].owner=a.highestBy;seller.props=(seller.props||[]).filter(x=>x!==a.pos);if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;return d})}
-async function finishBankAuction(){await runTransaction(path(),d=>{if(!d?.auction||d.auction.seller!=null)return;d=ensureProps(d);const a=d.auction;if(a.highestBy==null){d.auction=null;return d}const buyer=d.players[a.highestBy];if(!buyer||buyer.money<a.highest)return;buyer.money-=a.highest;d.properties[a.pos].owner=a.highestBy;if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);d.auction=null;return d})}
-async function cancelAuction(){await runTransaction(path(),d=>{if(!d?.auction)return;if(d.auction.seller!=null&&d.auction.seller!==playerNumber)return;d.auction=null;return d})}
 
-function bjInit(){return{type:"blackjack",phase:"bet",deck:makeDeck(),dealer:[],hands:{p0:[],p1:[]},bets:{p0:0,p1:0},done:{p0:false,p1:false},turn:0,message:"Bahis koyun (min 10₺)"}}
+function bjInit(){return{type:"blackjack",phase:"bet",deck:makeDeck(),dealer:[],hands:{p0:[],p1:[]},bets:{p0:0,p1:0},done:{p0:false,p1:false},turn:0,message:"Bahis"}}
 function renderBJ(g,d){
   const key=playerNumber===0?"p0":"p1";
-  let h=`<style>.bj-table{background:radial-gradient(ellipse,#0d5c2e,#064e22);border:8px solid #5c4033;border-radius:40% 40% 12% 12%/30% 30% 8% 8%;padding:22px}
-  .bj-seat{background:#0005;border:2px solid #2e7d32;border-radius:12px;padding:12px;min-width:140px;text-align:center}
-  .bj-seat.me{border-color:#ffc107}.bj-chip{display:inline-block;background:#c62828;color:#fff;border-radius:50%;width:34px;height:34px;line-height:34px;font-size:11px;font-weight:bold;border:2px solid #ffc107;margin-top:6px}</style>
-  <div class="bj-table"><div style="text-align:center"><div style="color:#c8e6c9;font-size:12px">♠ KURPİYER ♠</div><div class="cards">`;
+  let h=`<div style="text-align:center"><b>♠ BLACKJACK · Doğal BJ 3:2</b></div><div class="info">${g.message||""}</div><div class="cards">`;
   if(g.phase==="bet")h+=cardHTML(null,true)+cardHTML(null,true);
   else h+=(g.dealer||[]).map((c,i)=>cardHTML(c,g.phase==="play"&&i===1)).join("");
-  h+=`</div><div class="info" style="display:inline-block">${g.phase==="end"?"Puan: "+hVal(g.dealer||[]):(g.phase==="play"?"?":"")}</div></div>
-  <div class="info" style="text-align:center">${g.message||""}</div>
-  <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:14px">`;
+  h+=`</div><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">`;
   [0,1].forEach(i=>{
     if(!d.players?.[i])return;
     const k="p"+i,hand=g.hands?.[k]||[],bet=g.bets?.[k]||0,nat=isNaturalBJ(hand);
-    h+=`<div class="bj-seat ${i===playerNumber?"me":""}"><div style="font-size:12px;color:#a5d6a7">${i===playerNumber?"★ SEN":d.players[i].name}</div>
-      <div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):hand.map(c=>cardHTML(c)).join("")}</div>
-      ${g.phase!=="bet"&&hand.length?`<div style="color:#fff;font-weight:bold">${hVal(hand)}${nat?' <span class="bj-natural">BLACKJACK!</span>':""}</div>`:""}
-      ${bet?`<div class="bj-chip">${bet}</div>`:""}</div>`;
+    h+=`<div style="border:2px solid ${i===playerNumber?"#fbbf24":"#333"};padding:10px;border-radius:10px;min-width:120px;text-align:center">
+      <div>${i===playerNumber?"SEN":d.players[i].name}</div><div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):hand.map(c=>cardHTML(c)).join("")}</div>
+      ${hand.length&&g.phase!=="bet"?`<b>${hVal(hand)}${nat?' <span class="bj-natural">BJ!</span>':""}</b>`:""}
+      ${bet?`<div>${bet}₺</div>`:""}</div>`;
   });
-  h+=`</div></div><div style="margin-top:14px;text-align:center">`;
+  h+=`</div><div style="text-align:center;margin-top:10px">`;
   if(g.phase==="bet"){
-    const myBet=g.bets?.[key]||0;
-    h+=`<div class="info">Paran: ${d.players[playerNumber]?.money||0}₺ · Doğal BJ → 3:2 öder</div>`;
-    if(!myBet)h+=`<div class="btn-row"><input type="number" id="bjBet" value="50" min="10"><button class="gold" id="bjBetBtn">Bahis Koy</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Bahis alındı</div>`;
+    if(!(g.bets?.[key]>0))h+=`<div class="btn-row"><input type="number" id="bjBet" value="50" min="10"><button class="gold" id="bjBetBtn">Bahis</button></div>`;
+    else h+=`<div class="info">Bahis alındı</div>`;
   }else if(g.phase==="play"&&g.turn===playerNumber&&!g.done?.[key]){
     h+=`<div class="btn-row"><button id="bjHit">Kart</button><button class="blue" id="bjStand">Kal</button><button class="gold" id="bjDouble">Double</button></div>`;
-  }else if(g.phase==="play")h+=`<p style="color:#aaa">Sıra: ${d.players[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<div class="btn-row"><button id="bjClose">Masaya Dön</button></div>`;
+  }else if(g.phase==="play")h+=`<p>Sıra: ${d.players[g.turn]?.name||""}</p>`;
+  if(g.phase==="end")h+=`<button id="bjClose">Masaya Dön</button>`;
   h+=`</div>`;
   $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
   if($("bjBetBtn"))$("bjBetBtn").onclick=()=>window.bjPlaceBet();
@@ -606,88 +540,68 @@ function renderBJ(g,d){
 }
 window.bjPlaceBet=async()=>{
   const bet=Math.max(10,Number($("bjBet")?.value||50)),key=playerNumber===0?"p0":"p1";
-  try{
-    const snap=await get(path());const d=snap.val();
-    if(!d?.game||d.game.phase!=="bet")return;
-    const p=d.players?.[playerNumber];if(!p||p.money<bet){alert("Yetersiz para");return}
-    const bets={...(d.game.bets||{p0:0,p1:0})};if((bets[key]||0)>0)return;bets[key]=bet;
-    await update(ref(db,"rooms/"+roomCode+"/game"),{bets,message:`${p.name} ${bet}₺`});
-    if((bets.p0||0)>0&&(bets.p1||0)>0){
-      let deck=Array.isArray(d.game.deck)&&d.game.deck.length>20?[...d.game.deck]:makeDeck();
-      const hands={p0:[deck.pop(),deck.pop()],p1:[deck.pop(),deck.pop()]};
-      const done={p0:isNaturalBJ(hands.p0),p1:isNaturalBJ(hands.p1)};
-      let turn=0;if(done.p0&&!done.p1)turn=1;if(done.p0&&done.p1){/* end handled below */}
-      await update(ref(db,"rooms/"+roomCode+"/game"),{phase:"play",deck,dealer:[deck.pop(),deck.pop()],hands,done,turn,message:"Kartlar dağıtıldı"});
-      if(done.p0&&done.p1)await window.bjAct("stand"); // tetik için - her ikisi natural, sonuç için stand zinciri
-    }
-  }catch(e){alert(e.message)}
+  const snap=await get(path());const d=snap.val();
+  if(!d?.game||d.game.phase!=="bet")return;
+  const p=d.players[playerNumber];if(!p||p.money<bet){alert("Yetersiz para");return}
+  const bets={...(d.game.bets||{p0:0,p1:0})};if(bets[key]>0)return;bets[key]=bet;
+  await update(ref(db,"rooms/"+roomCode+"/game"),{bets,message:`${p.name} ${bet}₺`});
+  if(bets.p0>0&&bets.p1>0){
+    let deck=[...(d.game.deck||makeDeck())];
+    const hands={p0:[deck.pop(),deck.pop()],p1:[deck.pop(),deck.pop()]};
+    const done={p0:isNaturalBJ(hands.p0),p1:isNaturalBJ(hands.p1)};
+    await update(ref(db,"rooms/"+roomCode+"/game"),{phase:"play",deck,dealer:[deck.pop(),deck.pop()],hands,done,turn:done.p0?1:0,message:"Kartlar"});
+  }
 };
 window.bjAct=async(act)=>{
   const key=playerNumber===0?"p0":"p1",other=playerNumber===0?"p1":"p0";
-  try{
-    const snap=await get(path());let d=snap.val();
-    if(!d?.game||d.game.phase!=="play"||d.game.turn!==playerNumber)return;
-    const g={...d.game};if(!Array.isArray(g.deck))g.deck=makeDeck();
-    const h=[...(g.hands[key]||[])];
-    if(isNaturalBJ(h))g.done[key]=true;
-    else if(act==="hit"){h.push(g.deck.pop());if(hVal(h)>=21)g.done[key]=true}
-    else if(act==="stand")g.done[key]=true;
-    else if(act==="double"){h.push(g.deck.pop());g.bets[key]=(g.bets[key]||0)*2;g.done[key]=true}
-    else return;
-    g.hands[key]=h;
-    if(g.done[key]){
-      if(!g.done[other]){g.turn=playerNumber===0?1:0;g.message=`Sıra: ${d.players[g.turn]?.name||""}`}
-      else{
-        while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
-        g.phase="end";const dv=hVal(g.dealer);const dNat=isNaturalBJ(g.dealer);let msg="";
-        ["p0","p1"].forEach((k,i)=>{
-          if(!d.players[i])return;
-          const hand=g.hands[k]||[],bet=g.bets[k]||0,pv=hVal(hand),pNat=isNaturalBJ(hand);
-          if(pv>21){d.players[i].money-=bet;msg+=` ${d.players[i].name} battı.`}
-          else if(pNat&&dNat)msg+=` ${d.players[i].name} berabere (BJ).`;
-          else if(pNat){const win=Math.floor(bet*1.5);d.players[i].money+=win;msg+=` ${d.players[i].name} BLACKJACK +${win}!`}
-          else if(dNat){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti.`}
-          else if(dv>21||pv>dv){d.players[i].money+=bet;msg+=` ${d.players[i].name} +${bet}.`}
-          else if(pv<dv){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti.`}
-          else msg+=` ${d.players[i].name} berabere.`;
-        });
-        g.message="Bitti."+msg;
-      }
+  const snap=await get(path());let d=snap.val();
+  if(!d?.game||d.game.phase!=="play"||d.game.turn!==playerNumber)return;
+  const g={...d.game};if(!Array.isArray(g.deck))g.deck=makeDeck();
+  const h=[...(g.hands[key]||[])];
+  if(isNaturalBJ(h))g.done[key]=true;
+  else if(act==="hit"){h.push(g.deck.pop());if(hVal(h)>=21)g.done[key]=true}
+  else if(act==="stand")g.done[key]=true;
+  else if(act==="double"){h.push(g.deck.pop());g.bets[key]*=2;g.done[key]=true}
+  else return;
+  g.hands[key]=h;
+  if(g.done[key]){
+    if(!g.done[other]){g.turn=playerNumber===0?1:0}
+    else{
+      while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
+      g.phase="end";const dv=hVal(g.dealer),dNat=isNaturalBJ(g.dealer);let msg="";
+      ["p0","p1"].forEach((k,i)=>{
+        if(!d.players[i])return;
+        const hand=g.hands[k],bet=g.bets[k]||0,pv=hVal(hand),pNat=isNaturalBJ(hand);
+        if(pv>21){d.players[i].money-=bet;msg+=` ${d.players[i].name} battı`}
+        else if(pNat&&dNat)msg+=` ${d.players[i].name} berabere BJ`;
+        else if(pNat){const w=Math.floor(bet*1.5);d.players[i].money+=w;msg+=` ${d.players[i].name} BJ +${w}`}
+        else if(dNat){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti`}
+        else if(dv>21||pv>dv){d.players[i].money+=bet;msg+=` ${d.players[i].name} +${bet}`}
+        else if(pv<dv){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti`}
+        else msg+=` ${d.players[i].name} berabere`;
+      });
+      g.message="Bitti."+msg;
     }
-    await update(ref(db,"rooms/"+roomCode),{game:g,players:d.players,message:g.message});
-  }catch(e){alert(e.message)}
+  }
+  await update(ref(db,"rooms/"+roomCode),{game:g,players:d.players,message:g.message});
 };
 
-function pokerInit(){return{type:"poker",phase:"bet",deck:makeDeck(),community:[],players:{0:{hole:[],chips:0,fold:false,bet:0,acted:false},1:{hole:[],chips:0,fold:false,bet:0,acted:false}},pot:0,currentBet:0,turn:0,message:"Buy-in koyun"}}
+function pokerInit(){return{type:"poker",phase:"bet",deck:makeDeck(),community:[],players:{0:{hole:[],chips:0,fold:false,bet:0,acted:false},1:{hole:[],chips:0,fold:false,bet:0,acted:false}},pot:0,currentBet:0,turn:0,message:"Buy-in"}}
 function renderPoker(g,d){
-  const me=g.players?.[playerNumber]||{hole:[],chips:0,fold:false,bet:0};
-  const other=playerNumber===0?1:0,ot=g.players?.[other]||{hole:[],chips:0,fold:false,bet:0};
-  let h=`<style>.pk-table{background:radial-gradient(ellipse,#0f7a3a,#064020);border:10px solid #4a3728;border-radius:100px;padding:18px}
-  .pk-seat{background:#0005;border:2px solid #2e7d32;border-radius:12px;padding:12px;min-width:140px;text-align:center}
-  .pk-seat.me{border-color:#ffc107}.pk-pot{display:inline-block;background:#0007;color:#ffd54a;font-weight:bold;padding:4px 14px;border-radius:20px;margin:8px 0}</style>
-  <div class="pk-table"><div style="text-align:center"><div style="color:#c8e6c9;font-size:12px">♠ HOLD'EM ♠</div><div class="cards">`;
+  const me=g.players?.[playerNumber]||{chips:0,fold:false,bet:0,hole:[]};
+  let h=`<div style="text-align:center"><b>♠ POKER</b></div><div class="info">${g.message||""} · POT ${g.pot||0}₺</div><div class="cards">`;
   if(!(g.community||[]).length)for(let i=0;i<5;i++)h+=cardHTML(null,true);
-  else{h+=(g.community||[]).map(c=>cardHTML(c)).join("");for(let i=0;i<5-(g.community||[]).length;i++)h+=`<div class="card back" style="opacity:.3">🂠</div>`}
-  h+=`</div><div class="pk-pot">POT: ${g.pot||0}₺</div></div><div class="info" style="text-align:center">${g.message||""}</div>
-  <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:12px">
-  <div class="pk-seat"><div style="font-size:12px;color:#a5d6a7">${d.players?.[other]?.name||"Rakip"}</div>
-    <div class="cards">${g.phase==="end"?(ot.hole||[]).map(c=>cardHTML(c)).join(""):cardHTML(null,true)+cardHTML(null,true)}</div>
-    <div style="font-size:12px;color:#c8e6c9">Çip: ${ot.chips||0}₺</div></div>
-  <div class="pk-seat me"><div style="font-size:12px;color:#ffe082">★ SEN</div>
-    <div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):(me.hole||[]).map(c=>cardHTML(c)).join("")}</div>
-    <div style="font-size:12px;color:#c8e6c9">Çip: ${me.chips||0}₺</div></div></div>
-  <div style="margin-top:14px;text-align:center">`;
+  else h+=(g.community||[]).map(c=>cardHTML(c)).join("");
+  h+=`</div><div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):(me.hole||[]).map(c=>cardHTML(c)).join("")}</div>`;
   if(g.phase==="bet"){
-    h+=`<div class="info">Paran: ${d.players?.[playerNumber]?.money||0}₺</div>`;
     if(!(me.chips>0))h+=`<div class="btn-row"><input type="number" id="pkBet" value="100" min="20"><button class="gold" id="pkBuyin">Masaya Gir</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Buy-in alındı</div>`;
+    else h+=`<div class="info">Buy-in alındı</div>`;
   }else if(g.phase!=="end"&&g.turn===playerNumber&&!me.fold){
     h+=`<div class="btn-row"><button class="red" id="pkFold">Çekil</button>
       ${(me.bet||0)===(g.currentBet||0)?`<button class="blue" id="pkCheck">Pas</button>`:`<button id="pkCall">Gör</button>`}
-      <input type="number" id="raiseIn" value="${(g.currentBet||0)+50}" style="width:80px"><button class="gold" id="pkRaise">Rais Yap</button></div>`;
-  }else if(g.phase!=="end")h+=`<p style="color:#aaa">Sıra: ${d.players?.[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<div class="btn-row"><button id="pkClose">Masaya Dön</button></div>`;
-  h+=`</div>`;
+      <input type="number" id="raiseIn" value="${(g.currentBet||0)+50}" style="width:70px"><button class="gold" id="pkRaise">Rais</button></div>`;
+  }else if(g.phase!=="end")h+=`<p>Sıra: ${d.players[g.turn]?.name||""}</p>`;
+  if(g.phase==="end")h+=`<button id="pkClose">Masaya Dön</button>`;
   $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
   if($("pkBuyin"))$("pkBuyin").onclick=()=>window.pkPlaceBet();
   if($("pkFold"))$("pkFold").onclick=()=>window.pkAct("fold");
@@ -704,9 +618,8 @@ window.pkPlaceBet=async()=>{
     if(!p||p.money<amt||(g.players[playerNumber]?.chips||0)>0)return;
     p.money-=amt;g.players[playerNumber].chips=amt;
     if(g.players[0].chips>0&&g.players[1].chips>0){
-      g.phase="preflop";g.players[0].hole=[g.deck.pop(),g.deck.pop()];g.players[1].hole=[g.deck.pop(),g.deck.pop()];
-      g.turn=0;g.message="Preflop";
-    }else g.message=`${p.name} buy-in`;return d;
+      g.phase="preflop";g.players[0].hole=[g.deck.pop(),g.deck.pop()];g.players[1].hole=[g.deck.pop(),g.deck.pop()];g.turn=0;g.message="Preflop";
+    }return d;
   });
 };
 window.pkAct=async(act)=>{
@@ -729,7 +642,7 @@ window.pkAct=async(act)=>{
       if(g.phase==="preflop"){g.community=[g.deck.pop(),g.deck.pop(),g.deck.pop()];g.phase="flop"}
       else if(g.phase==="flop"){g.community.push(g.deck.pop());g.phase="turn"}
       else if(g.phase==="turn"){g.community.push(g.deck.pop());g.phase="river"}
-      else{g.players[0].chips+=g.pot;d.players[0].money+=g.players[0].chips;d.players[1].money+=g.players[1].chips;g.phase="end";g.message="El bitti";return d}
+      else{g.players[0].chips+=g.pot;d.players[0].money+=g.players[0].chips;d.players[1].money+=g.players[1].chips;g.phase="end";g.message="Bitti";return d}
     }
     if(g.phase!=="end"){g.turn=other;g.message=`Sıra: ${d.players[other]?.name||""}`}
     return d;
@@ -742,7 +655,7 @@ window.pkRaise=async()=>{
     const g=d.game,p=g.players[playerNumber];
     const add=Math.min(p.chips,Math.max(0,target-p.bet));
     p.chips-=add;p.bet+=add;g.pot+=add;g.currentBet=p.bet;p.acted=true;
-    g.turn=playerNumber===0?1:0;g.message=`Sıra: ${d.players[g.turn]?.name||""}`;return d;
+    g.turn=playerNumber===0?1:0;return d;
   });
 };
 
