@@ -180,17 +180,22 @@ function makeTileTexture(index, name, colorHex){
 }
 
 function init3D(){
-  const wrap = $("canvas-wrap");
-  const canvas = $("c3d");
-  const w = wrap.clientWidth, h = wrap.clientHeight;
+  // ... scene, camera, renderer, ışıklar ...
 
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0c0a08);
-
-  camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
-  // Orta dik bakış — hem derinlik hem okunaklılık
-  camera.position.set(0, 14, 12);
-  camera.lookAt(0, 0, 0);
+  boardGroup = new THREE.Group();
+  scene.add(boardGroup);
+  // İzometrik (Business Tour’a yakın)
+const aspect = w / h;
+const fr = 11; // sahne boyu; büyütürsen tahta küçülür
+camera = new THREE.OrthographicCamera(
+  -fr * aspect, fr * aspect,
+   fr, -fr,
+  0.1, 100
+);
+// Eşit eksen = klasik izometri
+camera.position.set(12, 12, 12);
+camera.lookAt(0, 0, 0);
+camera.up.set(0, 1, 0);
 
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setSize(w, h);
