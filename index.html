@@ -2,905 +2,7284 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>🎲 Kumarhane Monopoly</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#0d0d0d;color:#eee;font-family:Arial,sans-serif}
-body{display:flex;flex-direction:column;max-width:1920px;margin:0 auto}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#1a1a1a;border-bottom:1px solid #333;flex-shrink:0;gap:8px}
-.room-code{font-size:22px;font-weight:bold;color:#22c55e;letter-spacing:3px}
-.pill{font-size:14px;font-weight:bold;padding:8px 16px;border-radius:20px;border:2px solid #444;background:#252525}
-.pill.me{background:#14532d;border-color:#22c55e;color:#bbf7d0}
-.pill.wait{color:#ccc}
-.main{flex:1;display:grid;grid-template-columns:280px 1fr 300px;gap:10px;padding:10px;min-height:0}
-.left,.right{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-.panel{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:12px}
-.player-card{background:#252525;border-radius:8px;padding:10px;margin-bottom:8px;border:2px solid #444}
-.player-card.active{border-color:#22c55e}
-.money{font-size:20px;color:#fbbf24;font-weight:bold}
-.board-area{display:flex;align-items:center;justify-content:center;min-height:0}
-.board{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);width:min(820px,100%);height:min(820px,100%);gap:3px;background:#0a0a0a;border:4px solid #444;border-radius:8px;padding:3px}
-.cell{border:1px solid #333;font-size:10px;padding:3px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;position:relative;line-height:1.15;border-radius:4px;min-height:0}
-.cell .name{font-weight:bold;font-size:9px;text-shadow:0 1px 2px #000}
-.cell .price{font-size:8px;color:#ddd}
-.cell .rent{font-size:8px;color:#86efac}
-.cell .lvl{font-size:8px;color:#fbbf24}
-.cell .owner{position:absolute;bottom:2px;right:3px;font-size:10px}
-.pieces{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;align-items:center;min-height:22px}
-.piece{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px #0008}
-.piece.p0{background:linear-gradient(180deg,#fbbf24,#b45309);color:#111}
-.piece.p1{background:linear-gradient(180deg,#60a5fa,#1d4ed8);color:#fff}
-.piece.moving{transform:scale(1.2)}
-.start{background:linear-gradient(135deg,#14532d,#22c55e)!important}
-.jail{background:linear-gradient(135deg,#450a0a,#7f1d1d)!important}
-.special{background:linear-gradient(135deg,#422006,#b45309)!important}
-.poker{background:linear-gradient(135deg,#2e1065,#7c3aed)!important}
-.chance-cell{background:linear-gradient(135deg,#1e3a5f,#3b82f6)!important}
-.tax-cell{background:linear-gradient(135deg,#3f3f46,#71717a)!important}
-.station-cell{background:linear-gradient(135deg,#1c1917,#57534e)!important}
-.free-cell{background:linear-gradient(135deg,#365314,#65a30d)!important}
-.auc-cell{background:linear-gradient(135deg,#7c2d12,#ea580c)!important}
-.jackpot-cell{background:linear-gradient(135deg,#713f12,#fbbf24)!important;border-color:#fde68a!important}
-.center{grid-column:2/9;grid-row:2/9;background:#151515;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:none;color:#666;border-radius:6px}
-.dice-box{display:flex;gap:16px}
-.die{width:64px;height:64px;background:#fff;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px;border:2px solid #ccc}
-.die span{width:10px;height:10px;background:#111;border-radius:50%;margin:auto}
+
+html,body{
+    height:100%;
+    overflow:hidden;
+    background:#0d0d0d;
+    color:#eee;
+    font-family:Arial,sans-serif
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+    max-width:1920px;
+    margin:auto
+}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 16px;
+    background:#1a1a1a;
+    border-bottom:1px solid #333;
+    flex-shrink:0
+}
+
+.room-code{
+    font-size:24px;
+    font-weight:bold;
+    color:#22c55e;
+    letter-spacing:3px
+}
+
+.status{
+    font-size:15px;
+    font-weight:bold
+}
+
+.main{
+    flex:1;
+    display:grid;
+    grid-template-columns:280px 1fr 300px;
+    gap:10px;
+    padding:10px;
+    min-height:0
+}
+
+.left,.right{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow-y:auto
+}
+
+.panel{
+    background:#1e1e1e;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:12px
+}
+
+.player-card{
+    background:#252525;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:8px;
+    border:1px solid #444
+}
+
+.player-card.active{
+    border-color:#22c55e;
+    box-shadow:0 0 12px #22c55e33
+}
+
+.money{
+    font-size:20px;
+    color:#fbbf24;
+    font-weight:bold
+}
+
+.board-area{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:0
+}
+
+.board{
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    grid-template-rows:repeat(9,1fr);
+    width:min(820px,100%);
+    height:min(820px,100%);
+    gap:3px;
+    background:#090909;
+    border:4px solid #555;
+    border-radius:10px;
+    padding:3px
+}
+
+.cell{
+    border:1px solid #333;
+    font-size:10px;
+    padding:3px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    text-align:center;
+    position:relative;
+    line-height:1.15;
+    border-radius:4px;
+    min-height:0
+}
+
+.cell .name{
+    font-weight:bold;
+    font-size:9px;
+    text-shadow:0 1px 2px #000
+}
+
+.cell .price,
+.cell .rent{
+    font-size:8px;
+    color:#ddd
+}
+
+.cell .rent{
+    color:#86efac
+}
+
+.cell .owner{
+    position:absolute;
+    bottom:2px;
+    right:3px;
+    font-size:10px
+}
+
+.cell .level{
+    position:absolute;
+    top:2px;
+    right:3px;
+    font-size:9px;
+    color:#fbbf24
+}
+
+.pieces{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    justify-content:center;
+    align-items:center;
+    min-height:22px
+}
+
+.piece{
+    width:22px;
+    height:22px;
+    border-radius:50% 50% 40% 40%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+    border:2px solid #fff;
+    box-shadow:0 2px 4px #0008;
+    transition:transform .15s
+}
+
+.piece.p0{
+    background:linear-gradient(180deg,#fbbf24,#b45309);
+    color:#111
+}
+
+.piece.p1{
+    background:linear-gradient(180deg,#60a5fa,#1d4ed8);
+    color:#fff
+}
+
+.piece.moving{
+    transform:scale(1.25);
+    z-index:5
+}
+
+.start{
+    background:linear-gradient(135deg,#14532d,#22c55e)!important
+}
+
+.jail{
+    background:linear-gradient(135deg,#450a0a,#7f1d1d)!important
+}
+
+.special{
+    background:linear-gradient(135deg,#422006,#b45309)!important;
+    border-color:#f59e0b!important
+}
+
+.poker{
+    background:linear-gradient(135deg,#2e1065,#7c3aed)!important;
+    border-color:#a855f7!important
+}
+
+.chance-cell{
+    background:linear-gradient(135deg,#1e3a5f,#3b82f6)!important
+}
+
+.tax-cell{
+    background:linear-gradient(135deg,#3f3f46,#71717a)!important
+}
+
+.station-cell{
+    background:linear-gradient(135deg,#1c1917,#57534e)!important
+}
+
+.free-cell{
+    background:linear-gradient(135deg,#365314,#65a30d)!important
+}
+
+.auction-cell{
+    background:linear-gradient(135deg,#78350f,#d97706)!important;
+    border-color:#fbbf24!important
+}
+
+.jackpot-cell{
+    background:linear-gradient(135deg,#701a75,#db2777)!important;
+    border-color:#f472b6!important
+}
+
+.center{
+    grid-column:2/9;
+    grid-row:2/9;
+    background:#151515;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    border:none;
+    color:#555;
+    border-radius:6px
+}
+
+.dice-box{
+    display:flex;
+    gap:16px
+}
+
+.die{
+    width:64px;
+    height:64px;
+    background:#fff;
+    border-radius:12px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    padding:8px;
+    border:2px solid #ccc
+}
+
+.die span{
+    width:10px;
+    height:10px;
+    background:#111;
+    border-radius:50%;
+    margin:auto
+}
+
 .die .d1{grid-area:2/2}
-.die .d2a{grid-area:1/1}.die .d2b{grid-area:3/3}
-.die .d3a{grid-area:1/1}.die .d3b{grid-area:2/2}.die .d3c{grid-area:3/3}
-.die .d4a{grid-area:1/1}.die .d4b{grid-area:1/3}.die .d4c{grid-area:3/1}.die .d4d{grid-area:3/3}
-.die .d5a{grid-area:1/1}.die .d5b{grid-area:1/3}.die .d5c{grid-area:2/2}.die .d5d{grid-area:3/1}.die .d5e{grid-area:3/3}
-.die .d6a{grid-area:1/1}.die .d6b{grid-area:1/3}.die .d6c{grid-area:2/1}.die .d6d{grid-area:2/3}.die .d6e{grid-area:3/1}.die .d6f{grid-area:3/3}
-.dice-total{font-size:28px;font-weight:bold;color:#fbbf24}
-#cell-0{grid-column:1;grid-row:9}#cell-1{grid-column:2;grid-row:9}#cell-2{grid-column:3;grid-row:9}#cell-3{grid-column:4;grid-row:9}
-#cell-4{grid-column:5;grid-row:9}#cell-5{grid-column:6;grid-row:9}#cell-6{grid-column:7;grid-row:9}#cell-7{grid-column:8;grid-row:9}
-#cell-8{grid-column:9;grid-row:9}#cell-9{grid-column:9;grid-row:8}#cell-10{grid-column:9;grid-row:7}#cell-11{grid-column:9;grid-row:6}
-#cell-12{grid-column:9;grid-row:5}#cell-13{grid-column:9;grid-row:4}#cell-14{grid-column:9;grid-row:3}#cell-15{grid-column:9;grid-row:2}
-#cell-16{grid-column:9;grid-row:1}#cell-17{grid-column:8;grid-row:1}#cell-18{grid-column:7;grid-row:1}#cell-19{grid-column:6;grid-row:1}
-#cell-20{grid-column:5;grid-row:1}#cell-21{grid-column:4;grid-row:1}#cell-22{grid-column:3;grid-row:1}#cell-23{grid-column:2;grid-row:1}
-#cell-24{grid-column:1;grid-row:1}#cell-25{grid-column:1;grid-row:2}#cell-26{grid-column:1;grid-row:3}#cell-27{grid-column:1;grid-row:4}
-#cell-28{grid-column:1;grid-row:5}#cell-29{grid-column:1;grid-row:6}#cell-30{grid-column:1;grid-row:7}#cell-31{grid-column:1;grid-row:8}
-button{padding:9px 14px;border:0;border-radius:7px;font-weight:bold;cursor:pointer;font-size:13px;background:#22c55e;color:#fff}
-button:disabled{opacity:.4;cursor:not-allowed}
-.blue{background:#2563eb}.red{background:#dc2626}.gold{background:#b8860b}
-.btn-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
-.admin-toggle{width:100%;background:#b8860b;margin-bottom:6px}
-.teleports{display:none;grid-template-columns:1fr 1fr;gap:4px;max-height:220px;overflow-y:auto}
-.teleports.open{display:grid}
-.teleports button{font-size:11px;padding:6px 4px}
-.log{font-size:11px;color:#999;max-height:160px;overflow-y:auto;background:#111;padding:6px;border-radius:6px}
-.modal{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:100;padding:12px}
-.modal.hidden{display:none}
-.modalbox{background:#1a1a1a;border:1px solid #555;border-radius:12px;padding:18px;width:min(720px,96vw);max-height:90vh;overflow-y:auto}
-.cards{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
-.card{width:56px;height:80px;background:#fff;color:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;box-shadow:0 2px 6px #0005}
-.card.redcard{color:#c00}.card.back{background:#173b8f;color:#fff;border:3px solid #7aa2ff}
-.info{background:#111;padding:8px;border-radius:6px;margin:6px 0;font-size:13px}
-input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px solid #555;background:#222;color:#fff}
-#lobby{position:fixed;inset:0;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:12px}
-#lobby input{padding:12px;font-size:16px;text-align:center;width:200px}
-#game{display:none;height:100%;flex-direction:column}
-.chance-card{background:linear-gradient(145deg,#1e3a5f,#2563eb);border:3px solid #60a5fa;border-radius:16px;padding:24px;text-align:center;max-width:400px;margin:0 auto}
-.bj-natural{color:#fbbf24;font-weight:bold}
-/* SLOT */
-.slot-machine{background:linear-gradient(180deg,#3f2a0a,#1a1005);border:6px solid #b8860b;border-radius:16px;padding:20px;text-align:center;max-width:420px;margin:0 auto}
-.slot-reels{display:flex;gap:8px;justify-content:center;margin:16px 0;background:#0a0a0a;padding:12px;border-radius:10px;border:3px solid #78350f}
-.reel{width:64px;height:80px;background:#111;border:2px solid #fbbf24;border-radius:8px;overflow:hidden;position:relative}
-.reel-inner{display:flex;flex-direction:column;align-items:center;transition:transform .15s}
-.sym{height:80px;width:64px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
-.slot-lever{width:28px;height:90px;background:linear-gradient(90deg,#dc2626,#991b1b);border-radius:14px;margin:0 auto 12px;position:relative;cursor:pointer;box-shadow:4px 0 0 #450a0a}
-.slot-lever::after{content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:22px;height:22px;background:#ef4444;border-radius:50%;border:3px solid #fca5a5}
-.slot-win{color:#4ade80;font-size:22px;font-weight:bold}
-.slot-lose{color:#f87171;font-size:18px}
+
+.die .d2a{grid-area:1/1}
+.die .d2b{grid-area:3/3}
+
+.die .d3a{grid-area:1/1}
+.die .d3b{grid-area:2/2}
+.die .d3c{grid-area:3/3}
+
+.die .d4a{grid-area:1/1}
+.die .d4b{grid-area:1/3}
+.die .d4c{grid-area:3/1}
+.die .d4d{grid-area:3/3}
+
+.die .d5a{grid-area:1/1}
+.die .d5b{grid-area:1/3}
+.die .d5c{grid-area:2/2}
+.die .d5d{grid-area:3/1}
+.die .d5e{grid-area:3/3}
+
+.die .d6a{grid-area:1/1}
+.die .d6b{grid-area:1/3}
+.die .d6c{grid-area:2/1}
+.die .d6d{grid-area:2/3}
+.die .d6e{grid-area:3/1}
+.die .d6f{grid-area:3/3}
+
+.dice-total{
+    font-size:28px;
+    font-weight:bold;
+    color:#fbbf24
+}
+
+#cell-0{grid-column:1;grid-row:9}
+#cell-1{grid-column:2;grid-row:9}
+#cell-2{grid-column:3;grid-row:9}
+#cell-3{grid-column:4;grid-row:9}
+#cell-4{grid-column:5;grid-row:9}
+#cell-5{grid-column:6;grid-row:9}
+#cell-6{grid-column:7;grid-row:9}
+#cell-7{grid-column:8;grid-row:9}
+#cell-8{grid-column:9;grid-row:9}
+
+#cell-9{grid-column:9;grid-row:8}
+#cell-10{grid-column:9;grid-row:7}
+#cell-11{grid-column:9;grid-row:6}
+#cell-12{grid-column:9;grid-row:5}
+#cell-13{grid-column:9;grid-row:4}
+#cell-14{grid-column:9;grid-row:3}
+#cell-15{grid-column:9;grid-row:2}
+#cell-16{grid-column:9;grid-row:1}
+
+#cell-17{grid-column:8;grid-row:1}
+#cell-18{grid-column:7;grid-row:1}
+#cell-19{grid-column:6;grid-row:1}
+#cell-20{grid-column:5;grid-row:1}
+#cell-21{grid-column:4;grid-row:1}
+#cell-22{grid-column:3;grid-row:1}
+#cell-23{grid-column:2;grid-row:1}
+#cell-24{grid-column:1;grid-row:1}
+
+#cell-25{grid-column:1;grid-row:2}
+#cell-26{grid-column:1;grid-row:3}
+#cell-27{grid-column:1;grid-row:4}
+#cell-28{grid-column:1;grid-row:5}
+#cell-29{grid-column:1;grid-row:6}
+#cell-30{grid-column:1;grid-row:7}
+#cell-31{grid-column:1;grid-row:8}
+
+button{
+    padding:9px 14px;
+    border:0;
+    border-radius:7px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:13px;
+    background:#22c55e;
+    color:#fff
+}
+
+button:disabled{
+    opacity:.4;
+    cursor:not-allowed
+}
+
+.blue{background:#2563eb}
+.red{background:#dc2626}
+.gold{background:#b8860b}
+.pink{background:#db2777}
+
+.btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    margin-top:8px
+}
+
+.admin-toggle{
+    width:100%;
+    background:#b8860b;
+    margin-bottom:6px
+}
+
+.emergency{
+    width:100%;
+    background:#dc2626;
+    margin-top:6px
+}
+
+.teleports{
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:4px;
+    max-height:220px;
+    overflow-y:auto
+}
+
+.teleports.open{
+    display:grid
+}
+
+.teleports button{
+    font-size:11px;
+    padding:6px 4px
+}
+
+.log{
+    font-size:11px;
+    color:#999;
+    max-height:160px;
+    overflow-y:auto;
+    background:#111;
+    padding:6px;
+    border-radius:6px
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:#000c;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:12px
+}
+
+.modal.hidden{
+    display:none
+}
+
+.modalbox{
+    background:#1a1a1a;
+    border:1px solid #555;
+    border-radius:12px;
+    padding:18px;
+    width:min(760px,96vw);
+    max-height:92vh;
+    overflow-y:auto
+}
+
+.cards{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:8px 0
+}
+
+.card{
+    width:56px;
+    height:80px;
+    background:#fff;
+    color:#111;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    font-size:17px;
+    box-shadow:0 2px 6px #0005
+}
+
+.card.redcard{
+    color:#c00
+}
+
+.card.back{
+    background:#173b8f;
+    color:#fff;
+    border:3px solid #7aa2ff
+}
+
+.info{
+    background:#111;
+    padding:8px;
+    border-radius:6px;
+    margin:6px 0;
+    font-size:13px
+}
+
+input[type=text],
+input[type=number]{
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #555;
+    background:#222;
+    color:#fff
+}
+
+#lobby{
+    position:fixed;
+    inset:0;
+    background:#0d0d0d;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    gap:12px
+}
+
+#lobby input{
+    padding:12px;
+    font-size:16px;
+    text-align:center;
+    width:200px
+}
+
+#game{
+    display:none;
+    height:100%;
+    flex-direction:column
+}
+
+.chance-card{
+    background:linear-gradient(145deg,#1e3a5f,#2563eb);
+    border:3px solid #60a5fa;
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+    max-width:430px;
+    margin:auto
+}
+
+.chance-card h2{
+    color:#93c5fd;
+    margin-bottom:12px
+}
+
+.chance-card .event{
+    font-size:18px;
+    margin:16px 0;
+    line-height:1.4
+}
+
+.casino-table{
+    border:9px solid #4a3728;
+    border-radius:45px;
+    padding:20px;
+    background:radial-gradient(ellipse,#0f7a3a,#064020)
+}
+
+.casino-title{
+    text-align:center;
+    letter-spacing:2px;
+    color:#d1fae5
+}
+
+.seats{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:14px
+}
+
+.seat{
+    background:#0005;
+    border:2px solid #2e7d32;
+    border-radius:12px;
+    padding:12px;
+    min-width:180px;
+    text-align:center
+}
+
+.seat.me{
+    border-color:#ffc107
+}
+
+.poker-result{
+    border:2px solid #fbbf24;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    background:#111;
+    margin-top:12px
+}
+
+.confetti{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:300
+}
+
+.confetti i{
+    position:absolute;
+    top:-20px;
+    width:9px;
+    height:16px;
+    animation:fall 2.2s linear forwards
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh) rotate(720deg);
+        opacity:0
+    }
+}
+
+.slot{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:18px 0
+}
+
+.reel{
+    width:75px;
+    height:85px;
+    background:#f5f5f5;
+    color:#111;
+    border:4px solid #fbbf24;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    font-weight:bold;
+    overflow:hidden
+}
+
+.jackpot-title{
+    text-align:center;
+    color:#f9a8d4;
+    font-size:24px
+}
+
+@media(max-width:1100px){
+    .main{
+        grid-template-columns:220px 1fr 230px
+    }
+
+    .board{
+        max-width:620px;
+        max-height:620px
+    }
+}
+
+@media(max-width:850px){
+    .main{
+        grid-template-columns:1fr
+    }
+
+    .left,.right{
+        max-height:180px
+    }
+
+    .board{
+        width:95vw;
+        height:95vw
+    }
+
+    .board-area{
+        order:-1
+    }
+}
 </style>
 </head>
+
 <body>
+
 <div id="lobby">
-  <h1>🎲 Kumarhane Monopoly</h1>
-  <input id="nameInput" type="text" maxlength="16" placeholder="İsmin (zorunlu)">
-  <button id="createRoom" style="font-size:16px;padding:12px 24px">🏠 Oda Oluştur</button>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center">
-    <input id="roomInput" maxlength="4" placeholder="Oda Kodu" style="width:120px">
-    <button id="joinRoom">🚪 Katıl</button>
-  </div>
-  <div id="lobbyMessage" style="color:#f87171"></div>
-  <div id="createdRoom"></div>
+
+    <h1>🎲 Kumarhane Monopoly</h1>
+
+    <input
+        id="nameInput"
+        maxlength="16"
+        placeholder="İsmin (zorunlu)"
+    >
+
+    <button
+        id="createRoom"
+        style="font-size:16px;padding:12px 24px"
+    >
+        🏠 Oda Oluştur
+    </button>
+
+    <div
+        style="
+        display:flex;
+        gap:8px;
+        align-items:center;
+        flex-wrap:wrap;
+        justify-content:center
+        "
+    >
+
+        <input
+            id="roomInput"
+            maxlength="4"
+            placeholder="Oda Kodu"
+            style="width:120px"
+        >
+
+        <button id="joinRoom">
+            🚪 Katıl
+        </button>
+
+    </div>
+
+    <div
+        id="lobbyMessage"
+        style="color:#f87171"
+    ></div>
+
+    <div id="createdRoom"></div>
+
 </div>
+
+
 <div id="game">
-  <div class="topbar">
-    <div>ODA: <span id="gameRoomCode" class="room-code"></span></div>
-    <div id="turnText" class="pill wait">Bağlanıyor...</div>
-    <div id="message" style="font-size:14px;color:#ccc;max-width:420px;text-align:right"></div>
-  </div>
-  <div class="main">
-    <div class="left">
-      <div class="panel">
-        <div class="player-card" id="p0card">
-          <div id="name0label">👑 Oyuncu 1</div>
-          <div class="money"><span id="money0">1500</span> ₺</div>
-          <div>📍 Kare <span id="position0">0</span></div>
-          <div id="jail0" style="font-size:12px;color:#f87171"></div>
-          <div id="props0" style="font-size:11px;margin-top:4px;color:#aaa"></div>
+
+    <div class="topbar">
+
+        <div>
+            ODA:
+            <span
+                id="gameRoomCode"
+                class="room-code"
+            ></span>
         </div>
-        <div class="player-card" id="p1card">
-          <div id="name1label">👤 Oyuncu 2</div>
-          <div class="money"><span id="money1">1500</span> ₺</div>
-          <div>📍 Kare <span id="position1">0</span></div>
-          <div id="jail1" style="font-size:12px;color:#f87171"></div>
-          <div id="props1" style="font-size:11px;margin-top:4px;color:#aaa"></div>
+
+        <div
+            id="turnText"
+            class="status"
+        >
+            Bağlanıyor...
         </div>
-      </div>
-      <div class="panel" id="adminPanel" style="display:none">
-        <button class="admin-toggle" id="adminToggle">👑 Admin Işınlanma</button>
-        <div id="teleports" class="teleports"></div>
-      </div>
-      <div class="panel">
-        <button id="rollButton" style="width:100%;margin-bottom:6px">🎲 ZAR AT</button>
-        <button id="leaveButton" class="red" style="width:100%">🚪 Odadan Çık</button>
-      </div>
+
+        <div
+            id="message"
+            style="
+            font-size:14px;
+            color:#ccc;
+            max-width:520px;
+            text-align:right
+            "
+        ></div>
+
     </div>
-    <div class="board-area">
-      <div id="board" class="board">
-        <div class="center">
-          <div style="font-size:18px;color:#666">KUMARHANE MONOPOLY</div>
-          <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
-          <div class="dice-total" id="diceTotal">-</div>
+
+
+    <div class="main">
+
+        <div class="left">
+
+            <div class="panel">
+
+                <div
+                    class="player-card"
+                    id="p0card"
+                >
+
+                    <div id="name0label">
+                        👑 Oyuncu 1
+                    </div>
+
+                    <div class="money">
+                        <span id="money0">1500</span> ₺
+                    </div>
+
+                    <div>
+                        📍 Kare
+                        <span id="position0">0</span>
+                    </div>
+
+                    <div
+                        id="jail0"
+                        style="
+                        font-size:12px;
+                        color:#f87171
+                        "
+                    ></div>
+
+                    <div
+                        id="props0"
+                        style="
+                        font-size:11px;
+                        margin-top:4px;
+                        color:#aaa
+                        "
+                    ></div>
+
+                </div>
+
+
+                <div
+                    class="player-card"
+                    id="p1card"
+                >
+
+                    <div id="name1label">
+                        👤 Oyuncu 2
+                    </div>
+
+                    <div class="money">
+                        <span id="money1">1500</span> ₺
+                    </div>
+
+                    <div>
+                        📍 Kare
+                        <span id="position1">0</span>
+                    </div>
+
+                    <div
+                        id="jail1"
+                        style="
+                        font-size:12px;
+                        color:#f87171
+                        "
+                    ></div>
+
+                    <div
+                        id="props1"
+                        style="
+                        font-size:11px;
+                        margin-top:4px;
+                        color:#aaa
+                        "
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="panel"
+                id="adminPanel"
+                style="display:none"
+            >
+
+                <button
+                    class="admin-toggle"
+                    id="adminToggle"
+                >
+                    👑 Admin Işınlanma
+                </button>
+
+                <div
+                    id="teleports"
+                    class="teleports"
+                ></div>
+
+                <button
+                    class="emergency"
+                    id="emergencyButton"
+                >
+                    🚨 ACİL TOPARLA
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <button
+                    id="rollButton"
+                    style="
+                    width:100%;
+                    margin-bottom:6px
+                    "
+                >
+                    🎲 ZAR AT
+                </button>
+
+                <button
+                    id="leaveButton"
+                    class="red"
+                    style="width:100%"
+                >
+                    🚪 Odadan Çık
+                </button>
+
+            </div>
+
         </div>
-      </div>
+
+
+        <div class="board-area">
+
+            <div
+                id="board"
+                class="board"
+            >
+
+                <div class="center">
+
+                    <div
+                        style="
+                        font-size:18px;
+                        color:#666
+                        "
+                    >
+                        KUMARHANE MONOPOLY
+                    </div>
+
+                    <div class="dice-box">
+
+                        <div
+                            class="die"
+                            id="die1"
+                        ></div>
+
+                        <div
+                            class="die"
+                            id="die2"
+                        ></div>
+
+                    </div>
+
+                    <div
+                        class="dice-total"
+                        id="diceTotal"
+                    >
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="right">
+
+            <div class="panel">
+
+                <b>📜 Günlük</b>
+
+                <div
+                    id="log"
+                    class="log"
+                ></div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <b>⚡ Aksiyonlar</b>
+
+                <div
+                    id="actionButtons"
+                    class="btn-row"
+                ></div>
+
+            </div>
+
+        </div>
+
     </div>
-    <div class="right">
-      <div class="panel"><b>📜 Günlük</b><div id="log" class="log"></div></div>
-      <div class="panel"><b>⚡ Aksiyonlar</b><div id="actionButtons" class="btn-row"></div></div>
-    </div>
-  </div>
+
 </div>
-<div id="modal" class="modal hidden"><div class="modalbox" id="modalContent"></div></div>
+
+
+<div
+    id="modal"
+    class="modal hidden"
+>
+
+    <div
+        class="modalbox"
+        id="modalContent"
+    ></div>
+
+</div>
+
+
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {getDatabase,ref,set,get,onValue,runTransaction,update} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
-const firebaseConfig={
-  apiKey:"AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
-  authDomain:"yusuf11-5ecc9.firebaseapp.com",
-  databaseURL:"https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId:"yusuf11-5ecc9",
-  storageBucket:"yusuf11-5ecc9.firebasestorage.app",
-  messagingSenderId:"418982485830",
-  appId:"1:418982485830:web:ff0b051026d0256f1b0f47"
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    set,
+    get,
+    onValue,
+    runTransaction,
+    update
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+const firebaseConfig = {
+
+    apiKey:"AIzaSyBm7FzmrMpKpVvKPIRrnv5yhy6T-MaD-Kw",
+
+    authDomain:"yusuf11-5ecc9.firebaseapp.com",
+
+    databaseURL:
+    "https://yusuf11-5ecc9-default-rtdb.europe-west1.firebasedatabase.app",
+
+    projectId:"yusuf11-5ecc9",
+
+    storageBucket:
+    "yusuf11-5ecc9.firebasestorage.app",
+
+    messagingSenderId:"418982485830",
+
+    appId:
+    "1:418982485830:web:ff0b051026d0256f1b0f47"
+
 };
-const app=initializeApp(firebaseConfig),db=getDatabase(app);
-let roomCode=null,playerNumber=null,unsubscribe=null,playerName="";
-let animating=false,displayPos={0:0,1:0},jailSkipLock=false,slotSpinning=false;
-const $=id=>document.getElementById(id);
-const N=v=>Number(v);
 
-const SLOT_SYMS=["🍒","🍋","7️⃣","💎"];
-const CHANCE_EVENTS=[
-  {text:"Banka hatası! +200₺",money:200},{text:"Vergi iadesi: +100₺",money:100},
-  {text:"Doğum günü: +50₺",money:50},{text:"Hisse kârı: +150₺",money:150},
-  {text:"Yol: -50₺",money:-50},{text:"Doktor: -100₺",money:-100},
-  {text:"Hız cezası: -75₺",money:-75},{text:"Piyango: +250₺",money:250},
-  {text:"Okul: -80₺",money:-80},{text:"Miras: +120₺",money:120},
-  {text:"Kötü yatırım: -150₺",money:-150},{text:"Bonus: +80₺",money:80}
+
+const app =
+    initializeApp(firebaseConfig);
+
+const db =
+    getDatabase(app);
+
+
+let roomCode = null;
+
+let playerNumber = null;
+
+let unsubscribe = null;
+
+let playerName = "";
+
+let animating = false;
+
+let displayPos = {
+    0:0,
+    1:0
+};
+
+let lastPos = {
+    0:-1,
+    1:-1
+};
+
+let skipLock = false;
+
+let pokerCelebrated = false;
+
+
+const $ = id =>
+    document.getElementById(id);
+
+
+/* =========================
+   ŞANS KARTLARI
+========================= */
+
+const CHANCE_EVENTS = [
+
+    {
+        text:"Banka hatası! 200₺ kazandın.",
+        money:200
+    },
+
+    {
+        text:"Vergi iadesi: +100₺",
+        money:100
+    },
+
+    {
+        text:"Doğum günü! +50₺",
+        money:50
+    },
+
+    {
+        text:"Hisse senedi kârı: +150₺",
+        money:150
+    },
+
+    {
+        text:"Yol çalışması: -50₺",
+        money:-50
+    },
+
+    {
+        text:"Doktor faturası: -100₺",
+        money:-100
+    },
+
+    {
+        text:"Hız cezası: -75₺",
+        money:-75
+    },
+
+    {
+        text:"Piyango bileti: +250₺!",
+        money:250
+    },
+
+    {
+        text:"Okul masrafı: -80₺",
+        money:-80
+    },
+
+    {
+        text:"Amca mirası: +120₺",
+        money:120
+    },
+
+    {
+        text:"Kötü yatırım: -150₺",
+        money:-150
+    },
+
+    {
+        text:"Bonus çekiliş: +80₺",
+        money:80
+    }
+
 ];
 
-const cells=[
-  {name:"BAŞLANGIÇ",type:"go",bg:"#14532d"},
-  {name:"Kırmızı Sokak",type:"prop",price:60,rent:6,color:"#dc2626",bg:"#450a0a"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Mavi Sokak",type:"prop",price:80,rent:8,color:"#2563eb",bg:"#172554"},
-  {name:"HAPİS / ZİYARET",type:"jail",bg:"#450a0a"},
-  {name:"İstasyon",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"VERGİ",type:"tax",amount:150,bg:"#3f3f46"},
-  {name:"Yeşil Sokak",type:"prop",price:100,rent:10,color:"#16a34a",bg:"#14532d"},
-  {name:"BLACKJACK",type:"blackjack",bg:"#422006"},
-  {name:"Sarı Sokak",type:"prop",price:120,rent:12,color:"#ca8a04",bg:"#422006"},
-  {name:"Ücretsiz Otopark",type:"free",bg:"#365314"},
-  {name:"Kumarhane",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Mor Sokak",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Elektrik",type:"utility",price:150,rent:40,bg:"#0c4a6e"},
-  {name:"Turuncu Sokak",type:"prop",price:160,rent:16,color:"#ea580c",bg:"#7c2d12"},
-  {name:"POKER",type:"poker",bg:"#2e1065"},
-  {name:"Kırmızı 2",type:"prop",price:180,rent:18,color:"#dc2626",bg:"#450a0a"},
-  {name:"Antalya Sahil",type:"prop",price:200,rent:20,color:"#0ea5e9",bg:"#0c4a6e"},
-  {name:"Lacivert Sokak",type:"prop",price:200,rent:20,color:"#1e3a8a",bg:"#1e3a8a"},
-  {name:"HAPİS",type:"gotojail",bg:"#7f1d1d"},
-  {name:"İstasyon 2",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Yeşil 2",type:"prop",price:220,rent:22,color:"#16a34a",bg:"#14532d"},
-  {name:"JACKPOT",type:"jackpot",bg:"#713f12"},
-  {name:"Turuncu 2",type:"prop",price:240,rent:24,color:"#ea580c",bg:"#7c2d12"},
-  {name:"AÇIK ARTIRMA",type:"auctionSpot",bg:"#7c2d12"},
-  {name:"Mavi 2",type:"prop",price:260,rent:26,color:"#2563eb",bg:"#172554"},
-  {name:"Şans",type:"chance",bg:"#1e3a5f"},
-  {name:"Kırmızı 3",type:"prop",price:280,rent:28,color:"#dc2626",bg:"#450a0a"},
-  {name:"İstasyon 3",type:"station",price:200,rent:25,bg:"#1c1917"},
-  {name:"SON",type:"go",bg:"#14532d"}
+
+/* =========================
+   TAHTA
+========================= */
+
+const cells = [
+
+    {
+        name:"BAŞLANGIÇ",
+        type:"go",
+        bg:"#14532d"
+    },
+
+    {
+        name:"Kırmızı Sokak",
+        type:"prop",
+        price:60,
+        rent:6,
+        color:"#dc2626",
+        bg:"#450a0a"
+    },
+
+    {
+        name:"Şans",
+        type:"chance",
+        bg:"#1e3a5f"
+    },
+
+    {
+        name:"Mavi Sokak",
+        type:"prop",
+        price:80,
+        rent:8,
+        color:"#2563eb",
+        bg:"#172554"
+    },
+
+    {
+        name:"HAPİS / ZİYARET",
+        type:"jail",
+        bg:"#450a0a"
+    },
+
+    {
+        name:"İstasyon",
+        type:"station",
+        price:200,
+        rent:25,
+        bg:"#1c1917"
+    },
+
+    {
+        name:"Vergi",
+        type:"tax",
+        amount:100,
+        bg:"#3f3f46"
+    },
+
+    {
+        name:"Yeşil Sokak",
+        type:"prop",
+        price:100,
+        rent:10,
+        color:"#16a34a",
+        bg:"#14532d"
+    },
+
+    {
+        name:"BLACKJACK",
+        type:"blackjack",
+        bg:"#422006"
+    },
+
+    {
+        name:"Sarı Sokak",
+        type:"prop",
+        price:120,
+        rent:12,
+        color:"#ca8a04",
+        bg:"#422006"
+    },
+
+    {
+        name:"Ücretsiz Otopark",
+        type:"free",
+        bg:"#365314"
+    },
+
+    {
+        name:"Kumarhane",
+        type:"prop",
+        price:140,
+        rent:14,
+        color:"#7c3aed",
+        bg:"#2e1065"
+    },
+
+    {
+        name:"Mor Sokak",
+        type:"prop",
+        price:140,
+        rent:14,
+        color:"#7c3aed",
+        bg:"#2e1065"
+    },
+
+    {
+        name:"Şans",
+        type:"chance",
+        bg:"#1e3a5f"
+    },
+
+    {
+        name:"Elektrik",
+        type:"utility",
+        price:150,
+        rent:40,
+        bg:"#0c4a6e"
+    },
+
+    {
+        name:"Turuncu Sokak",
+        type:"prop",
+        price:160,
+        rent:16,
+        color:"#ea580c",
+        bg:"#7c2d12"
+    },
+
+    {
+        name:"POKER",
+        type:"poker",
+        bg:"#2e1065"
+    },
+
+    {
+        name:"AÇIK ARTIRMA",
+        type:"auction",
+        bg:"#78350f"
+    },
+
+    {
+        name:"Lacivert Sokak",
+        type:"prop",
+        price:200,
+        rent:20,
+        color:"#1e3a8a",
+        bg:"#1e3a8a"
+    },
+
+    {
+        name:"HAPİS",
+        type:"gotojail",
+        bg:"#7f1d1d"
+    },
+
+    {
+        name:"İstasyon 2",
+        type:"station",
+        price:200,
+        rent:25,
+        bg:"#1c1917"
+    },
+
+    {
+        name:"Şans",
+        type:"chance",
+        bg:"#1e3a5f"
+    },
+
+    {
+        name:"Yeşil 2",
+        type:"prop",
+        price:220,
+        rent:22,
+        color:"#16a34a",
+        bg:"#14532d"
+    },
+
+    {
+        name:"JACKPOT",
+        type:"jackpot",
+        bg:"#701a12"
+    },
+
+    {
+        name:"Turuncu 2",
+        type:"prop",
+        price:240,
+        rent:24,
+        color:"#ea580c",
+        bg:"#7c2d12"
+    },
+
+    {
+        name:"Mavi 3",
+        type:"prop",
+        price:250,
+        rent:25,
+        color:"#2563eb",
+        bg:"#172554"
+    },
+
+    {
+        name:"Mavi 2",
+        type:"prop",
+        price:260,
+        rent:26,
+        color:"#2563eb",
+        bg:"#172554"
+    },
+
+    {
+        name:"Şans",
+        type:"chance",
+        bg:"#1e3a5f"
+    },
+
+    {
+        name:"Kırmızı 3",
+        type:"prop",
+        price:280,
+        rent:28,
+        color:"#dc2626",
+        bg:"#450a0a"
+    },
+
+    {
+        name:"İstasyon 3",
+        type:"station",
+        price:200,
+        rent:25,
+        bg:"#1c1917"
+    },
+
+    {
+        name:"SON",
+        type:"go",
+        bg:"#14532d"
+    }
+
 ];
 
-const boardEl=$("board");
-for(let i=0;i<32;i++){
-  const c=cells[i];
-  const div=document.createElement("div");
-  div.className="cell";div.id="cell-"+i;
-  if(c.bg)div.style.background=c.bg;
-  if(c.type==="go")div.classList.add("start");
-  if(c.type==="jail"||c.type==="gotojail")div.classList.add("jail");
-  if(c.type==="blackjack")div.classList.add("special");
-  if(c.type==="poker")div.classList.add("poker");
-  if(c.type==="chance")div.classList.add("chance-cell");
-  if(c.type==="tax")div.classList.add("tax-cell");
-  if(c.type==="station"||c.type==="utility")div.classList.add("station-cell");
-  if(c.type==="free")div.classList.add("free-cell");
-  if(c.type==="auctionSpot")div.classList.add("auc-cell");
-  if(c.type==="jackpot")div.classList.add("jackpot-cell");
-  let extra="";
-  if(c.price)extra+=`<div class="price">Alım: ${c.price}₺</div>`;
-  if(c.rent)extra+=`<div class="rent">Kira: ${c.rent}₺</div>`;
-  if(c.amount)extra+=`<div class="price">-${c.amount}₺</div>`;
-  if(c.type==="auctionSpot")extra+=`<div class="price">Mal sat</div>`;
-  if(c.type==="jackpot")extra+=`<div class="price">Slot</div>`;
-  div.innerHTML=`<div class="name">${c.name}</div>${extra}<div class="lvl" id="lvl-${i}"></div><div class="pieces"></div><div class="owner" id="owner-${i}"></div>`;
-  if(c.color)div.style.borderTop=`4px solid ${c.color}`;
-  boardEl.appendChild(div);
-}
+
+const boardEl =
+    $("board");
+
+
+cells.forEach((c,i)=>{
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        "cell";
+
+    div.id =
+        "cell-"+i;
+
+    if(c.bg)
+        div.style.background =
+            c.bg;
+
+    if(c.type==="go")
+        div.classList.add("start");
+
+    if(
+        c.type==="jail" ||
+        c.type==="gotojail"
+    )
+        div.classList.add("jail");
+
+    if(c.type==="blackjack")
+        div.classList.add("special");
+
+    if(c.type==="poker")
+        div.classList.add("poker");
+
+    if(c.type==="chance")
+        div.classList.add("chance-cell");
+
+    if(c.type==="tax")
+        div.classList.add("tax-cell");
+
+    if(c.type==="station")
+        div.classList.add("station-cell");
+
+    if(c.type==="free")
+        div.classList.add("free-cell");
+
+    if(c.type==="auction")
+        div.classList.add("auction-cell");
+
+    if(c.type==="jackpot")
+        div.classList.add("jackpot-cell");
+
+
+    let extra = "";
+
+    if(c.price)
+        extra +=
+        `<div class="price">
+            Alım: ${c.price}₺
+        </div>`;
+
+    if(c.rent)
+        extra +=
+        `<div class="rent">
+            Kira: ${c.rent}₺
+        </div>`;
+
+    if(c.amount)
+        extra +=
+        `<div class="price">
+            -${c.amount}₺
+        </div>`;
+
+
+    div.innerHTML = `
+
+        <div class="name">
+            ${c.name}
+        </div>
+
+        ${extra}
+
+        <div class="pieces"></div>
+
+        <div
+            class="owner"
+            id="owner-${i}"
+        ></div>
+
+        <div
+            class="level"
+            id="level-${i}"
+        ></div>
+
+    `;
+
+
+    if(c.color)
+        div.style.borderTop =
+            `4px solid ${c.color}`;
+
+
+    boardEl.appendChild(div);
+
+});
+
+
+/* =========================
+   ZAR
+========================= */
 
 function drawDie(el,n){
-  el.innerHTML="";
-  const map={1:["d1"],2:["d2a","d2b"],3:["d3a","d3b","d3c"],4:["d4a","d4b","d4c","d4d"],5:["d5a","d5b","d5c","d5d","d5e"],6:["d6a","d6b","d6c","d6d","d6e","d6f"]};
-  (map[n]||[]).forEach(cls=>{const s=document.createElement("span");s.className=cls;el.appendChild(s)});
+
+    el.innerHTML = "";
+
+    const map = {
+
+        1:["d1"],
+
+        2:[
+            "d2a",
+            "d2b"
+        ],
+
+        3:[
+            "d3a",
+            "d3b",
+            "d3c"
+        ],
+
+        4:[
+            "d4a",
+            "d4b",
+            "d4c",
+            "d4d"
+        ],
+
+        5:[
+            "d5a",
+            "d5b",
+            "d5c",
+            "d5d",
+            "d5e"
+        ],
+
+        6:[
+            "d6a",
+            "d6b",
+            "d6c",
+            "d6d",
+            "d6e",
+            "d6f"
+        ]
+
+    };
+
+
+    (map[n]||[])
+        .forEach(cls=>{
+
+            const s =
+                document.createElement("span");
+
+            s.className =
+                cls;
+
+            el.appendChild(s);
+
+        });
+
 }
-function showDice(a,b){drawDie($("die1"),a);drawDie($("die2"),b);$("diceTotal").textContent=(a+b)+" ("+a+"+"+b+")"}
-function path(){return ref(db,"rooms/"+roomCode)}
-function setMsg(t){$("message").textContent=t||""}
+
+
+function showDice(a,b){
+
+    drawDie(
+        $("die1"),
+        a
+    );
+
+    drawDie(
+        $("die2"),
+        b
+    );
+
+    $("diceTotal").textContent =
+        `${a+b} (${a}+${b})`;
+
+}
+
+
+/* =========================
+   YARDIMCI
+========================= */
+
+function path(){
+
+    return ref(
+        db,
+        "rooms/"+roomCode
+    );
+
+}
+
+
+function log(t){
+
+    const d =
+        document.createElement("div");
+
+    d.textContent =
+        new Date().toLocaleTimeString("tr-TR")
+        +" — "+t;
+
+    $("log").prepend(d);
+
+}
+
+
+function setMsg(t){
+
+    $("message").textContent =
+        t || "";
+
+}
+
+
 function ensureProps(d){
-  if(!d.properties)d.properties={};
-  for(let i=0;i<32;i++){
-    if(!d.properties[i])d.properties[i]={owner:null,level:1};
-    if(d.properties[i].level==null)d.properties[i].level=1;
-  }
-  return d;
-}
-function generateCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*ch.length)];return c}
-function getName(){return ($("nameInput").value||"").trim().slice(0,16)||"Oyuncu"}
-function isNaturalBJ(h){return h&&h.length===2&&hVal(h)===21}
-function rentOf(cell,level){return (cell.rent||25)*Math.max(1,level||1)}
-function upgradeCost(cell,level){return Math.floor((cell.price||100)*0.5*level)}
 
-const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-function makeDeck(){const d=[];for(const s of suits)for(const r of ranks)d.push({s,r});return d.sort(()=>Math.random()-0.5)}
-function cVal(c){return c.r==="A"?11:["K","Q","J"].includes(c.r)?10:+c.r}
-function hVal(h){let n=0,a=0;(h||[]).forEach(c=>{n+=cVal(c);if(c.r==="A")a++});while(n>21&&a){n-=10;a--}return n}
-function cardHTML(c,back=false){if(back||!c)return`<div class="card back">🂠</div>`;return`<div class="card ${["♥","♦"].includes(c.s)?"redcard":""}">${c.r}${c.s}</div>`}
+    if(!d.properties)
+        d.properties = {};
 
-function clearPieces(){document.querySelectorAll(".pieces").forEach(x=>x.innerHTML="")}
-function placePiece(pos,who,moving=false){
-  const cell=$("cell-"+pos);if(!cell)return;
-  const s=document.createElement("span");
-  s.className="piece p"+who+(moving?" moving":"");
-  s.textContent=String(who+1);
-  cell.querySelector(".pieces").appendChild(s);
-}
-async function animateMove(who,from,to){
-  if(from===to){displayPos[who]=to;return}
-  animating=true;let cur=from;
-  while(cur!==to){
-    cur=(cur+1)%32;clearPieces();displayPos[who]=cur;
-    placePiece(displayPos[0],0,who===0);placePiece(displayPos[1],1,who===1);
-    await new Promise(r=>setTimeout(r,200));
-  }
-  displayPos[who]=to;animating=false;clearPieces();
-  placePiece(displayPos[0],0);placePiece(displayPos[1],1);
-}
+    for(
+        let i=0;
+        i<32;
+        i++
+    ){
 
-async function forceClearPending(){
-  await runTransaction(path(),d=>{
-    if(!d)return;
-    d.pending=null;d.auction=null;d.chance=null;
-    if(d.game?.type==="jackpot")d.game=null;
-    d.message="Bekleyen işlem temizlendi";
+        if(!d.properties[i])
+
+            d.properties[i] = {
+
+                owner:null,
+
+                level:0
+
+            };
+
+    }
+
     return d;
-  });
+
 }
 
-async function autoSkipJail(d){
-  const t=N(d.turn);
-  const p=d.players?.[t];
-  if(!p||!(p.jailTurns>0)||d.game||d.auction||d.pending||d.chance||jailSkipLock)return;
-  jailSkipLock=true;
-  try{
-    await runTransaction(path(),data=>{
-      if(!data)return;
-      const tt=N(data.turn);
-      const pl=data.players?.[tt];
-      if(!pl||!(pl.jailTurns>0)||data.game||data.auction||data.pending||data.chance)return;
-      pl.jailTurns-=1;
-      data.turn=tt===0?1:0;
-      data.message=`${pl.name} hapiste atlandı → ${data.players[data.turn]?.name||""}`;
-      return data;
-    });
-  }finally{setTimeout(()=>{jailSkipLock=false},400)}
+
+function generateCode(){
+
+    const ch =
+        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let c = "";
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        c +=
+            ch[
+                Math.floor(
+                    Math.random()*ch.length
+                )
+            ];
+
+    }
+
+    return c;
+
 }
+
+
+function getName(){
+
+    return (
+        $("nameInput")
+        .value ||
+        ""
+    )
+    .trim()
+    .slice(0,16)
+    || "Oyuncu";
+
+}
+
+
+/* =========================
+   MÜLK / KAT
+========================= */
+
+function rentFor(c,level){
+
+    return Math.round(
+        (c.rent||25) *
+        (1 + 0.75*level)
+    );
+
+}
+
+
+function upgradeCost(c,level){
+
+    return Math.max(
+        50,
+        Math.round(
+            (c.price||100) *
+            0.5 *
+            (level+1)
+        )
+    );
+
+}
+
+
+/* =========================
+   KARTLAR
+========================= */
+
+const suits =
+    ["♠","♥","♦","♣"];
+
+const ranks =
+    [
+        "A",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K"
+    ];
+
+
+function makeDeck(){
+
+    const d=[];
+
+    for(
+        const s of suits
+    )
+
+        for(
+            const r of ranks
+        )
+
+            d.push({
+                s,
+                r
+            });
+
+
+    return d.sort(
+        ()=>Math.random()-0.5
+    );
+
+}
+
+
+function cVal(c){
+
+    return c.r==="A"
+        ?11
+        :["K","Q","J"]
+            .includes(c.r)
+            ?10
+            :+c.r;
+
+}
+
+
+function hVal(h){
+
+    let n=0;
+    let a=0;
+
+    (h||[])
+    .forEach(c=>{
+
+        n +=
+            cVal(c);
+
+        if(c.r==="A")
+            a++;
+
+    });
+
+
+    while(
+        n>21 &&
+        a
+    ){
+
+        n-=10;
+        a--;
+
+    }
+
+    return n;
+
+}
+
+
+function isNatural(h){
+
+    return (
+        (h||[]).length===2 &&
+        hVal(h)===21 &&
+        h.some(
+            c=>c.r==="A"
+        )
+    );
+
+}
+
+
+function cardHTML(c,back=false){
+
+    if(
+        back ||
+        !c
+    )
+
+        return `
+        <div class="card back">
+            🂠
+        </div>`;
+
+    return `
+        <div
+            class="card ${
+                ["♥","♦"].includes(c.s)
+                ?"redcard"
+                :""
+            }"
+        >
+            ${c.r}${c.s}
+        </div>
+    `;
+
+}
+
+
+/* =========================
+   TAŞ
+========================= */
+
+function clearPieces(){
+
+    document
+    .querySelectorAll(".pieces")
+    .forEach(
+        x=>x.innerHTML=""
+    );
+
+}
+
+
+function placePiece(
+    pos,
+    who,
+    moving=false
+){
+
+    const cell =
+        $("cell-"+pos);
+
+    if(!cell)
+        return;
+
+    const s =
+        document.createElement("span");
+
+    s.className =
+        "piece p"+who+
+        (moving?" moving":"");
+
+    s.textContent =
+        who===0
+        ?"♚"
+        :"♛";
+
+    s.title =
+        who===0
+        ?"Oyuncu 1"
+        :"Oyuncu 2";
+
+    cell
+    .querySelector(".pieces")
+    .appendChild(s);
+
+}
+
+
+async function animateMove(
+    who,
+    from,
+    to
+){
+
+    if(from===to){
+
+        displayPos[who]=to;
+
+        return;
+
+    }
+
+
+    animating=true;
+
+    let cur=from;
+
+    const steps=[];
+
+
+    while(cur!==to){
+
+        cur =
+            (cur+1)%32;
+
+        steps.push(cur);
+
+    }
+
+
+    for(
+        const step of steps
+    ){
+
+        clearPieces();
+
+        displayPos[who]=step;
+
+        placePiece(
+            displayPos[0],
+            0,
+            who===0
+        );
+
+        placePiece(
+            displayPos[1],
+            1,
+            who===1
+        );
+
+        await new Promise(
+            r=>setTimeout(r,160)
+        );
+
+    }
+
+
+    displayPos[who]=to;
+
+    animating=false;
+
+    clearPieces();
+
+    placePiece(
+        displayPos[0],
+        0
+    );
+
+    placePiece(
+        displayPos[1],
+        1
+    );
+
+}
+
+
+/* =========================
+   ODA
+========================= */
 
 async function createGame(){
-  playerName=getName();
-  if(!playerName){$("lobbyMessage").textContent="Önce ismini yaz";return}
-  try{
-    let code;while(true){code=generateCode();if(!(await get(ref(db,"rooms/"+code))).exists())break}
-    roomCode=code;playerNumber=0;
-    const props={};for(let i=0;i<32;i++)props[i]={owner:null,level:1};
-    await set(ref(db,"rooms/"+roomCode),{
-      players:{0:{name:playerName,money:1500,position:0,props:[],jailTurns:0},1:null},
-      properties:props,turn:0,message:playerName+" oda kurdu",
-      game:null,auction:null,pending:null,chance:null,lastDice:[0,0]
-    });
-    $("createdRoom").innerHTML=`<div class="room-code">ODA: ${code}</div>`;
-    startGame();
-  }catch(e){$("lobbyMessage").textContent=e.message}
+
+    playerName =
+        getName();
+
+
+    try{
+
+        let code;
+
+        while(true){
+
+            code =
+                generateCode();
+
+            if(
+                !(
+                    await get(
+                        ref(
+                            db,
+                            "rooms/"+code
+                        )
+                    )
+                ).exists()
+            )
+                break;
+
+        }
+
+
+        roomCode =
+            code;
+
+        playerNumber =
+            0;
+
+
+        const props={};
+
+        for(
+            let i=0;
+            i<32;
+            i++
+        ){
+
+            props[i]={
+                owner:null,
+                level:0
+            };
+
+        }
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+roomCode
+            ),
+            {
+
+                players:{
+
+                    0:{
+                        name:playerName,
+                        money:1500,
+                        position:0,
+                        props:[],
+                        jailTurns:0
+                    },
+
+                    1:null
+
+                },
+
+                properties:props,
+
+                turn:0,
+
+                message:
+                    playerName+
+                    " oda kurdu. Oyuncu 2 bekleniyor...",
+
+                game:null,
+
+                auction:null,
+
+                pending:null,
+
+                chance:null,
+
+                lastDice:[0,0]
+
+            }
+        );
+
+
+        $("createdRoom").innerHTML =
+            `<div class="room-code">
+                ODA: ${code}
+            </div>`;
+
+
+        startGame();
+
+
+    }catch(e){
+
+        $("lobbyMessage")
+            .textContent =
+            e.message;
+
+    }
+
 }
+
+
 async function joinGame(){
-  playerName=getName();
-  if(!playerName){$("lobbyMessage").textContent="Önce ismini yaz";return}
-  const code=$("roomInput").value.trim().toUpperCase();
-  if(code.length!==4){$("lobbyMessage").textContent="4 haneli kod";return}
-  try{
-    const snap=await get(ref(db,"rooms/"+code));
-    if(!snap.exists()){$("lobbyMessage").textContent="Oda yok";return}
-    const d=snap.val();
-    if(d.players?.[1]){$("lobbyMessage").textContent="Oda dolu";return}
-    const props=d.properties||{};for(let i=0;i<32;i++)if(!props[i])props[i]={owner:null,level:1};
-    await set(ref(db,"rooms/"+code+"/players/1"),{name:playerName,money:1500,position:0,props:[],jailTurns:0});
-    await update(ref(db,"rooms/"+code),{message:playerName+" katıldı!",properties:props});
-    roomCode=code;playerNumber=1;startGame();
-  }catch(e){$("lobbyMessage").textContent=e.message}
+
+    playerName =
+        getName();
+
+
+    if(!playerName){
+
+        $("lobbyMessage")
+            .textContent =
+            "Önce ismini yaz";
+
+        return;
+
+    }
+
+
+    const code =
+        $("roomInput")
+        .value
+        .trim()
+        .toUpperCase();
+
+
+    if(code.length!==4){
+
+        $("lobbyMessage")
+            .textContent =
+            "4 haneli kod gir";
+
+        return;
+
+    }
+
+
+    try{
+
+        const snap =
+            await get(
+                ref(
+                    db,
+                    "rooms/"+code
+                )
+            );
+
+
+        if(!snap.exists()){
+
+            $("lobbyMessage")
+                .textContent =
+                "Oda yok";
+
+            return;
+
+        }
+
+
+        const d =
+            snap.val();
+
+
+        if(d.players?.[1]){
+
+            $("lobbyMessage")
+                .textContent =
+                "Oda dolu";
+
+            return;
+
+        }
+
+
+        await set(
+            ref(
+                db,
+                "rooms/"+code+"/players/1"
+            ),
+            {
+
+                name:playerName,
+
+                money:1500,
+
+                position:0,
+
+                props:[],
+
+                jailTurns:0
+
+            }
+        );
+
+
+        await update(
+            ref(
+                db,
+                "rooms/"+code
+            ),
+            {
+                message:
+                    playerName+
+                    " katıldı!"
+            }
+        );
+
+
+        roomCode =
+            code;
+
+        playerNumber =
+            1;
+
+        startGame();
+
+
+    }catch(e){
+
+        $("lobbyMessage")
+            .textContent =
+            e.message;
+
+    }
+
 }
+
+
 function startGame(){
-  $("lobby").style.display="none";$("game").style.display="flex";
-  $("gameRoomCode").textContent=roomCode;
-  $("adminPanel").style.display=playerNumber===0?"block":"none";
-  buildAdmin();
-  unsubscribe=onValue(path(),async snap=>{const d=snap.val();if(d)await render(d)});
+
+    $("lobby")
+        .style.display =
+        "none";
+
+    $("game")
+        .style.display =
+        "flex";
+
+    $("gameRoomCode")
+        .textContent =
+        roomCode;
+
+
+    $("adminPanel")
+        .style.display =
+        playerNumber===0
+        ?"block"
+        :"none";
+
+
+    buildAdmin();
+
+
+    unsubscribe =
+        onValue(
+            path(),
+            async snap=>{
+
+                const d =
+                    snap.val();
+
+                if(!d)
+                    return;
+
+                await render(d);
+
+            }
+        );
+
 }
 
-let lastPos={0:-1,1:-1};
+
+/* =========================
+   RENDER
+========================= */
+
 async function render(d){
-  await autoSkipJail(d);
-  const p0=d.players?.[0],p1=d.players?.[1];
-  const turn=N(d.turn);
-  $("name0label").textContent="👑 "+(p0?.name||"Oyuncu 1");
-  $("name1label").textContent="👤 "+(p1?.name||"Oyuncu 2");
-  $("money0").textContent=p0?.money??"-";$("position0").textContent=p0?.position??"-";
-  $("money1").textContent=p1?.money??"-";$("position1").textContent=p1?.position??"-";
-  $("jail0").textContent=(p0?.jailTurns>0)?`🔒 Hapiste (${p0.jailTurns})`:"";
-  $("jail1").textContent=(p1?.jailTurns>0)?`🔒 Hapiste (${p1.jailTurns})`:"";
-  $("props0").textContent=p0?.props?.length?`Mal: ${p0.props.length}`:"";
-  $("props1").textContent=p1?.props?.length?`Mal: ${p1.props.length}`:"";
-  $("p0card").classList.toggle("active",turn===0);
-  $("p1card").classList.toggle("active",turn===1);
-  const el=$("turnText");el.classList.remove("me","wait");
-  if(turn===playerNumber){el.textContent="🎲 SENİN SIRAN";el.classList.add("me")}
-  else{el.textContent="⏳ Sıra: "+(d.players?.[turn]?.name||"");el.classList.add("wait")}
-  const me=d.players?.[playerNumber];
-  $("rollButton").disabled=turn!==playerNumber||!!d.game||!!d.auction||!!d.pending||!!d.chance||animating||(me?.jailTurns>0);
-  setMsg(d.message);if(d.lastDice?.[0])showDice(d.lastDice[0],d.lastDice[1]);
 
-  for(const who of [0,1]){
-    const p=d.players?.[who];if(!p)continue;
-    const target=N(p.position)||0;
-    if(lastPos[who]<0){displayPos[who]=target;lastPos[who]=target}
-    else if(lastPos[who]!==target&&!animating){const from=lastPos[who];lastPos[who]=target;await animateMove(who,from,target)}
-    else if(!animating)displayPos[who]=target;
-  }
-  if(!animating){clearPieces();if(p0)placePiece(displayPos[0],0);if(p1)placePiece(displayPos[1],1)}
+    ensureProps(d);
 
-  const props=d.properties||{};
-  for(let i=0;i<32;i++){
-    const o=props[i]?.owner;const el=$("owner-"+i);
-    if(el)el.textContent=N(o)===0?"👑":N(o)===1?"👤":"";
-    const lv=$("lvl-"+i);if(lv){const L=props[i]?.level||1;lv.textContent=(o!=null&&L>1)?("Kat "+L):""}
-  }
 
-  if(d.chance)renderChance(d.chance);
-  else if(d.game)renderCasino(d.game,d);
-  else if(d.pending)renderPending(d.pending,d);
-  else if(d.auction)renderAuction(d.auction,d);
-  else $("modal").classList.add("hidden");
+    const p0 =
+        d.players?.[0];
+
+    const p1 =
+        d.players?.[1];
+
+
+    $("name0label")
+        .textContent =
+        "👑 "+
+        (p0?.name||"Oyuncu 1");
+
+
+    $("name1label")
+        .textContent =
+        "👤 "+
+        (p1?.name||"Oyuncu 2");
+
+
+    $("money0")
+        .textContent =
+        p0?.money??"-";
+
+    $("position0")
+        .textContent =
+        p0?.position??"-";
+
+
+    $("money1")
+        .textContent =
+        p1?.money??"-";
+
+    $("position1")
+        .textContent =
+        p1?.position??"-";
+
+
+    $("jail0")
+        .textContent =
+        p0?.jailTurns>0
+        ?`🔒 Hapiste (${p0.jailTurns} tur atlaması)`
+        :"";
+
+
+    $("jail1")
+        .textContent =
+        p1?.jailTurns>0
+        ?`🔒 Hapiste (${p1.jailTurns} tur atlaması)`
+        :"";
+
+
+    $("props0")
+        .textContent =
+        p0?.props?.length
+        ?`Mal: ${p0.props.length}`
+        :"";
+
+
+    $("props1")
+        .textContent =
+        p1?.props?.length
+        ?`Mal: ${p1.props.length}`
+        :"";
+
+
+    $("p0card")
+        .classList
+        .toggle(
+            "active",
+            d.turn===0
+        );
+
+
+    $("p1card")
+        .classList
+        .toggle(
+            "active",
+            d.turn===1
+        );
+
+
+    const turnName =
+        d.players?.[d.turn]?.name ||
+        "Oyuncu "+(d.turn+1);
+
+
+    $("turnText")
+        .textContent =
+        `🎯 SIRA: ${turnName}`+
+        (
+            d.turn===playerNumber
+            ?" — SEN"
+            :""
+        );
+
+
+    const me =
+        d.players?.[playerNumber];
+
+
+    const blocked =
+        !!(
+            d.game ||
+            d.auction ||
+            d.pending ||
+            d.chance ||
+            animating
+        );
+
+
+    $("rollButton")
+        .disabled =
+        d.turn!==playerNumber ||
+        blocked ||
+        !me ||
+        ((me.jailTurns||0)>0);
+
+
+    setMsg(d.message);
+
+
+    if(d.lastDice?.[0])
+        showDice(
+            d.lastDice[0],
+            d.lastDice[1]
+        );
+
+
+    for(
+        const who of [0,1]
+    ){
+
+        const p =
+            d.players?.[who];
+
+        if(!p)
+            continue;
+
+
+        const target =
+            p.position||0;
+
+
+        if(
+            lastPos[who]===-1
+        ){
+
+            displayPos[who]=target;
+
+            lastPos[who]=target;
+
+        }
+
+        else if(
+            lastPos[who]!==target &&
+            !animating
+        ){
+
+            const from =
+                lastPos[who];
+
+            lastPos[who]=target;
+
+            await animateMove(
+                who,
+                from,
+                target
+            );
+
+        }
+
+        else if(!animating){
+
+            displayPos[who]=target;
+
+        }
+
+    }
+
+
+    if(!animating){
+
+        clearPieces();
+
+        if(p0)
+            placePiece(
+                displayPos[0],
+                0
+            );
+
+        if(p1)
+            placePiece(
+                displayPos[1],
+                1
+            );
+
+    }
+
+
+    for(
+        let i=0;
+        i<32;
+        i++
+    ){
+
+        const pr =
+            d.properties?.[i];
+
+        const owner =
+            pr?.owner;
+
+        const el =
+            $("owner-"+i);
+
+        const lv =
+            $("level-"+i);
+
+
+        if(el)
+
+            el.textContent =
+                owner===0
+                ?"👑"
+                :owner===1
+                ?"👤"
+                :"";
+
+
+        if(lv)
+
+            lv.textContent =
+                pr?.level>0
+                ?`Lv${pr.level}`
+                :"";
+
+    }
+
+
+    renderActions(d);
+
+
+    if(d.chance)
+
+        renderChance(
+            d.chance,
+            d
+        );
+
+    else if(d.game)
+
+        renderCasino(
+            d.game,
+            d
+        );
+
+    else if(d.pending)
+
+        renderPending(
+            d.pending,
+            d
+        );
+
+    else if(d.auction)
+
+        renderAuction(
+            d.auction,
+            d
+        );
+
+    else
+
+        $("modal")
+            .classList
+            .add("hidden");
+
+
+    /*
+       HAPİS:
+       Oyuncunun sırası geldiğinde
+       zar butonu kilitlenmek yerine
+       otomatik olarak tur atlanır.
+    */
+
+    if(
+        d.turn===playerNumber &&
+        me?.jailTurns>0 &&
+        !skipLock &&
+        !d.game &&
+        !d.auction &&
+        !d.pending &&
+        !d.chance
+    ){
+
+        skipLock=true;
+
+        setTimeout(
+            skipJailTurn,
+            200
+        );
+
+    }
+
 }
+
+
+/* =========================
+   AKSİYONLAR
+========================= */
+
+function renderActions(d){
+
+    const box =
+        $("actionButtons");
+
+    box.innerHTML="";
+
+
+    const me =
+        d.players?.[playerNumber];
+
+
+    if(
+        !me?.props?.length ||
+        d.game ||
+        d.auction ||
+        d.pending ||
+        d.chance
+    )
+        return;
+
+
+    me.props.forEach(idx=>{
+
+        const c =
+            cells[idx];
+
+        const pr =
+            d.properties[idx];
+
+
+        if(
+            !pr ||
+            pr.level>=3
+        )
+            return;
+
+
+        const b =
+            document.createElement("button");
+
+
+        b.className =
+            "gold";
+
+
+        b.textContent =
+            `🏗️ ${c.name} `+
+            `Lv${(pr.level||0)+1} `+
+            `(${upgradeCost(c,pr.level||0)}₺)`;
+
+
+        b.onclick =
+            ()=>upgradeProperty(idx);
+
+
+        box.appendChild(b);
+
+    });
+
+}
+
+
+/* =========================
+   HAPİS TUR ATLAMA
+========================= */
+
+async function skipJailTurn(){
+
+    skipLock=false;
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(
+                !d ||
+                d.turn!==playerNumber
+            )
+                return d;
+
+
+            const p =
+                d.players?.[playerNumber];
+
+
+            if(
+                !p ||
+                !(p.jailTurns>0)
+            )
+                return d;
+
+
+            p.jailTurns=0;
+
+
+            d.message =
+                `${p.name} hapisteydi — `+
+                `tur otomatik atlandı. `+
+                `Sıra rakibe geçti.`;
+
+
+            d.turn =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+/* =========================
+   ZAR
+========================= */
 
 async function rollDice(){
-  try{
-    await runTransaction(path(),d=>{
-      if(!d)return;d=ensureProps(d);
-      if(N(d.turn)!==playerNumber||!d.players?.[playerNumber]||d.game||d.auction||d.pending||d.chance)return;
-      const p=d.players[playerNumber];
-      if((p.jailTurns||0)>0){
-        p.jailTurns-=1;d.turn=playerNumber===0?1:0;
-        d.message=`${p.name} hapiste atlandı`;return d;
-      }
-      const d1=1+Math.floor(Math.random()*6),d2=1+Math.floor(Math.random()*6),total=d1+d2;
-      d.lastDice=[d1,d2];
-      const old=N(p.position)||0;
-      p.position=(old+total)%32;
-      if(p.position<old){p.money=(p.money||0)+200;d.message=`${p.name} başlangıç +200₺ · `}
-      else d.message="";
-      d.message+=`${p.name} ${d1}+${d2}=${total} → ${cells[p.position].name}`;
-      d.turn=playerNumber===0?1:0;
 
-      const cell=cells[p.position],prop=d.properties[p.position];
-      if(cell.type==="blackjack"){d.game=bjInit();d.message="🃏 BLACKJACK!"}
-      else if(cell.type==="poker"){d.game=pokerInit();d.message="♠️ POKER!"}
-      else if(cell.type==="jackpot"){
-        d.game={type:"jackpot",player:playerNumber,phase:"ready",reels:null,won:false};
-        d.turn=playerNumber;d.message="🎰 JACKPOT!";
-      }
-      else if(cell.type==="tax"){p.money-=cell.amount;d.message+=` (-${cell.amount}₺ vergi)`}
-      else if(cell.type==="gotojail"){p.position=4;p.jailTurns=1;d.message=`${p.name} hapse girdi!`}
-      else if(cell.type==="chance"){
-        const ev=CHANCE_EVENTS[Math.floor(Math.random()*CHANCE_EVENTS.length)];
-        p.money+=(ev.money||0);
-        d.chance={text:ev.text,money:ev.money,player:playerNumber,name:p.name};
-        d.turn=playerNumber;
-      }
-      else if(cell.type==="auctionSpot"){
-        if((p.props||[]).length){
-          d.pending={type:"pickAuction",player:playerNumber};
-          d.turn=playerNumber;d.message=`${p.name} açık artırma — mal seç`;
-        }else d.message+=` (satacak mal yok)`;
-      }
-      else if((cell.type==="prop"||cell.type==="station"||cell.type==="utility")&&prop){
-        if(prop.owner==null||prop.owner===undefined){
-          d.pending={type:"buy",pos:p.position,player:playerNumber,price:cell.price};
-          d.turn=playerNumber;d.message=`${cell.name} satılık (${cell.price}₺)`;
-        }else if(N(prop.owner)===playerNumber){
-          const lvl=prop.level||1;
-          if(lvl<3){
-            d.pending={type:"upgrade",pos:p.position,player:playerNumber,level:lvl,cost:upgradeCost(cell,lvl)};
-            d.turn=playerNumber;d.message=`${cell.name} kat yükselt?`;
-          }
-        }else{
-          const lvl=prop.level||1,rent=rentOf(cell,lvl);
-          p.money-=rent;
-          if(d.players[prop.owner])d.players[prop.owner].money+=rent;
-          d.message+=` → ${rent}₺ kira (Kat ${lvl})`;
+    try{
+
+        await runTransaction(
+            path(),
+            d=>{
+
+                if(!d)
+                    return d;
+
+
+                if(
+                    d.turn!==playerNumber ||
+                    !d.players?.[playerNumber] ||
+                    d.game ||
+                    d.auction ||
+                    d.pending ||
+                    d.chance
+                )
+                    return d;
+
+
+                const p =
+                    d.players[playerNumber];
+
+
+                if(p.jailTurns>0)
+                    return d;
+
+
+                const d1 =
+                    Math.floor(
+                        Math.random()*6
+                    )+1;
+
+
+                const d2 =
+                    Math.floor(
+                        Math.random()*6
+                    )+1;
+
+
+                const total =
+                    d1+d2;
+
+
+                d.lastDice =
+                    [d1,d2];
+
+
+                const old =
+                    p.position||0;
+
+
+                const next =
+                    (old+total)%32;
+
+
+                const passed =
+                    next<old;
+
+
+                p.position =
+                    next;
+
+
+                /*
+                    Tahtayı tamamlarken
+                    200 ₺
+                */
+
+                if(passed){
+
+                    p.money =
+                        (p.money||0)+200;
+
+                }
+
+
+                d.message =
+                    `${p.name} ${d1}+${d2}=${total} → `+
+                    `${cells[next].name}`+
+                    (
+                        passed
+                        ?" (+200₺ tur bonusu)"
+                        :""
+                    );
+
+
+                return resolveLanding(
+                    d,
+                    playerNumber,
+                    next
+                );
+
+            }
+        );
+
+    }catch(e){
+
+        setMsg(
+            "Zar hatası: "+
+            e.message
+        );
+
+    }
+
+}
+
+
+/* =========================
+   TAHTA ÖNCELİK SİSTEMİ
+========================= */
+
+function resolveLanding(
+    d,
+    who,
+    pos
+){
+
+    const p =
+        d.players[who];
+
+    const cell =
+        cells[pos];
+
+    const pr =
+        d.properties[pos];
+
+
+    /*
+       1 — HAPİS
+    */
+
+    if(
+        cell.type==="gotojail"
+    ){
+
+        p.position=4;
+
+        p.jailTurns=1;
+
+
+        d.message =
+            `${p.name} hapse girdi! `+
+            `Bir sonraki turu otomatik atlanacak.`;
+
+
+        d.turn =
+            who===0
+            ?1
+            :0;
+
+
+        return d;
+
+    }
+
+
+    /*
+       2 — VERGİ
+    */
+
+    if(
+        cell.type==="tax"
+    ){
+
+        p.money -=
+            cell.amount;
+
+
+        d.message +=
+            ` (-${cell.amount}₺ vergi)`;
+
+
+        d.turn =
+            who===0
+            ?1
+            :0;
+
+
+        return d;
+
+    }
+
+
+    /*
+       3 — ŞANS
+    */
+
+    if(
+        cell.type==="chance"
+    ){
+
+        const ev =
+            CHANCE_EVENTS[
+                Math.floor(
+                    Math.random()*
+                    CHANCE_EVENTS.length
+                )
+            ];
+
+
+        p.money +=
+            ev.money;
+
+
+        d.chance = {
+
+            text:ev.text,
+
+            money:ev.money,
+
+            player:who,
+
+            name:p.name
+
+        };
+
+
+        d.turn=who;
+
+
+        return d;
+
+    }
+
+
+    /*
+       4 — BLACKJACK
+    */
+
+    if(
+        cell.type==="blackjack"
+    ){
+
+        d.game =
+            bjInit(who);
+
+
+        d.turn=who;
+
+        d.message =
+            "🃏 BLACKJACK masası açıldı.";
+
+
+        return d;
+
+    }
+
+
+    /*
+       5 — POKER
+    */
+
+    if(
+        cell.type==="poker"
+    ){
+
+        d.game =
+            pokerInit(who);
+
+
+        d.turn=who;
+
+        d.message =
+            "♠️ POKER masası açıldı.";
+
+
+        return d;
+
+    }
+
+
+    /*
+       6 — JACKPOT
+    */
+
+    if(
+        cell.type==="jackpot"
+    ){
+
+        d.game =
+            jackpotInit(who);
+
+
+        d.turn=who;
+
+        d.message =
+            "🎰 JACKPOT!";
+
+
+        return d;
+
+    }
+
+
+    /*
+       7 — AÇIK ARTIRMA
+    */
+
+    if(
+        cell.type==="auction"
+    ){
+
+        d.auction={
+
+            kind:"propertySelect",
+
+            seller:who,
+
+            highest:0,
+
+            highestBy:null,
+
+            pos:null,
+
+            minBid:0,
+
+            active:true
+
+        };
+
+
+        d.turn=who;
+
+
+        d.message =
+            `${p.name} açık artırma alanına geldi. `+
+            `Satacağı yeri seçiyor.`;
+
+
+        return d;
+
+    }
+
+
+    /*
+       8 — MÜLKLER
+    */
+
+    if(
+        [
+            "prop",
+            "station",
+            "utility"
+        ].includes(cell.type)
+    ){
+
+        /*
+           SATILIK
+        */
+
+        if(
+            pr.owner==null
+        ){
+
+            d.pending={
+
+                type:"buy",
+
+                pos,
+
+                player:who,
+
+                price:cell.price
+
+            };
+
+
+            d.turn=who;
+
+
+            d.message =
+                `${cell.name} satılık. `+
+                `Satın alma veya vazgeçme seçeneği.`;
+
+
+            return d;
+
         }
-      }
-      return d;
-    });
-  }catch(e){setMsg("Zar hatası: "+e.message)}
-}
 
-function renderChance(ch){
-  $("modalContent").innerHTML=`<div class="chance-card"><h2>🎴 ŞANS</h2>
-    <div style="color:#93c5fd">${ch.name||""}</div>
-    <div style="font-size:18px;margin:14px 0">${ch.text}</div>
-    <div style="font-size:22px;font-weight:bold;color:${(ch.money||0)>=0?"#4ade80":"#f87171"}">${(ch.money||0)>=0?"+":""}${ch.money}₺</div>
-    <div class="btn-row"><button id="chanceOk">Tamam</button></div></div>`;
-  $("modal").classList.remove("hidden");
-  $("chanceOk").onclick=async()=>{await runTransaction(path(),data=>{if(!data?.chance)return;const w=N(data.chance.player);data.chance=null;data.turn=w===0?1:0;return data})};
-}
 
-function buildAdmin(){
-  const t=$("teleports");t.innerHTML="";
-  cells.forEach((c,i)=>{
-    const b=document.createElement("button");b.textContent=i+" "+c.name;
-    if(c.type==="blackjack"||c.type==="jackpot"||c.type==="auctionSpot")b.className="gold";
-    if(c.type==="poker")b.className="blue";
-    b.onclick=()=>teleport(i);t.appendChild(b);
-  });
-}
-$("adminToggle").onclick=()=>$("teleports").classList.toggle("open");
-async function teleport(idx){
-  if(playerNumber!==0)return;
-  await runTransaction(path(),d=>{
-    if(!d?.players?.[0])return;d=ensureProps(d);
-    d.players[0].position=idx;d.message="Admin → "+cells[idx].name;
-    if(cells[idx].type==="blackjack")d.game=bjInit();
-    else if(cells[idx].type==="poker")d.game=pokerInit();
-    else if(cells[idx].type==="jackpot"){d.game={type:"jackpot",player:0,phase:"ready",reels:null,won:false};d.turn=0}
-    else if(cells[idx].type==="gotojail"){d.players[0].position=4;d.players[0].jailTurns=1}
-    else if(cells[idx].type==="auctionSpot"&&(d.players[0].props||[]).length){
-      d.pending={type:"pickAuction",player:0};d.turn=0;
+        /*
+           KENDİ MÜLKÜ
+        */
+
+        if(
+            pr.owner===who
+        ){
+
+            if(
+                pr.level<3
+            ){
+
+                d.pending={
+
+                    type:"upgrade",
+
+                    pos,
+
+                    player:who,
+
+                    price:
+                        upgradeCost(
+                            cell,
+                            pr.level||0
+                        )
+
+                };
+
+
+                d.turn=who;
+
+
+                d.message =
+                    `${cell.name} senin. `+
+                    `Bir üst kata çıkabilirsin.`;
+
+
+                return d;
+
+            }
+
+
+            d.message +=
+                ` → Kendi mülkün (Lv3).`;
+
+
+            d.turn =
+                who===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+
+
+        /*
+           RAKİP MÜLKÜ
+        */
+
+        const rent =
+            rentFor(
+                cell,
+                pr.level||0
+            );
+
+
+        p.money -=
+            rent;
+
+
+        if(
+            d.players[pr.owner]
+        ){
+
+            d.players[
+                pr.owner
+            ].money +=
+                rent;
+
+        }
+
+
+        d.message +=
+            ` → ${rent}₺ kira `+
+            `(Lv${pr.level||0})`;
+
+
+        d.turn =
+            who===0
+            ?1
+            :0;
+
+
+        return d;
+
     }
-    else if((cells[idx].type==="prop"||cells[idx].type==="station")&&d.properties[idx].owner==null){
-      d.pending={type:"buy",pos:idx,player:0,price:cells[idx].price};d.turn=0;
+
+
+    /*
+       9 — ÜCRETSİZ OTOPARK
+    */
+
+    if(
+        cell.type==="free"
+    ){
+
+        d.message +=
+            " → Ücretsiz otopark.";
+
+
+        d.turn =
+            who===0
+            ?1
+            :0;
+
+
+        return d;
+
     }
+
+
+    d.turn =
+        who===0
+        ?1
+        :0;
+
+
     return d;
-  });
+
 }
 
-function renderPending(pend,d){
-  const who=N(pend.player);
-  if(who!==playerNumber){
-    $("modalContent").innerHTML=`<h3>Bekleniyor</h3>
-      <p>${d.players[who]?.name||("Oyuncu "+(who+1))} karar veriyor...</p>
-      <div class="btn-row"><button class="red" id="forceClearPend">Kilit aç (acil)</button></div>`;
-    $("modal").classList.remove("hidden");
-    if($("forceClearPend"))$("forceClearPend").onclick=forceClearPending;
-    return;
-  }
 
-  if(pend.type==="buy"){
-    const c=cells[pend.pos];
-    $("modalContent").innerHTML=`<h2>🏠 ${c.name}</h2>
-      <div class="info">Alım: <b>${c.price}₺</b> | Kira: <b style="color:#4ade80">${c.rent||0}₺</b></div>
-      <div class="info">Paran: ${d.players[playerNumber].money}₺</div>
-      <div class="btn-row"><button id="btnBuy">✅ Satın Al</button><button class="red" id="btnSkip">❌ Alma</button></div>`;
-    $("modal").classList.remove("hidden");
-    $("btnBuy").onclick=doBuy;$("btnSkip").onclick=doSkipBuy;
-    return;
-  }
-  if(pend.type==="upgrade"){
-    const c=cells[pend.pos],next=pend.level+1,cost=pend.cost;
-    $("modalContent").innerHTML=`<h2>🏗️ ${c.name}</h2>
-      <div class="info">Kat ${pend.level} → <b>Kat ${next}</b> (max 3)</div>
-      <div class="info">Maliyet: <b>${cost}₺</b> | Yeni kira: <b style="color:#4ade80">${rentOf(c,next)}₺</b></div>
-      <div class="info">Paran: ${d.players[playerNumber].money}₺</div>
-      <div class="btn-row"><button id="btnUp">✅ Kat Çık</button><button class="red" id="btnSkipUp">❌ Geç</button></div>`;
-    $("modal").classList.remove("hidden");
-    $("btnUp").onclick=doUpgrade;$("btnSkipUp").onclick=doSkipBuy;
-    return;
-  }
-  if(pend.type==="pickAuction"){
-    const me=d.players[playerNumber];
-    let list="";
-    (me.props||[]).forEach(idx=>{
-      const c=cells[idx],L=d.properties[idx]?.level||1;
-      list+=`<button class="gold" data-pos="${idx}" style="width:100%;margin:4px 0">${c.name} · Kat ${L}</button>`;
-    });
-    $("modalContent").innerHTML=`<h2>📢 Açık Artırmaya Çıkar</h2>
-      <div class="info">Bir malını seç</div><div id="pickList">${list||"<p>Mal yok</p>"}</div>
-      <div class="btn-row"><button class="red" id="btnSkipPick">Geç</button></div>`;
-    $("modal").classList.remove("hidden");
-    $("pickList").querySelectorAll("button[data-pos]").forEach(b=>{b.onclick=()=>startBoardAuction(N(b.dataset.pos))});
-    $("btnSkipPick").onclick=doSkipBuy;
-  }
+/* =========================
+   KAT GELİŞTİRME
+========================= */
+
+async function upgradeProperty(pos){
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(
+                !d ||
+                d.turn!==playerNumber
+            )
+                return d;
+
+
+            const p =
+                d.players[playerNumber];
+
+            const pr =
+                d.properties?.[pos];
+
+            const c =
+                cells[pos];
+
+
+            if(
+                !p ||
+                !pr ||
+                pr.owner!==playerNumber ||
+                pr.level>=3
+            )
+                return d;
+
+
+            const cost =
+                upgradeCost(
+                    c,
+                    pr.level||0
+                );
+
+
+            if(
+                p.money<cost
+            ){
+
+                d.message =
+                    "Yetersiz para.";
+
+                return d;
+
+            }
+
+
+            p.money -=
+                cost;
+
+
+            pr.level =
+                (pr.level||0)+1;
+
+
+            d.pending=null;
+
+
+            d.message =
+                `${c.name} Lv${pr.level} oldu. `+
+                `Yeni kira: ${rentFor(c,pr.level)}₺`;
+
+
+            d.turn =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+    );
+
 }
+
+
+/* =========================
+   SATIN ALMA EKRANI
+========================= */
+
+function renderPending(
+    pend,
+    d
+){
+
+    const c =
+        cells[pend.pos];
+
+    const p =
+        d.players[playerNumber];
+
+
+    if(
+        pend.player!==playerNumber
+    ){
+
+        $("modalContent")
+            .innerHTML =
+            `
+            <h3>Bekleniyor</h3>
+            <p>
+                ${
+                    d.players?.[
+                        pend.player
+                    ]?.name ||
+                    "Oyuncu"
+                }
+                karar veriyor.
+            </p>
+            `;
+
+
+        $("modal")
+            .classList
+            .remove("hidden");
+
+        return;
+
+    }
+
+
+    if(
+        pend.type==="buy"
+    ){
+
+        $("modalContent")
+            .innerHTML =
+
+            `
+            <h2>🏠 ${c.name}</h2>
+
+            <div class="info">
+                Alım:
+                <b>${c.price}₺</b>
+                |
+                İlk kira:
+                <b>${rentFor(c,0)}₺</b>
+            </div>
+
+            <div class="info">
+                Paran:
+                ${p.money}₺
+            </div>
+
+            <div class="btn-row">
+
+                <button id="btnBuy">
+                    ✅ Satın Al
+                </button>
+
+                <button
+                    class="red"
+                    id="btnSkip"
+                >
+                    ❌ Alma
+                </button>
+
+            </div>
+            `;
+
+
+        $("modal")
+            .classList
+            .remove("hidden");
+
+
+        $("btnBuy").onclick =
+            doBuy;
+
+
+        $("btnSkip").onclick =
+            doSkipBuy;
+
+
+        return;
+
+    }
+
+
+    /*
+       GELİŞTİRME
+    */
+
+    $("modalContent")
+        .innerHTML =
+
+        `
+        <h2>🏗️ ${c.name}</h2>
+
+        <div class="info">
+
+            Mevcut seviye:
+            <b>Lv${d.properties[pend.pos].level||0}</b>
+
+            →
+
+            <b>
+                Lv${
+                    (d.properties[pend.pos].level||0)+1
+                }
+            </b>
+
+        </div>
+
+        <div class="info">
+
+            Geliştirme:
+            <b>${pend.price}₺</b>
+
+            |
+
+            Yeni kira:
+            <b>
+                ${
+                    rentFor(
+                        c,
+                        d.properties[pend.pos].level+1
+                    )
+                }₺
+            </b>
+
+        </div>
+
+        <div class="btn-row">
+
+            <button id="btnUpgrade">
+                🏗️ Kat Çıkar
+            </button>
+
+            <button
+                class="red"
+                id="btnNoUpgrade"
+            >
+                ❌ Şimdilik Hayır
+            </button>
+
+        </div>
+        `;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    $("btnUpgrade").onclick =
+        ()=>upgradeProperty(
+            pend.pos
+        );
+
+
+    $("btnNoUpgrade").onclick =
+        doSkipUpgrade;
+
+}
+
+
+/* =========================
+   SATIN AL
+========================= */
 
 async function doBuy(){
-  await runTransaction(path(),d=>{
-    if(!d?.pending||N(d.pending.player)!==playerNumber||d.pending.type!=="buy")return;
-    d=ensureProps(d);
-    const pos=d.pending.pos,price=d.pending.price,p=d.players[playerNumber];
-    if(p.money<price){d.message="Yetersiz para!";return d}
-    p.money-=price;d.properties[pos].owner=playerNumber;d.properties[pos].level=1;
-    if(!p.props)p.props=[];if(!p.props.includes(pos))p.props.push(pos);
-    d.message=`${p.name} ${cells[pos].name} aldı`;d.pending=null;d.turn=playerNumber===0?1:0;return d;
-  });
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const x =
+                d.pending;
+
+
+            if(
+                !x ||
+                x.player!==playerNumber
+            )
+                return d;
+
+
+            const p =
+                d.players[playerNumber];
+
+            const pr =
+                d.properties[x.pos];
+
+
+            if(
+                p.money<x.price
+            ){
+
+                d.message =
+                    "Yetersiz para.";
+
+                return d;
+
+            }
+
+
+            p.money -=
+                x.price;
+
+
+            pr.owner =
+                playerNumber;
+
+
+            pr.level=0;
+
+
+            p.props =
+                p.props || [];
+
+
+            if(
+                !p.props.includes(x.pos)
+            )
+                p.props.push(x.pos);
+
+
+            d.pending=null;
+
+
+            d.message =
+                `${p.name} ${cells[x.pos].name} aldı.`;
+
+
+            d.turn =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+    );
+
 }
+
+
 async function doSkipBuy(){
-  await runTransaction(path(),d=>{
-    if(!d?.pending||N(d.pending.player)!==playerNumber)return;
-    d.pending=null;d.turn=playerNumber===0?1:0;d.message="Geçildi";return d;
-  });
-}
-async function doUpgrade(){
-  await runTransaction(path(),d=>{
-    if(!d?.pending||d.pending.type!=="upgrade"||N(d.pending.player)!==playerNumber)return;
-    d=ensureProps(d);
-    const pos=d.pending.pos,cost=d.pending.cost,p=d.players[playerNumber],prop=d.properties[pos];
-    if((prop.level||1)>=3){d.pending=null;d.turn=playerNumber===0?1:0;return d}
-    if(p.money<cost){d.message="Yetersiz para!";return d}
-    p.money-=cost;prop.level=(prop.level||1)+1;
-    d.message=`${p.name} ${cells[pos].name} → Kat ${prop.level}`;
-    d.pending=null;d.turn=playerNumber===0?1:0;return d;
-  });
-}
-async function startBoardAuction(pos){
-  await runTransaction(path(),d=>{
-    if(!d)return;d=ensureProps(d);
-    const me=d.players[playerNumber];
-    if(!me?.props?.includes(pos))return;
-    d.auction={pos,seller:playerNumber,highest:0,highestBy:null,minBid:Math.floor((cells[pos].price||100)*0.5),active:true};
-    d.pending=null;d.message=`📢 ${me.name} ${cells[pos].name} artırmada`;return d;
-  });
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(!d?.pending)
+                return d;
+
+
+            const who =
+                d.pending.player;
+
+
+            d.message =
+                `${cells[d.pending.pos].name} alınmadı.`;
+
+
+            d.pending=null;
+
+
+            d.turn =
+                who===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+    );
+
 }
 
-function renderAuction(a,d){
-  const c=cells[a.pos],L=d.properties[a.pos]?.level||1,seller=N(a.seller);
-  let h=`<h2>📢 Açık Artırma</h2>
-    <div class="info"><b>${c.name}</b> · Kat ${L} · Kira ${rentOf(c,L)}₺</div>
-    <div class="info">Min: ${a.minBid||0}₺ · En yüksek: <b>${a.highest}₺</b>
-      ${a.highestBy!=null?`(${d.players[a.highestBy]?.name||""})`:""}</div>`;
-  if(seller!==playerNumber){
-    h+=`<div class="btn-row"><input type="number" id="bidInput" value="${Math.max((a.highest||0)+10,a.minBid||50)}">
-      <button class="gold" id="btnBid">Teklif Ver</button></div>`;
-  }
-  if(seller===playerNumber){
-    h+=`<div class="btn-row"><button class="blue" id="btnAccept" ${a.highestBy==null?"disabled":""}>✅ Onayla</button>
-      <button class="red" id="btnCancelAuc">❌ İptal</button></div>`;
-  }
-  h+=`<div class="btn-row"><button class="red" id="forceClearPend2" style="font-size:11px">Kilit aç</button></div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("btnBid"))$("btnBid").onclick=placeBid;
-  if($("btnAccept"))$("btnAccept").onclick=acceptBid;
-  if($("btnCancelAuc"))$("btnCancelAuc").onclick=cancelAuction;
-  if($("forceClearPend2"))$("forceClearPend2").onclick=forceClearPending;
+
+async function doSkipUpgrade(){
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(!d?.pending)
+                return d;
+
+
+            const who =
+                d.pending.player;
+
+
+            d.pending=null;
+
+
+            d.message =
+                "Geliştirme yapılmadı.";
+
+
+            d.turn =
+                who===0
+                ?1
+                :0;
+
+
+            return d;
+
+        }
+    );
+
 }
+
+
+/* =========================
+   ŞANS
+========================= */
+
+function renderChance(
+    ch,
+    d
+){
+
+    $("modalContent")
+        .innerHTML =
+
+        `
+        <div class="chance-card">
+
+            <h2>
+                🎴 ŞANS KARTI
+            </h2>
+
+            <div
+                style="
+                color:#93c5fd
+                "
+            >
+                ${ch.name}
+            </div>
+
+            <div class="event">
+                ${ch.text}
+            </div>
+
+            <div
+                style="
+                font-size:22px;
+                font-weight:bold;
+                color:
+                ${
+                    ch.money>=0
+                    ?" #4ade80"
+                    :"#f87171"
+                }
+                "
+            >
+                ${
+                    ch.money>=0
+                    ?"+"
+                    :""
+                }
+                ${ch.money} ₺
+            </div>
+
+            <div class="btn-row">
+
+                <button id="chanceOk">
+                    Tamam
+                </button>
+
+            </div>
+
+        </div>
+        `;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    $("chanceOk").onclick =
+        async()=>{
+
+            await runTransaction(
+                path(),
+                d=>{
+
+                    if(!d?.chance)
+                        return d;
+
+
+                    const who =
+                        d.chance.player;
+
+
+                    d.chance=null;
+
+
+                    d.message =
+                        "Şans kartı uygulandı.";
+
+
+                    d.turn =
+                        who===0
+                        ?1
+                        :0;
+
+
+                    return d;
+
+                }
+            );
+
+        };
+
+}
+
+
+/* =========================
+   ADMIN
+========================= */
+
+function buildAdmin(){
+
+    const t =
+        $("teleports");
+
+
+    t.innerHTML="";
+
+
+    cells.forEach(
+        (c,i)=>{
+
+            const b =
+                document.createElement("button");
+
+
+            b.textContent =
+                i+" "+c.name;
+
+
+            if(
+                c.type==="blackjack" ||
+                c.type==="jackpot"
+            )
+                b.className="gold";
+
+
+            if(
+                c.type==="poker"
+            )
+                b.className="blue";
+
+
+            b.onclick =
+                ()=>teleport(i);
+
+
+            t.appendChild(b);
+
+        }
+    );
+
+}
+
+
+$("adminToggle")
+    .onclick =
+    ()=>
+        $("teleports")
+        .classList
+        .toggle("open");
+
+
+async function teleport(idx){
+
+    if(
+        playerNumber!==0
+    )
+        return;
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(
+                !d?.players?.[0]
+            )
+                return d;
+
+
+            d.game=null;
+
+            d.auction=null;
+
+            d.pending=null;
+
+            d.chance=null;
+
+
+            d.players[0].position =
+                idx;
+
+
+            d.message =
+                "Admin → "+
+                cells[idx].name;
+
+
+            return resolveLanding(
+                d,
+                0,
+                idx
+            );
+
+        }
+    );
+
+}
+
+
+/*
+   ACİL TOPARLA
+
+   Burada oyun verisini
+   silmiyoruz.
+
+   Sadece ekranı tekrar
+   Firebase durumuna bağlayıp
+   butonları yeniden oluşturuyoruz.
+
+   Böylece Blackjack/Poker gibi
+   devam eden bir el mümkün olduğunca
+   olduğu yerden devam eder.
+*/
+
+async function emergency(){
+
+    if(
+        playerNumber!==0
+    )
+        return;
+
+
+    animating=false;
+
+    skipLock=false;
+
+    lastPos={
+        0:-1,
+        1:-1
+    };
+
+
+    $("modal")
+        .classList
+        .add("hidden");
+
+
+    $("teleports")
+        .classList
+        .remove("open");
+
+
+    try{
+
+        const snap =
+            await get(path());
+
+
+        if(
+            snap.exists()
+        ){
+
+            await render(
+                snap.val()
+            );
+
+        }
+
+
+        setMsg(
+            "🚨 Acil toparlama yapıldı. "+
+            "Mevcut oyun durumu korunuyor."
+        );
+
+
+    }catch(e){
+
+        setMsg(
+            "Toparlama hatası: "+
+            e.message
+        );
+
+    }
+
+}
+
+
+$("emergencyButton")
+    .onclick =
+    emergency;
+
+
+/* =========================
+   BLACKJACK
+========================= */
+
+function bjInit(
+    startedBy
+){
+
+    return {
+
+        type:"blackjack",
+
+        phase:"bet",
+
+        startedBy,
+
+        deck:makeDeck(),
+
+        dealer:[],
+
+        hands:{
+            p0:[],
+            p1:[]
+        },
+
+        bets:{
+            p0:0,
+            p1:0
+        },
+
+        done:{
+            p0:false,
+            p1:false
+        },
+
+        turn:0,
+
+        message:
+            "İki oyuncu da bahis koysun. "+
+
+            "İlk 2 kart A + 10/J/Q/K ise "+
+            "NATURAL BLACKJACK olur ve 3:2 ödeme alır."
+
+    };
+
+}
+
+
+function renderBJ(
+    g,
+    d
+){
+
+    const key =
+        playerNumber===0
+        ?"p0"
+        :"p1";
+
+
+    let h = `
+
+        <div class="casino-table">
+
+            <div class="casino-title">
+                ♠ BLACKJACK MASASI ♠
+            </div>
+
+            <div class="cards">
+    `;
+
+
+    if(
+        g.phase==="bet"
+    ){
+
+        h +=
+            cardHTML(null,true)+
+            cardHTML(null,true);
+
+    }
+
+    else{
+
+        h +=
+            (g.dealer||[])
+            .map(
+                (c,i)=>
+                    cardHTML(
+                        c,
+                        g.phase==="play" &&
+                        i===1
+                    )
+            )
+            .join("");
+
+    }
+
+
+    h += `
+
+            </div>
+
+            <div
+                class="info"
+                style="text-align:center"
+            >
+                ${
+                    g.phase==="play"
+                    ?"Kurupiyer kartı kapalı."
+                    :
+                    g.phase==="end"
+                    ?"Kurupiyer: "+hVal(g.dealer)
+                    :""
+                }
+            </div>
+
+            <div
+                class="info"
+                style="text-align:center"
+            >
+                ${g.message||""}
+            </div>
+
+            <div class="seats">
+    `;
+
+
+    [0,1].forEach(i=>{
+
+        if(!d.players?.[i])
+            return;
+
+
+        const k =
+            i===0
+            ?"p0"
+            :"p1";
+
+
+        const hand =
+            g.hands?.[k]||[];
+
+
+        const bet =
+            g.bets?.[k]||0;
+
+
+        h += `
+
+            <div
+                class="
+                seat
+                ${i===playerNumber?"me":""}
+                "
+            >
+
+                <b>
+                    ${
+                        i===playerNumber
+                        ?"★ SEN ★"
+                        :d.players[i].name
+                    }
+                </b>
+
+                <div class="cards">
+        `;
+
+
+        if(
+            g.phase==="bet"
+        ){
+
+            h +=
+                cardHTML(null,true)+
+                cardHTML(null,true);
+
+        }
+
+        else{
+
+            h +=
+                hand
+                .map(c=>cardHTML(c))
+                .join("");
+
+        }
+
+
+        h += `
+
+                </div>
+
+                ${
+                    g.phase!=="bet" &&
+                    hand.length
+                    ?
+                    `
+                    <b>
+                        ${hVal(hand)}
+                        ${
+                            isNatural(hand)
+                            ?" 🟡 NATURAL BLACKJACK"
+                            :""
+                        }
+                    </b>
+                    `
+                    :""
+                }
+
+                ${
+                    bet
+                    ?
+                    `<div>
+                        Bahis: ${bet}₺
+                    </div>`
+                    :""
+                }
+
+            </div>
+
+        `;
+
+    });
+
+
+    h += `
+
+            </div>
+
+        </div>
+
+        <div
+            style="
+            margin-top:12px;
+            text-align:center
+            "
+        >
+    `;
+
+
+    if(
+        g.phase==="bet"
+    ){
+
+        const myBet =
+            g.bets?.[key]||0;
+
+
+        h += `
+
+            <div class="info">
+                Paran:
+                ${d.players[playerNumber].money}₺
+            </div>
+
+        `;
+
+
+        if(!myBet){
+
+            h += `
+
+                <input
+                    type="number"
+                    id="bjBet"
+                    value="50"
+                    min="10"
+                >
+
+                <button
+                    class="gold"
+                    id="bjBetBtn"
+                >
+                    Bahis Koy
+                </button>
+
+            `;
+
+        }
+
+        else{
+
+            h += `
+
+                <div
+                    style="
+                    color:#4ade80
+                    "
+                >
+                    Bahsin alındı.
+                </div>
+
+            `;
+
+        }
+
+    }
+
+    else if(
+        g.phase==="play" &&
+        g.turn===playerNumber &&
+        !g.done?.[key]
+    ){
+
+        h += `
+
+            <div class="btn-row">
+
+                <button id="bjHit">
+                    🃏 Kart
+                </button>
+
+                <button
+                    class="blue"
+                    id="bjStand"
+                >
+                    ✋ Kal
+                </button>
+
+                <button
+                    class="gold"
+                    id="bjDouble"
+                >
+                    💰 Double
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+    else if(
+        g.phase==="play"
+    ){
+
+        h += `
+
+            <p style="color:#aaa">
+                Sıra:
+                ${
+                    d.players[g.turn]?.name||
+                    ""
+                }
+            </p>
+
+        `;
+
+    }
+
+
+    if(
+        g.phase==="end"
+    ){
+
+        h += `
+
+            <div class="btn-row">
+
+                <button id="bjClose">
+                    Masaya Dön
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    h +=
+        `</div>`;
+
+
+    $("modalContent")
+        .innerHTML =
+        h;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    if(
+        $("bjBetBtn")
+    )
+        $("bjBetBtn")
+            .onclick =
+            bjPlaceBet;
+
+
+    if(
+        $("bjHit")
+    )
+        $("bjHit")
+            .onclick =
+            ()=>bjAct("hit");
+
+
+    if(
+        $("bjStand")
+    )
+        $("bjStand")
+            .onclick =
+            ()=>bjAct("stand");
+
+
+    if(
+        $("bjDouble")
+    )
+        $("bjDouble")
+            .onclick =
+            ()=>bjAct("double");
+
+
+    if(
+        $("bjClose")
+    )
+        $("bjClose")
+            .onclick =
+            closeCasino;
+
+}
+
+
+async function bjPlaceBet(){
+
+    const bet =
+        Math.max(
+            10,
+            Number(
+                $("bjBet")?.value ||
+                50
+            )
+        );
+
+
+    const key =
+        playerNumber===0
+        ?"p0"
+        :"p1";
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+            const p =
+                d.players[playerNumber];
+
+
+            if(
+                !g ||
+                g.type!=="blackjack" ||
+                g.phase!=="bet" ||
+                !p ||
+                p.money<bet ||
+                (g.bets[key]||0)>0
+            )
+                return d;
+
+
+            /*
+               Bahis parası masaya girerken
+               oyuncunun parasından düşüyor.
+            */
+
+            p.money -=
+                bet;
+
+
+            g.bets[key]=bet;
+
+
+            if(
+                g.bets.p0>0 &&
+                g.bets.p1>0
+            ){
+
+                g.phase="play";
+
+                g.deck =
+                    makeDeck();
+
+
+                g.dealer=[
+                    g.deck.pop(),
+                    g.deck.pop()
+                ];
+
+
+                g.hands={
+
+                    p0:[
+                        g.deck.pop(),
+                        g.deck.pop()
+                    ],
+
+                    p1:[
+                        g.deck.pop(),
+                        g.deck.pop()
+                    ]
+
+                };
+
+
+                g.done={
+                    p0:false,
+                    p1:false
+                };
+
+
+                g.turn=0;
+
+
+                g.message =
+                    "Kartlar dağıtıldı. "+
+                    "İlk oyuncunun sırası.";
+
+            }
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+async function bjAct(
+    act
+){
+
+    const key =
+        playerNumber===0
+        ?"p0"
+        :"p1";
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+
+            if(
+                !g ||
+                g.type!=="blackjack" ||
+                g.phase!=="play" ||
+                g.turn!==playerNumber ||
+                g.done[key]
+            )
+                return d;
+
+
+            const h =
+                g.hands[key];
+
+
+            if(
+                act==="hit"
+            ){
+
+                h.push(
+                    g.deck.pop()
+                );
+
+            }
+
+            else if(
+                act==="double"
+            ){
+
+                const bet =
+                    g.bets[key];
+
+
+                const p =
+                    d.players[playerNumber];
+
+
+                if(
+                    p.money<bet
+                )
+                    return d;
+
+
+                p.money -=
+                    bet;
+
+
+                g.bets[key] +=
+                    bet;
+
+
+                h.push(
+                    g.deck.pop()
+                );
+
+
+                g.done[key]=true;
+
+            }
+
+            else if(
+                act==="stand"
+            ){
+
+                g.done[key]=true;
+
+            }
+
+            else{
+
+                return d;
+
+            }
+
+
+            if(
+                hVal(h)>=21
+            ){
+
+                g.done[key]=true;
+
+            }
+
+
+            const other =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            if(
+                g.done[key]
+            ){
+
+                if(
+                    !g.done[
+                        "p"+other
+                    ]
+                ){
+
+                    g.turn =
+                        other;
+
+                }
+
+                else{
+
+                    finishBJ(d);
+
+                }
+
+            }
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+function finishBJ(d){
+
+    const g =
+        d.game;
+
+
+    while(
+        hVal(g.dealer)<17
+    ){
+
+        g.dealer.push(
+            g.deck.pop()
+        );
+
+    }
+
+
+    const dv =
+        hVal(g.dealer);
+
+
+    let msg =
+        "Bitti.";
+
+
+    [0,1].forEach(i=>{
+
+        if(
+            !d.players?.[i]
+        )
+            return;
+
+
+        const k =
+            "p"+i;
+
+
+        const p =
+            d.players[i];
+
+
+        const bet =
+            g.bets[k]||0;
+
+
+        const pv =
+            hVal(
+                g.hands[k]||[]
+            );
+
+
+        const natural =
+            isNatural(
+                g.hands[k]
+            );
+
+
+        /*
+           BATTI
+        */
+
+        if(
+            pv>21
+        ){
+
+            msg +=
+                ` ${p.name} battı.`;
+
+        }
+
+
+        /*
+           KURUPİYER BUST
+        */
+
+        else if(
+            dv>21
+        ){
+
+            p.money +=
+                natural
+                ?bet*2.5
+                :bet*2;
+
+
+            msg +=
+                ` ${p.name} kazandı`+
+                (
+                    natural
+                    ?" (NATURAL BLACKJACK 3:2)"
+                    :""
+                )+
+                ".";
+
+        }
+
+
+        /*
+           OYUNCU NATURAL
+        */
+
+        else if(
+            natural &&
+            !isNatural(g.dealer)
+        ){
+
+            p.money +=
+                bet*2.5;
+
+
+            msg +=
+                ` ${p.name} NATURAL BLACKJACK yaptı!`;
+
+        }
+
+
+        /*
+           KURUPİYER NATURAL
+        */
+
+        else if(
+            isNatural(g.dealer) &&
+            !natural
+        ){
+
+            msg +=
+                ` ${p.name} kaybetti: `+
+                `kurupiyer BLACKJACK.`;
+
+        }
+
+
+        /*
+           NORMAL 21 / KAZANMA
+        */
+
+        else if(
+            pv>dv
+        ){
+
+            p.money +=
+                bet*2;
+
+
+            msg +=
+                ` ${p.name} kazandı.`;
+
+        }
+
+
+        /*
+           BERABERE
+        */
+
+        else if(
+            pv===dv
+        ){
+
+            p.money +=
+                bet;
+
+
+            msg +=
+                ` ${p.name} berabere.`;
+
+        }
+
+
+        /*
+           KAYIP
+        */
+
+        else{
+
+            msg +=
+                ` ${p.name} kaybetti.`;
+
+        }
+
+    });
+
+
+    g.phase="end";
+
+    g.message =
+        msg;
+
+}
+
+
+/* =========================
+   POKER
+========================= */
+
+function pokerInit(
+    startedBy
+){
+
+    return {
+
+        type:"poker",
+
+        phase:"bet",
+
+        startedBy,
+
+        deck:makeDeck(),
+
+        community:[],
+
+        players:{
+
+            0:{
+                hole:[],
+                chips:0,
+                fold:false,
+                bet:0,
+                acted:false
+            },
+
+            1:{
+                hole:[],
+                chips:0,
+                fold:false,
+                bet:0,
+                acted:false
+            }
+
+        },
+
+        pot:0,
+
+        currentBet:0,
+
+        turn:0,
+
+        message:
+            "İki oyuncu da masaya buy-in ile otursun.",
+
+        result:null
+
+    };
+
+}
+
+
+/* =========================
+   POKER EL HESABI
+========================= */
+
+function rank5(cards){
+
+    const vals =
+        cards
+        .map(
+            c=>
+                c.r==="A"
+                ?14
+                :["K","Q","J"]
+                    .includes(c.r)
+                    ?{
+                        K:13,
+                        Q:12,
+                        J:11
+                    }[c.r]
+                    :+c.r
+        )
+        .sort(
+            (a,b)=>b-a
+        );
+
+
+    const cnt={};
+
+
+    vals.forEach(
+        v=>{
+            cnt[v] =
+                (cnt[v]||0)+1;
+        }
+    );
+
+
+    const flush =
+        cards
+        .every(
+            c=>
+                c.s===cards[0].s
+        );
+
+
+    let uniq =
+        [...new Set(vals)];
+
+
+    if(
+        uniq.includes(14)
+    )
+        uniq.push(1);
+
+
+    let straightHigh=null;
+
+
+    for(
+        let i=0;
+        i<=uniq.length-5;
+        i++
+    ){
+
+        const x =
+            uniq.slice(
+                i,
+                i+5
+            );
+
+
+        if(
+            x[0]-x[4]===4
+        ){
+
+            straightHigh =
+                x[0];
+
+            break;
+
+        }
+
+    }
+
+
+    const groups =
+        Object.entries(cnt)
+        .map(
+            ([v,n])=>[
+                n,
+                +v
+            ]
+        )
+        .sort(
+            (a,b)=>
+                b[0]-a[0] ||
+                b[1]-a[1]
+        );
+
+
+    if(
+        flush &&
+        straightHigh
+    )
+        return [
+            8,
+            straightHigh
+        ];
+
+
+    if(
+        groups[0][0]===4
+    )
+        return [
+            7,
+            groups[0][1],
+            groups[1][1]
+        ];
+
+
+    if(
+        groups[0][0]===3 &&
+        groups[1][0]===2
+    )
+        return [
+            6,
+            groups[0][1],
+            groups[1][1]
+        ];
+
+
+    if(flush)
+        return [
+            5,
+            ...vals
+        ];
+
+
+    if(straightHigh)
+        return [
+            4,
+            straightHigh
+        ];
+
+
+    if(
+        groups[0][0]===3
+    )
+        return [
+            3,
+            groups[0][1],
+            ...groups
+                .filter(
+                    x=>x[0]===1
+                )
+                .map(
+                    x=>x[1]
+                )
+        ];
+
+
+    const pairs =
+        groups
+        .filter(
+            x=>x[0]===2
+        )
+        .map(
+            x=>x[1]
+        );
+
+
+    if(
+        pairs.length>=2
+    )
+        return [
+            2,
+            pairs[0],
+            pairs[1],
+            groups.find(
+                x=>x[0]===1
+            )[1]
+        ];
+
+
+    if(
+        pairs.length===1
+    )
+        return [
+            1,
+            pairs[0],
+            ...groups
+                .filter(
+                    x=>x[0]===1
+                )
+                .map(
+                    x=>x[1]
+                )
+        ];
+
+
+    return [
+        0,
+        ...vals
+    ];
+
+}
+
+
+function compareRank(a,b){
+
+    const len =
+        Math.max(
+            a.length,
+            b.length
+        );
+
+
+    for(
+        let i=0;
+        i<len;
+        i++
+    ){
+
+        const av =
+            a[i]||0;
+
+        const bv =
+            b[i]||0;
+
+
+        if(av>bv)
+            return 1;
+
+        if(bv>av)
+            return -1;
+
+    }
+
+
+    return 0;
+
+}
+
+
+function best5(cards){
+
+    let best=null;
+
+
+    for(
+        let a=0;
+        a<cards.length-4;
+        a++
+    )
+
+        for(
+            let b=a+1;
+            b<cards.length-3;
+            b++
+        )
+
+            for(
+                let c=b+1;
+                c<cards.length-2;
+                c++
+            )
+
+                for(
+                    let d=c+1;
+                    d<cards.length-1;
+                    d++
+                )
+
+                    for(
+                        let e=d+1;
+                        e<cards.length;
+                        e++
+                    ){
+
+                        const r =
+                            rank5([
+                                cards[a],
+                                cards[b],
+                                cards[c],
+                                cards[d],
+                                cards[e]
+                            ]);
+
+
+                        if(
+                            !best ||
+                            compareRank(
+                                r,
+                                best
+                            )>0
+                        )
+                            best=r;
+
+                    }
+
+
+    return best;
+
+}
+
+
+function handName(r){
+
+    return [
+
+        "Yüksek Kart",
+
+        "Çift",
+
+        "İki Çift",
+
+        "Üçlü",
+
+        "Kent",
+
+        "Renk",
+
+        "Full House",
+
+        "Kare",
+
+        "Kent Flush"
+
+    ][
+        r?.[0]||0
+    ];
+
+}
+
+
+/* =========================
+   POKER RENDER
+========================= */
+
+function renderPoker(
+    g,
+    d
+){
+
+    if(
+        g.phase!=="end"
+    )
+        pokerCelebrated=false;
+
+
+    if(
+        g.phase==="end" &&
+        !pokerCelebrated
+    ){
+
+        pokerCelebrated=true;
+
+        setTimeout(
+            confetti,
+            150
+        );
+
+    }
+
+
+    const me =
+        g.players?.[
+            playerNumber
+        ] || {};
+
+
+    const other =
+        playerNumber===0
+        ?1
+        :0;
+
+
+    const ot =
+        g.players?.[other] || {};
+
+
+    let h = `
+
+        <div class="casino-table">
+
+            <div class="casino-title">
+                ♠ TEXAS HOLD'EM MASASI ♠
+            </div>
+
+            <div class="cards">
+    `;
+
+
+    if(
+        !g.community.length
+    ){
+
+        for(
+            let i=0;
+            i<5;
+            i++
+        )
+            h +=
+                cardHTML(
+                    null,
+                    true
+                );
+
+    }
+
+    else{
+
+        g.community.forEach(
+            c=>{
+                h +=
+                    cardHTML(c);
+            }
+        );
+
+
+        for(
+            let i=g.community.length;
+            i<5;
+            i++
+        )
+            h +=
+                cardHTML(
+                    null,
+                    true
+                );
+
+    }
+
+
+    h += `
+
+            </div>
+
+            <div
+                class="info"
+                style="text-align:center"
+            >
+                POT:
+                <b>
+                    ${g.pot||0}₺
+                </b>
+
+                —
+
+                ${g.message||""}
+            </div>
+
+            <div class="seats">
+
+                <div class="seat">
+
+                    <b>
+                        ${
+                            d.players?.[
+                                other
+                            ]?.name ||
+                            "Rakip"
+                        }
+                    </b>
+
+                    <div class="cards">
+
+                        ${
+                            g.phase==="end"
+
+                            ?
+
+                            (ot.hole||[])
+                            .map(
+                                c=>
+                                    cardHTML(c)
+                            )
+                            .join("")
+
+                            :
+
+                            cardHTML(
+                                null,
+                                true
+                            )+
+                            cardHTML(
+                                null,
+                                true
+                            )
+                        }
+
+                    </div>
+
+                    <div>
+                        Çip:
+                        ${ot.chips||0}
+                    </div>
+
+                </div>
+
+
+                <div class="seat me">
+
+                    <b>
+                        ★
+                        ${
+                            d.players?.[
+                                playerNumber
+                            ]?.name ||
+                            "SEN"
+                        }
+                        ★
+                    </b>
+
+                    <div class="cards">
+
+                        ${
+                            g.phase==="bet"
+
+                            ?
+
+                            cardHTML(
+                                null,
+                                true
+                            )+
+                            cardHTML(
+                                null,
+                                true
+                            )
+
+                            :
+
+                            (me.hole||[])
+                            .map(
+                                c=>
+                                    cardHTML(c)
+                            )
+                            .join("")
+                        }
+
+                    </div>
+
+                    <div>
+                        Çip:
+                        ${me.chips||0}
+                    </div>
+
+                </div>
+
+            </div>
+
+    `;
+
+
+    if(
+        g.phase==="end" &&
+        g.result
+    ){
+
+        h += `
+
+            <div class="poker-result">
+
+                <h2>
+                    🎉 ${g.result.text}
+                </h2>
+
+                <p>
+
+                    ${
+                        g.result.handName0
+                        ?
+                        d.players[0].name+
+                        ": "+
+                        g.result.handName0
+                        :""
+                    }
+
+                    |
+
+                    ${
+                        g.result.handName1
+                        ?
+                        d.players[1].name+
+                        ": "+
+                        g.result.handName1
+                        :""
+                    }
+
+                </p>
+
+                <p
+                    style="
+                    margin-top:8px
+                    "
+                >
+                    🏆
+                    ${g.result.winnerName}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    h += `
+
+        </div>
+
+        <div
+            style="
+            margin-top:12px;
+            text-align:center
+            "
+        >
+    `;
+
+
+    if(
+        g.phase==="bet"
+    ){
+
+        if(
+            !(me.chips>0)
+        ){
+
+            h += `
+
+                <div class="info">
+                    Paran:
+                    ${d.players[playerNumber].money}₺
+                </div>
+
+                <input
+                    type="number"
+                    id="pkBet"
+                    value="100"
+                    min="20"
+                >
+
+                <button
+                    class="gold"
+                    id="pkBuyin"
+                >
+                    Masaya Gir
+                </button>
+
+            `;
+
+        }
+
+        else{
+
+            h += `
+
+                <div
+                    style="
+                    color:#4ade80
+                    "
+                >
+                    Masaya oturdun.
+                    Rakip bekleniyor.
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    else if(
+        g.phase!=="end" &&
+        g.turn===playerNumber &&
+        !me.fold
+    ){
+
+        h += `
+
+            <div class="btn-row">
+
+                <button
+                    class="red"
+                    id="pkFold"
+                >
+                    Çekil
+                </button>
+
+                ${
+                    me.bet===g.currentBet
+
+                    ?
+
+                    `
+                    <button
+                        class="blue"
+                        id="pkCheck"
+                    >
+                        Pas
+                    </button>
+                    `
+
+                    :
+
+                    `
+                    <button
+                        id="pkCall"
+                    >
+                        Gör
+                    </button>
+                    `
+                }
+
+                <input
+                    type="number"
+                    id="raiseIn"
+                    value="${g.currentBet+50}"
+                    style="width:90px"
+                >
+
+                <button
+                    class="gold"
+                    id="pkRaise"
+                >
+                    Raise
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    else if(
+        g.phase!=="end"
+    ){
+
+        h += `
+
+            <p style="color:#aaa">
+                Sıra:
+                ${
+                    d.players?.[
+                        g.turn
+                    ]?.name ||
+                    ""
+                }
+            </p>
+
+        `;
+
+    }
+
+
+    if(
+        g.phase==="end"
+    ){
+
+        h += `
+
+            <div class="btn-row">
+
+                <button
+                    id="pkClose"
+                >
+                    Masaya Dön
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    h +=
+        `</div>`;
+
+
+    $("modalContent")
+        .innerHTML =
+        h;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    if(
+        $("pkBuyin")
+    )
+        $("pkBuyin")
+            .onclick =
+            pkPlaceBet;
+
+
+    if(
+        $("pkFold")
+    )
+        $("pkFold")
+            .onclick =
+            ()=>pkAct("fold");
+
+
+    if(
+        $("pkCheck")
+    )
+        $("pkCheck")
+            .onclick =
+            ()=>pkAct("check");
+
+
+    if(
+        $("pkCall")
+    )
+        $("pkCall")
+            .onclick =
+            ()=>pkAct("call");
+
+
+    if(
+        $("pkRaise")
+    )
+        $("pkRaise")
+            .onclick =
+            pkRaise;
+
+
+    if(
+        $("pkClose")
+    )
+        $("pkClose")
+            .onclick =
+            closeCasino;
+
+}
+
+
+/* =========================
+   POKER BUY-IN
+========================= */
+
+async function pkPlaceBet(){
+
+    const amt =
+        Math.max(
+            20,
+            Number(
+                $("pkBet")?.value ||
+                100
+            )
+        );
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+            const p =
+                d.players[playerNumber];
+
+            const me =
+                g?.players?.[
+                    playerNumber
+                ];
+
+
+            if(
+                !g ||
+                g.type!=="poker" ||
+                g.phase!=="bet" ||
+                !p ||
+                !me ||
+                me.chips>0 ||
+                p.money<amt
+            )
+                return d;
+
+
+            p.money -=
+                amt;
+
+
+            me.chips =
+                amt;
+
+
+            if(
+                g.players[0].chips>0 &&
+                g.players[1].chips>0
+            ){
+
+                g.phase =
+                    "preflop";
+
+
+                g.deck =
+                    makeDeck();
+
+
+                g.players[0].hole=[
+                    g.deck.pop(),
+                    g.deck.pop()
+                ];
+
+
+                g.players[1].hole=[
+                    g.deck.pop(),
+                    g.deck.pop()
+                ];
+
+
+                g.turn=0;
+
+
+                g.message =
+                    "Preflop başladı.";
+
+            }
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+/* =========================
+   POKER OYUNCU AKSİYONU
+========================= */
+
+async function pkAct(
+    act
+){
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+
+            if(
+                !g ||
+                g.type!=="poker" ||
+                g.phase==="end" ||
+                g.turn!==playerNumber
+            )
+                return d;
+
+
+            const p =
+                g.players[playerNumber];
+
+
+            const other =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            if(
+                act==="fold"
+            ){
+
+                p.fold=true;
+
+            }
+
+            else if(
+                act==="check"
+            ){
+
+                if(
+                    p.bet!==g.currentBet
+                )
+                    return d;
+
+            }
+
+            else if(
+                act==="call"
+            ){
+
+                const add =
+                    g.currentBet-p.bet;
+
+
+                if(
+                    add<0 ||
+                    p.chips<add
+                )
+                    return d;
+
+
+                p.chips -=
+                    add;
+
+
+                p.bet +=
+                    add;
+
+
+                g.pot +=
+                    add;
+
+            }
+
+            else{
+
+                return d;
+
+            }
+
+
+            p.acted=true;
+
+
+            if(
+                p.fold
+            ){
+
+                return finishPokerFold(
+                    d,
+                    other
+                );
+
+            }
+
+
+            const o =
+                g.players[other];
+
+
+            if(
+                p.acted &&
+                o.acted &&
+                p.bet===o.bet
+            ){
+
+                p.acted=false;
+
+                o.acted=false;
+
+                p.bet=0;
+
+                o.bet=0;
+
+                g.currentBet=0;
+
+
+                if(
+                    g.phase==="preflop"
+                ){
+
+                    g.community=[
+
+                        g.deck.pop(),
+                        g.deck.pop(),
+                        g.deck.pop()
+
+                    ];
+
+                    g.phase="flop";
+
+                }
+
+                else if(
+                    g.phase==="flop"
+                ){
+
+                    g.community.push(
+                        g.deck.pop()
+                    );
+
+                    g.phase="turn";
+
+                }
+
+                else if(
+                    g.phase==="turn"
+                ){
+
+                    g.community.push(
+                        g.deck.pop()
+                    );
+
+                    g.phase="river";
+
+                }
+
+                else{
+
+                    return finishPokerShowdown(
+                        d
+                    );
+
+                }
+
+            }
+
+
+            g.turn =
+                other;
+
+
+            g.message =
+                `Sıra: ${
+                    d.players[other].name
+                }`;
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+function finishPokerFold(
+    d,
+    winner
+){
+
+    const g =
+        d.game;
+
+
+    g.players[winner].chips +=
+        g.pot;
+
+
+    g.pot=0;
+
+
+    return finishPokerEnd(
+        d,
+        winner,
+        `Rakip çekildi. ${
+            d.players[winner].name
+        } kazandı.`
+    );
+
+}
+
+
+function finishPokerShowdown(
+    d
+){
+
+    const g =
+        d.game;
+
+
+    const r0 =
+        best5([
+            ...(g.players[0].hole||[]),
+            ...g.community
+        ]);
+
+
+    const r1 =
+        best5([
+            ...(g.players[1].hole||[]),
+            ...g.community
+        ]);
+
+
+    const cmp =
+        compareRank(
+            r0,
+            r1
+        );
+
+
+    if(
+        cmp===0
+    ){
+
+        g.players[0].chips +=
+            Math.floor(
+                g.pot/2
+            );
+
+
+        g.players[1].chips +=
+            g.pot -
+            Math.floor(
+                g.pot/2
+            );
+
+
+        g.pot=0;
+
+
+        g.result={
+
+            winnerName:
+                "Berabere — pot paylaşıldı",
+
+            text:
+                "🤝 Berabere!",
+
+            handName0:
+                handName(r0),
+
+            handName1:
+                handName(r1)
+
+        };
+
+
+        return finishPokerEnd(
+            d,
+            null,
+            g.result.text
+        );
+
+    }
+
+
+    const winner =
+        cmp===1
+        ?0
+        :1;
+
+
+    return finishPokerEnd(
+        d,
+        winner,
+        `🏆 ${
+            d.players[winner].name
+        } kazandı!`
+    );
+
+}
+
+
+function finishPokerEnd(
+    d,
+    winner,
+    text
+){
+
+    const g =
+        d.game;
+
+
+    if(
+        winner!==null
+    ){
+
+        g.players[winner].chips +=
+            g.pot;
+
+        g.pot=0;
+
+    }
+
+
+    /*
+       Eğer berabere ise
+       yukarıda çipler zaten
+       oyunculara dağıtılmış oluyor.
+    */
+
+
+    for(
+        let i=0;
+        i<2;
+        i++
+    ){
+
+        if(
+            d.players[i] &&
+            g.players[i]
+        ){
+
+            d.players[i].money +=
+                g.players[i].chips;
+
+
+            g.players[i].chips=0;
+
+        }
+
+    }
+
+
+    g.phase="end";
+
+
+    if(
+        !g.result
+    ){
+
+        const r0 =
+            best5([
+                ...(g.players[0].hole||[]),
+                ...g.community
+            ]);
+
+
+        const r1 =
+            best5([
+                ...(g.players[1].hole||[]),
+                ...g.community
+            ]);
+
+
+        g.result={
+
+            winnerName:
+                winner===null
+                ?"Berabere"
+                :d.players[winner].name,
+
+            text,
+
+            handName0:
+                handName(r0),
+
+            handName1:
+                handName(r1)
+
+        };
+
+    }
+
+
+    return d;
+
+}
+
+
+async function pkRaise(){
+
+    const target =
+        Math.max(
+            0,
+            Number(
+                $("raiseIn")?.value ||
+                0
+            )
+        );
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+
+            if(
+                !g ||
+                g.type!=="poker" ||
+                g.turn!==playerNumber
+            )
+                return d;
+
+
+            const p =
+                g.players[playerNumber];
+
+
+            const add =
+                target-p.bet;
+
+
+            if(
+                add<=0 ||
+                p.chips<add
+            )
+                return d;
+
+
+            p.chips -=
+                add;
+
+
+            p.bet +=
+                add;
+
+
+            g.pot +=
+                add;
+
+
+            g.currentBet =
+                p.bet;
+
+
+            p.acted=true;
+
+
+            g.turn =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            g.message =
+                `Sıra: ${
+                    d.players[g.turn].name
+                }`;
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+/* =========================
+   JACKPOT
+========================= */
+
+function jackpotInit(
+    startedBy
+){
+
+    return {
+
+        type:"jackpot",
+
+        startedBy,
+
+        phase:"spin",
+
+        symbols:[
+            "🍒",
+            "💎",
+            "7️⃣",
+            "⭐"
+        ],
+
+        reels:[
+            "❓",
+            "❓",
+            "❓",
+            "❓"
+        ],
+
+        message:
+            "Kolu çek! "+
+            "3 aynı sembol = 500₺.",
+
+        result:null
+
+    };
+
+}
+
+
+function renderJackpot(
+    g,
+    d
+){
+
+    let h = `
+
+        <div class="casino-table">
+
+            <div class="jackpot-title">
+                🎰 JACKPOT
+            </div>
+
+            <div
+                class="info"
+                style="text-align:center"
+            >
+                ${g.message}
+            </div>
+
+            <div class="slot">
+    `;
+
+
+    g.reels.forEach(
+        x=>{
+
+            h += `
+
+                <div class="reel">
+                    ${x}
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    h += `
+
+            </div>
+
+            <div class="btn-row">
+
+    `;
+
+
+    if(
+        g.phase==="spin"
+    ){
+
+        h += `
+
+            <button
+                id="slotSpin"
+                class="pink"
+            >
+                🎰 KOLU ÇEK
+            </button>
+
+        `;
+
+    }
+
+
+    if(
+        g.phase==="end"
+    ){
+
+        h += `
+
+            <button
+                id="slotClose"
+            >
+                Masaya Dön
+            </button>
+
+        `;
+
+    }
+
+
+    h += `
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    $("modalContent")
+        .innerHTML =
+        h;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    if(
+        $("slotSpin")
+    )
+        $("slotSpin")
+            .onclick =
+            spinJackpot;
+
+
+    if(
+        $("slotClose")
+    )
+        $("slotClose")
+            .onclick =
+            closeCasino;
+
+}
+
+
+async function spinJackpot(){
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const g =
+                d.game;
+
+            const p =
+                d.players[playerNumber];
+
+
+            if(
+                !g ||
+                g.type!=="jackpot" ||
+                g.phase!=="spin" ||
+                !p
+            )
+                return d;
+
+
+            const a =
+                g.symbols[
+                    Math.floor(
+                        Math.random()*4
+                    )
+                ];
+
+
+            const b =
+                g.symbols[
+                    Math.floor(
+                        Math.random()*4
+                    )
+                ];
+
+
+            const c =
+                g.symbols[
+                    Math.floor(
+                        Math.random()*4
+                    )
+                ];
+
+
+            const e =
+                g.symbols[
+                    Math.floor(
+                        Math.random()*4
+                    )
+                ];
+
+
+            g.reels=[
+                a,
+                b,
+                c,
+                e
+            ];
+
+
+            const counts={};
+
+
+            g.reels.forEach(
+                x=>{
+                    counts[x] =
+                        (counts[x]||0)+1;
+                }
+            );
+
+
+            const win =
+                Object
+                .values(counts)
+                .some(
+                    n=>n>=3
+                );
+
+
+            if(win){
+
+                p.money +=
+                    500;
+
+
+                g.message =
+                    "🎉 3 aynı sembol! "+
+                    "500₺ kazandın!";
+
+
+                g.result="win";
+
+            }
+
+            else{
+
+                g.message =
+                    "😅 Bu kez olmadı.";
+
+
+                g.result="lose";
+
+            }
+
+
+            g.phase="end";
+
+
+            return d;
+
+        }
+    );
+
+}
+
+
+/* =========================
+   KASİNO RENDER
+========================= */
+
+function renderCasino(
+    g,
+    d
+){
+
+    if(
+        g.type==="blackjack"
+    ){
+
+        renderBJ(
+            g,
+            d
+        );
+
+    }
+
+    else if(
+        g.type==="poker"
+    ){
+
+        renderPoker(
+            g,
+            d
+        );
+
+    }
+
+    else if(
+        g.type==="jackpot"
+    ){
+
+        renderJackpot(
+            g,
+            d
+        );
+
+    }
+
+}
+
+
+/* =========================
+   KASİNO KAPAT
+========================= */
+
+async function closeCasino(){
+
+    await update(
+        path(),
+        {
+
+            game:null,
+
+            turn:
+                playerNumber===0
+                ?1
+                :0,
+
+            message:
+                "🎲 Masa kapandı. "+
+                "Sıra rakibe geçti."
+
+        }
+    );
+
+
+    $("modal")
+        .classList
+        .add("hidden");
+
+}
+
+
+/* =========================
+   AÇIK ARTIRMA
+========================= */
+
+function renderAuction(
+    a,
+    d
+){
+
+    /*
+       ÖNCE SATILACAK MÜLK SEÇİMİ
+    */
+
+    if(
+        a.kind==="propertySelect"
+    ){
+
+        const seller =
+            d.players?.[
+                a.seller
+            ];
+
+
+        if(
+            a.seller!==playerNumber
+        ){
+
+            $("modalContent")
+                .innerHTML = `
+
+                <h2>
+                    📢 Açık Artırma
+                </h2>
+
+                <div class="info">
+
+                    ${
+                        seller?.name ||
+                        "Oyuncu"
+                    }
+
+                    satılacak mülkü
+                    seçiyor.
+
+                </div>
+
+                `;
+
+
+            $("modal")
+                .classList
+                .remove("hidden");
+
+
+            return;
+
+        }
+
+
+        const owned =
+            seller?.props||[];
+
+
+        let h = `
+
+            <h2>
+                📢 Hangi mülk açık
+                artırmaya çıksın?
+            </h2>
+
+            <div class="info">
+
+                Sahip olduğun bir yeri seç.
+                Diğer oyuncu teklif verecek.
+
+            </div>
+
+            <div class="btn-row">
+
+        `;
+
+
+        owned.forEach(
+            idx=>{
+
+                h += `
+
+                    <button
+                        class="gold"
+                        onclick="
+                        chooseAuctionProperty(${idx})
+                        "
+                    >
+                        ${cells[idx].name}
+                        Lv${d.properties[idx].level||0}
+                    </button>
+
+                `;
+
+            }
+        );
+
+
+        h +=
+            `</div>`;
+
+
+        if(
+            !owned.length
+        ){
+
+            h += `
+
+                <div class="info">
+                    Satabileceğin mülk yok.
+                </div>
+
+                <button
+                    id="aucCancel"
+                    class="red"
+                >
+                    Vazgeç
+                </button>
+
+            `;
+
+        }
+
+
+        $("modalContent")
+            .innerHTML =
+            h;
+
+
+        $("modal")
+            .classList
+            .remove("hidden");
+
+
+        if(
+            $("aucCancel")
+        )
+            $("aucCancel")
+                .onclick =
+                cancelAuction;
+
+
+        return;
+
+    }
+
+
+    /*
+       TEKLİF AŞAMASI
+    */
+
+    const c =
+        cells[a.pos];
+
+
+    const highest =
+        a.highest||0;
+
+
+    let h = `
+
+        <h2>
+            📢 ${c.name}
+            Açık Artırma
+        </h2>
+
+        <div class="info">
+
+            Satıcı:
+            <b>
+                ${d.players[a.seller].name}
+            </b>
+
+            |
+
+            En yüksek teklif:
+            <b>
+                ${highest}₺
+            </b>
+
+        </div>
+
+    `;
+
+
+    if(
+        a.seller!==playerNumber
+    ){
+
+        h += `
+
+            <div class="btn-row">
+
+                <input
+                    type="number"
+                    id="bidInput"
+                    value="${Math.max(
+                        highest+10,
+                        50
+                    )}"
+                >
+
+                <button
+                    class="gold"
+                    id="btnBid"
+                >
+                    Teklif Ver
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+    else{
+
+        h += `
+
+            <div class="btn-row">
+
+                <button
+                    class="blue"
+                    id="btnAccept"
+                    ${
+                        a.highestBy==null
+                        ?"disabled"
+                        :""
+                    }
+                >
+                    ✅ En Yüksek Teklifi Kabul Et
+                </button>
+
+                <button
+                    class="red"
+                    id="btnCancelAuc"
+                >
+                    ❌ İptal
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    if(
+        a.highestBy!=null
+    ){
+
+        h += `
+
+            <div class="info">
+
+                Şu an lider:
+                ${
+                    d.players[
+                        a.highestBy
+                    ].name
+                }
+
+                —
+
+                ${a.highest}₺
+
+            </div>
+
+        `;
+
+    }
+
+
+    $("modalContent")
+        .innerHTML =
+        h;
+
+
+    $("modal")
+        .classList
+        .remove("hidden");
+
+
+    if(
+        $("btnBid")
+    )
+        $("btnBid")
+            .onclick =
+            placeBid;
+
+
+    if(
+        $("btnAccept")
+    )
+        $("btnAccept")
+            .onclick =
+            acceptBid;
+
+
+    if(
+        $("btnCancelAuc")
+    )
+        $("btnCancelAuc")
+            .onclick =
+            cancelAuction;
+
+}
+
+
+window.chooseAuctionProperty =
+async idx=>{
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const a =
+                d.auction;
+
+
+            if(
+                !a ||
+                a.kind!=="propertySelect" ||
+                a.seller!==playerNumber
+            )
+                return d;
+
+
+            const seller =
+                d.players[playerNumber];
+
+
+            if(
+                !seller.props?.includes(idx)
+            )
+                return d;
+
+
+            a.kind =
+                "bidding";
+
+
+            a.pos =
+                idx;
+
+
+            a.highest=0;
+
+            a.highestBy=null;
+
+            a.minBid=50;
+
+
+            d.message =
+                `📢 ${cells[idx].name} `+
+                `açık artırmada!`;
+
+
+            return d;
+
+        }
+    );
+
+};
+
+
 async function placeBid(){
-  const amount=Number($("bidInput")?.value||0);
-  await runTransaction(path(),d=>{
-    if(!d?.auction?.active)return;
-    const a=d.auction;
-    if(N(a.seller)===playerNumber||amount<=(a.highest||0)||amount<(a.minBid||0))return;
-    if((d.players[playerNumber]?.money||0)<amount)return;
-    a.highest=amount;a.highestBy=playerNumber;
-    d.message=`${d.players[playerNumber].name} ${amount}₺`;return d;
-  });
+
+    const amount =
+        Number(
+            $("bidInput")?.value ||
+            0
+        );
+
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const a =
+                d.auction;
+
+
+            if(
+                !a ||
+                a.kind!=="bidding" ||
+                a.seller===playerNumber ||
+                amount<=a.highest ||
+                amount<a.minBid
+            )
+                return d;
+
+
+            if(
+                (d.players[playerNumber]?.money||0)
+                <amount
+            )
+                return d;
+
+
+            a.highest =
+                amount;
+
+
+            a.highestBy =
+                playerNumber;
+
+
+            d.message =
+                `${
+                    d.players[playerNumber].name
+                } ${amount}₺ teklif verdi.`;
+
+
+            return d;
+
+        }
+    );
+
 }
+
+
 async function acceptBid(){
-  await runTransaction(path(),d=>{
-    if(!d?.auction||N(d.auction.seller)!==playerNumber)return;d=ensureProps(d);
-    const a=d.auction;if(a.highestBy==null)return;
-    const buyer=d.players[a.highestBy],seller=d.players[a.seller];
-    if(!buyer||buyer.money<a.highest)return;
-    buyer.money-=a.highest;seller.money+=a.highest;
-    d.properties[a.pos].owner=N(a.highestBy);
-    seller.props=(seller.props||[]).filter(x=>x!==a.pos);
-    if(!buyer.props)buyer.props=[];if(!buyer.props.includes(a.pos))buyer.props.push(a.pos);
-    d.auction=null;d.message=`${cells[a.pos].name} satıldı`;d.turn=playerNumber===0?1:0;return d;
-  });
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            const a =
+                d.auction;
+
+
+            if(
+                !a ||
+                a.kind!=="bidding" ||
+                a.seller!==playerNumber ||
+                a.highestBy==null
+            )
+                return d;
+
+
+            const buyer =
+                d.players[
+                    a.highestBy
+                ];
+
+
+            const seller =
+                d.players[
+                    a.seller
+                ];
+
+
+            if(
+                !buyer ||
+                buyer.money<a.highest
+            )
+                return d;
+
+
+            buyer.money -=
+                a.highest;
+
+
+            seller.money +=
+                a.highest;
+
+
+            d.properties[
+                a.pos
+            ].owner =
+                a.highestBy;
+
+
+            seller.props =
+                (seller.props||[])
+                .filter(
+                    x=>x!==a.pos
+                );
+
+
+            buyer.props =
+                buyer.props||[];
+
+
+            if(
+                !buyer.props.includes(
+                    a.pos
+                )
+            )
+                buyer.props.push(
+                    a.pos
+                );
+
+
+            d.auction=null;
+
+
+            d.turn =
+                playerNumber===0
+                ?1
+                :0;
+
+
+            d.message =
+                `${cells[a.pos].name} `+
+                `${buyer.name} tarafından `+
+                `${a.highest}₺'ye alındı.`;
+
+
+            return d;
+
+        }
+    );
+
 }
+
+
 async function cancelAuction(){
-  await runTransaction(path(),d=>{
-    if(!d?.auction)return;
-    if(d.auction.seller!=null&&N(d.auction.seller)!==playerNumber)return;
-    d.auction=null;d.message="Artırma iptal";d.turn=playerNumber===0?1:0;return d;
-  });
+
+    await runTransaction(
+        path(),
+        d=>{
+
+            if(!d?.auction)
+                return d;
+
+
+            const who =
+                d.auction.seller;
+
+
+            d.auction=null;
+
+
+            d.turn =
+                who===0
+                ?1
+                :0;
+
+
+            d.message =
+                "Açık artırma iptal edildi.";
+
+
+            return d;
+
+        }
+    );
+
 }
 
-/* ===== JACKPOT SLOT ===== */
-function renderJackpot(g,d){
-  const who=N(g.player);
-  const isMe=who===playerNumber;
-  let reelsHtml="";
-  for(let i=0;i<4;i++){
-    const sym=g.reels?g.reels[i]:SLOT_SYMS[0];
-    reelsHtml+=`<div class="reel"><div class="reel-inner" id="reel${i}"><div class="sym">${sym}</div></div></div>`;
-  }
-  let h=`<div class="slot-machine">
-    <h2 style="color:#fbbf24">🎰 JACKPOT</h2>
-    <div style="font-size:12px;color:#fde68a">4 makara · 3 aynı sembol = +500₺</div>
-    <div class="slot-reels">${reelsHtml}</div>`;
-  if(g.phase==="ready"&&isMe){
-    h+=`<div class="slot-lever" id="slotLever" title="Çek!"></div>
-      <button class="gold" id="slotSpin">KOLU ÇEK</button>`;
-  }else if(g.phase==="ready"){
-    h+=`<p style="color:#aaa">${d.players[who]?.name} çekiyor...</p>`;
-  }else if(g.phase==="done"){
-    if(g.won)h+=`<div class="slot-win">🎉 3 aynı! +500₺</div>`;
-    else h+=`<div class="slot-lose">Bu sefer olmadı</div>`;
-    if(isMe)h+=`<div class="btn-row"><button id="slotClose">Masaya Dön</button></div>`;
-    else h+=`<p style="color:#aaa">Sonuç bekleniyor...</p>`;
-  }
-  h+=`</div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("slotSpin"))$("slotSpin").onclick=spinSlot;
-  if($("slotLever"))$("slotLever").onclick=spinSlot;
-  if($("slotClose"))$("slotClose").onclick=closeJackpot;
-}
 
-async function spinSlot(){
-  if(slotSpinning)return;
-  slotSpinning=true;
-  const result=[];
-  for(let i=0;i<4;i++)result.push(SLOT_SYMS[Math.floor(Math.random()*SLOT_SYMS.length)]);
+/* =========================
+   KONFETİ
+========================= */
 
-  /* animasyon: makaraları döndür */
-  for(let i=0;i<4;i++){
-    const el=$("reel"+i);if(!el)continue;
-    let html="";
-    for(let k=0;k<12;k++)html+=`<div class="sym">${SLOT_SYMS[Math.floor(Math.random()*4)]}</div>`;
-    html+=`<div class="sym">${result[i]}</div>`;
-    el.innerHTML=html;
-    el.style.transition="none";
-    el.style.transform="translateY(0)";
-    void el.offsetWidth;
-    el.style.transition=`transform ${0.8+i*0.25}s cubic-bezier(.2,.8,.2,1)`;
-    el.style.transform=`translateY(-${12*80}px)`;
-  }
-  await new Promise(r=>setTimeout(r,1800));
+function confetti(){
 
-  /* 3 aynı? */
-  const counts={};
-  result.forEach(s=>{counts[s]=(counts[s]||0)+1});
-  const won=Object.values(counts).some(n=>n>=3);
+    const box =
+        document.createElement("div");
 
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.type!=="jackpot"||N(d.game.player)!==playerNumber)return;
-    d.game.reels=result;d.game.phase="done";d.game.won=won;
-    if(won){
-      d.players[playerNumber].money=(d.players[playerNumber].money||0)+500;
-      d.game.message="JACKPOT +500₺!";
-      d.message=`${d.players[playerNumber].name} slot: +500₺!`;
-    }else{
-      d.game.message="Kazanamadı";
-      d.message=`${d.players[playerNumber].name} slot: boş`;
+
+    box.className =
+        "confetti";
+
+
+    for(
+        let i=0;
+        i<70;
+        i++
+    ){
+
+        const x =
+            document.createElement("i");
+
+
+        x.style.left =
+            Math.random()*100+
+            "%";
+
+
+        x.style.animationDelay =
+            Math.random()*0.8+
+            "s";
+
+
+        x.style.transform =
+            `rotate(${
+                Math.random()*360
+            }deg)`;
+
+
+        x.style.background =
+            `hsl(${
+                Math.random()*360
+            },90%,60%)`;
+
+
+        box.appendChild(x);
+
     }
-    return d;
-  });
-  slotSpinning=false;
+
+
+    document.body
+        .appendChild(box);
+
+
+    setTimeout(
+        ()=>box.remove(),
+        2800
+    );
+
 }
 
-async function closeJackpot(){
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.type!=="jackpot")return;
-    const who=N(d.game.player);
-    d.game=null;d.turn=who===0?1:0;d.message="Jackpot bitti";return d;
-  });
-}
 
-/* BLACKJACK */
-function bjInit(){return{type:"blackjack",phase:"bet",deck:makeDeck(),dealer:[],hands:{p0:[],p1:[]},bets:{p0:0,p1:0},done:{p0:false,p1:false},turn:0,message:"Bahis · Doğal BJ 3:2"}}
-function renderBJ(g,d){
-  const key=playerNumber===0?"p0":"p1";
-  let h=`<div style="text-align:center"><b>♠ BLACKJACK · Doğal BJ 3:2</b></div><div class="info">${g.message||""}</div><div class="cards">`;
-  if(g.phase==="bet")h+=cardHTML(null,true)+cardHTML(null,true);
-  else h+=(g.dealer||[]).map((c,i)=>cardHTML(c,g.phase==="play"&&i===1)).join("");
-  h+=`</div><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0">`;
-  [0,1].forEach(i=>{
-    if(!d.players?.[i])return;
-    const k="p"+i,hand=g.hands?.[k]||[],bet=g.bets?.[k]||0,nat=isNaturalBJ(hand);
-    h+=`<div style="border:2px solid ${i===playerNumber?"#fbbf24":"#333"};padding:10px;border-radius:10px;min-width:130px;text-align:center;background:#111">
-      <div>${i===playerNumber?"★ SEN":d.players[i].name}</div>
-      <div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):hand.map(c=>cardHTML(c)).join("")}</div>
-      ${g.phase!=="bet"&&hand.length?`<b>${hVal(hand)}${nat?' <span class="bj-natural">BJ!</span>':""}</b>`:""}
-      ${bet?`<div style="color:#fbbf24">${bet}₺</div>`:""}</div>`;
-  });
-  h+=`</div><div style="text-align:center">`;
-  if(g.phase==="bet"){
-    if(!(g.bets?.[key]>0))h+=`<div class="btn-row"><input type="number" id="bjBet" value="50" min="10"><button class="gold" id="bjBetBtn">Bahis</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Bahis alındı</div>`;
-  }else if(g.phase==="play"&&N(g.turn)===playerNumber&&!g.done?.[key]){
-    h+=`<div class="btn-row"><button id="bjHit">Kart</button><button class="blue" id="bjStand">Kal</button><button class="gold" id="bjDouble">Double</button></div>`;
-  }else if(g.phase==="play")h+=`<p style="color:#aaa">Sıra: ${d.players[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<button id="bjClose">Masaya Dön</button>`;
-  h+=`</div>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("bjBetBtn"))$("bjBetBtn").onclick=()=>window.bjPlaceBet();
-  if($("bjHit"))$("bjHit").onclick=()=>window.bjAct("hit");
-  if($("bjStand"))$("bjStand").onclick=()=>window.bjAct("stand");
-  if($("bjDouble"))$("bjDouble").onclick=()=>window.bjAct("double");
-  if($("bjClose"))$("bjClose").onclick=()=>window.closeGame();
-}
-window.bjPlaceBet=async()=>{
-  const bet=Math.max(10,Number($("bjBet")?.value||50)),key=playerNumber===0?"p0":"p1";
-  try{
-    const snap=await get(path());const d=snap.val();
-    if(!d?.game||d.game.phase!=="bet")return;
-    const p=d.players?.[playerNumber];if(!p||p.money<bet){alert("Yetersiz para");return}
-    const bets={...(d.game.bets||{p0:0,p1:0})};if((bets[key]||0)>0)return;bets[key]=bet;
-    await update(ref(db,"rooms/"+roomCode+"/game"),{bets,message:`${p.name} ${bet}₺`});
-    if((bets.p0||0)>0&&(bets.p1||0)>0){
-      let deck=Array.isArray(d.game.deck)&&d.game.deck.length>20?[...d.game.deck]:makeDeck();
-      const hands={p0:[deck.pop(),deck.pop()],p1:[deck.pop(),deck.pop()]};
-      const done={p0:isNaturalBJ(hands.p0),p1:isNaturalBJ(hands.p1)};
-      await update(ref(db,"rooms/"+roomCode+"/game"),{phase:"play",deck,dealer:[deck.pop(),deck.pop()],hands,done,turn:done.p0?1:0,message:"Kartlar"});
-    }
-  }catch(e){alert(e.message)}
-};
-window.bjAct=async(act)=>{
-  const key=playerNumber===0?"p0":"p1",other=playerNumber===0?"p1":"p0";
-  try{
-    const snap=await get(path());let d=snap.val();
-    if(!d?.game||d.game.phase!=="play"||N(d.game.turn)!==playerNumber)return;
-    const g={...d.game};if(!Array.isArray(g.deck))g.deck=makeDeck();
-    const h=[...(g.hands[key]||[])];
-    if(isNaturalBJ(h))g.done[key]=true;
-    else if(act==="hit"){h.push(g.deck.pop());if(hVal(h)>=21)g.done[key]=true}
-    else if(act==="stand")g.done[key]=true;
-    else if(act==="double"){h.push(g.deck.pop());g.bets[key]=(g.bets[key]||0)*2;g.done[key]=true}
-    else return;
-    g.hands[key]=h;
-    if(g.done[key]){
-      if(!g.done[other]){g.turn=playerNumber===0?1:0;g.message=`Sıra: ${d.players[g.turn]?.name||""}`}
-      else{
-        while(hVal(g.dealer)<17)g.dealer.push(g.deck.pop());
-        g.phase="end";const dv=hVal(g.dealer),dNat=isNaturalBJ(g.dealer);let msg="";
-        ["p0","p1"].forEach((k,i)=>{
-          if(!d.players[i])return;
-          const hand=g.hands[k]||[],bet=g.bets[k]||0,pv=hVal(hand),pNat=isNaturalBJ(hand);
-          if(pv>21){d.players[i].money-=bet;msg+=` ${d.players[i].name} battı.`}
-          else if(pNat&&dNat)msg+=` ${d.players[i].name} berabere BJ.`;
-          else if(pNat){const win=Math.floor(bet*1.5);d.players[i].money+=win;msg+=` ${d.players[i].name} BJ +${win}!`}
-          else if(dNat){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti.`}
-          else if(dv>21||pv>dv){d.players[i].money+=bet;msg+=` ${d.players[i].name} +${bet}.`}
-          else if(pv<dv){d.players[i].money-=bet;msg+=` ${d.players[i].name} kaybetti.`}
-          else msg+=` ${d.players[i].name} berabere.`;
-        });
-        g.message="Bitti."+msg;
-      }
-    }
-    await update(ref(db,"rooms/"+roomCode),{game:g,players:d.players,message:g.message});
-  }catch(e){alert(e.message)}
-};
+/* =========================
+   BUTONLAR
+========================= */
 
-function pokerInit(){return{type:"poker",phase:"bet",deck:makeDeck(),community:[],players:{0:{hole:[],chips:0,fold:false,bet:0,acted:false},1:{hole:[],chips:0,fold:false,bet:0,acted:false}},pot:0,currentBet:0,turn:0,message:"Buy-in"}}
-function renderPoker(g,d){
-  const me=g.players?.[playerNumber]||{hole:[],chips:0,fold:false,bet:0};
-  let h=`<div style="text-align:center"><b>♠ POKER</b></div><div class="info">${g.message||""} · POT ${g.pot||0}₺</div><div class="cards">`;
-  if(!(g.community||[]).length)for(let i=0;i<5;i++)h+=cardHTML(null,true);
-  else h+=(g.community||[]).map(c=>cardHTML(c)).join("");
-  h+=`</div><div class="cards">${g.phase==="bet"?cardHTML(null,true)+cardHTML(null,true):(me.hole||[]).map(c=>cardHTML(c)).join("")}</div>`;
-  if(g.phase==="bet"){
-    if(!(me.chips>0))h+=`<div class="btn-row"><input type="number" id="pkBet" value="100" min="20"><button class="gold" id="pkBuyin">Masaya Gir</button></div>`;
-    else h+=`<div class="info" style="color:#4ade80">Buy-in alındı</div>`;
-  }else if(g.phase!=="end"&&N(g.turn)===playerNumber&&!me.fold){
-    h+=`<div class="btn-row"><button class="red" id="pkFold">Çekil</button>
-      ${(me.bet||0)===(g.currentBet||0)?`<button class="blue" id="pkCheck">Pas</button>`:`<button id="pkCall">Gör</button>`}
-      <input type="number" id="raiseIn" value="${(g.currentBet||0)+50}" style="width:80px"><button class="gold" id="pkRaise">Rais</button></div>`;
-  }else if(g.phase!=="end")h+=`<p style="color:#aaa">Sıra: ${d.players?.[g.turn]?.name||""}</p>`;
-  if(g.phase==="end")h+=`<button id="pkClose">Masaya Dön</button>`;
-  $("modalContent").innerHTML=h;$("modal").classList.remove("hidden");
-  if($("pkBuyin"))$("pkBuyin").onclick=()=>window.pkPlaceBet();
-  if($("pkFold"))$("pkFold").onclick=()=>window.pkAct("fold");
-  if($("pkCheck"))$("pkCheck").onclick=()=>window.pkAct("check");
-  if($("pkCall"))$("pkCall").onclick=()=>window.pkAct("call");
-  if($("pkRaise"))$("pkRaise").onclick=()=>window.pkRaise();
-  if($("pkClose"))$("pkClose").onclick=()=>window.closeGame();
-}
-window.pkPlaceBet=async()=>{
-  const amt=Math.max(20,Number($("pkBet")?.value||100));
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.phase!=="bet")return;
-    const g=d.game,p=d.players[playerNumber];
-    if(!p||p.money<amt||(g.players[playerNumber]?.chips||0)>0)return;
-    p.money-=amt;g.players[playerNumber].chips=amt;
-    if(g.players[0].chips>0&&g.players[1].chips>0){
-      g.phase="preflop";g.players[0].hole=[g.deck.pop(),g.deck.pop()];g.players[1].hole=[g.deck.pop(),g.deck.pop()];
-      g.turn=0;g.message="Preflop";
-    }else g.message=`${p.name} buy-in`;return d;
-  });
-};
-window.pkAct=async(act)=>{
-  await runTransaction(path(),d=>{
-    if(!d?.game||d.game.phase==="end"||N(d.game.turn)!==playerNumber)return;
-    const g=d.game,p=g.players[playerNumber],other=playerNumber===0?1:0;
-    if(act==="fold")p.fold=true;
-    else if(act==="check"){if(p.bet!==g.currentBet)return}
-    else if(act==="call"){const add=Math.min(p.chips,g.currentBet-p.bet);p.chips-=add;p.bet+=add;g.pot+=add}
-    else return;
-    p.acted=true;
-    if(p.fold||g.players[other].fold){
-      const win=p.fold?other:playerNumber;g.players[win].chips+=g.pot;
-      d.players[0].money+=g.players[0].chips;d.players[1].money+=g.players[1].chips;
-      g.phase="end";g.message=`${d.players[win]?.name} kazandı`;return d;
-    }
-    const a=g.players[0],b=g.players[1];
-    if(a.acted&&b.acted&&a.bet===b.bet){
-      a.acted=b.acted=false;a.bet=b.bet=0;g.currentBet=0;
-      if(g.phase==="preflop"){g.community=[g.deck.pop(),g.deck.pop(),g.deck.pop()];g.phase="flop"}
-      else if(g.phase==="flop"){g.community.push(g.deck.pop());g.phase="turn"}
-      else if(g.phase==="turn"){g.community.push(g.deck.pop());g.phase="river"}
-      else{g.players[0].chips+=g.pot;d.players[0].money+=g.players[0].chips;d.players[1].money+=g.players[1].chips;g.phase="end";g.message="El bitti";return d}
-    }
-    if(g.phase!=="end"){g.turn=other;g.message=`Sıra: ${d.players[other]?.name||""}`}
-    return d;
-  });
-};
-window.pkRaise=async()=>{
-  const target=Number($("raiseIn")?.value||100);
-  await runTransaction(path(),d=>{
-    if(!d?.game||N(d.game.turn)!==playerNumber)return;
-    const g=d.game,p=g.players[playerNumber];
-    const add=Math.min(p.chips,Math.max(0,target-p.bet));
-    p.chips-=add;p.bet+=add;g.pot+=add;g.currentBet=p.bet;p.acted=true;
-    g.turn=playerNumber===0?1:0;return d;
-  });
-};
+$("createRoom")
+    .onclick =
+    createGame;
 
-function renderCasino(g,d){
-  if(g.type==="blackjack")renderBJ(g,d);
-  else if(g.type==="poker")renderPoker(g,d);
-  else if(g.type==="jackpot")renderJackpot(g,d);
-}
-window.closeGame=async()=>{await update(path(),{game:null,message:"Masaya dönüldü"});$("modal").classList.add("hidden")}
-async function leaveGame(){if(!roomCode)return;await runTransaction(path(),d=>{if(!d)return;if(d.players)d.players[playerNumber]=null;return d});if(unsubscribe)unsubscribe();location.reload()}
 
-$("createRoom").onclick=createGame;
-$("joinRoom").onclick=joinGame;
-$("rollButton").onclick=rollDice;
-$("leaveButton").onclick=leaveGame;
+$("joinRoom")
+    .onclick =
+    joinGame;
+
+
+$("rollButton")
+    .onclick =
+    rollDice;
+
+
+$("leaveButton")
+    .onclick =
+    async()=>{
+
+        if(!roomCode)
+            return;
+
+
+        await runTransaction(
+            path(),
+            d=>{
+
+                if(
+                    d?.players
+                )
+                    d.players[
+                        playerNumber
+                    ]=null;
+
+
+                return d;
+
+            }
+        );
+
+
+        if(unsubscribe)
+            unsubscribe();
+
+
+        location.reload();
+
+    };
+
+
 </script>
+
 </body>
 </html>
