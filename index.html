@@ -5159,10 +5159,506 @@ function handName(r){
    POKER RENDER
 ========================= */
 
-function renderPoker(
-    g,
-    d
-){
+function renderPoker(g,d){
+  /*
+    POKER VERİ GÜVENLİĞİ
+    Firebase'de eski/eksik veri varsa renderPoker çökmemesi için
+    bütün dizileri ve oyuncu objelerini normalize ediyoruz.
+  */
+
+  g = g || {};
+
+  // community mutlaka dizi olsun
+  const community = Array.isArray(g.community) ? g.community : [];
+
+  // players mutlaka obje olsun
+  const pokerPlayers =
+    (g.players && typeof g.players === "object")
+      ? g.players
+      : {};
+
+  // Oyuncular yoksa boş oyuncu oluştur
+  const makePokerPlayer = (p) => ({
+    hole: Array.isArray(p?.hole) ? p.hole : [],
+    chips: Number(p?.chips) || 0,
+    fold: !!p?.fold,
+    bet: Number(p?.bet) || 0,
+    acted: !!p?.acted
+  });
+
+  const me = makePokerPlayer(
+    pokerPlayers[playerNumber]
+  );
+
+  const other = playerNumber === 0 ? 1 : 0;
+
+  const ot = makePokerPlayer(
+    pokerPlayers[other]
+  );
+
+  const phase = g.phase || "bet";
+  const pot = Number(g.pot) || 0;
+  const currentBet = Number(g.currentBet) || 0;
+
+  let h = `
+  <style>
+    .pk-table{
+      background:radial-gradient(ellipse,#0f7a3a,#064020);
+      border:10px solid #4a3728;
+      border-radius:100px;
+      padding:20px;
+    }
+
+    .pk-pot{
+      display:inline-block;
+      background:#0007;
+      color:#ffd54a;
+      font-weight:bold;
+      padding:4px 14px;
+      border-radius:20px;
+      margin:8px 0;
+    }
+
+    .pk-seats{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .pk-seat{
+      background:#0005;
+      border:2px solid #2e7d32;
+      border-radius:12px;
+      padding:12px;
+      min-width:150px;
+      text-align:center;
+    }
+
+    .pk-seat.me{
+      border-color:#ffc107;
+    }
+
+    .pk-error{
+      background:#3b1010;
+      border:1px solid #ef5350;
+      color:#ffcdd2;
+      padding:10px;
+      border-radius:10px;
+      margin:10px 0;
+    }
+  </style>
+
+  <div class="pk-table">
+
+    <div style="text-align:center">
+
+      <div style="
+        color:#c8e6c9;
+        font-size:12px;
+        letter-spacing:2px
+      ">
+        ♠ TEXAS HOLD'EM ♠
+      </div>
+
+      <div class="cards">
+  `;
+
+  /*
+    ORTAK KARTLAR
+  */
+
+  if(community.length === 0){
+
+    for(let i = 0; i < 5; i++){
+      h += cardHTML(null,true);
+    }
+
+  }else{
+
+    community.forEach(c => {
+      if(c){
+        h += cardHTML(c);
+      }else{
+        h += cardHTML(null,true);
+      }
+    });
+
+    const missing = Math.max(
+      0,
+      5 - community.length
+    );
+
+    for(let i = 0; i < missing; i++){
+      h += `
+        <div
+          class="card back"
+          style="opacity:.3"
+        >
+          🂠
+        </div>
+      `;
+    }
+  }
+
+  h += `
+      </div>
+
+      <div class="pk-pot">
+        POT: ${pot} ₺
+      </div>
+
+    </div>
+
+    <div
+      class="info"
+      style="text-align:center"
+    >
+      ${g.message || ""}
+    </div>
+
+    <div class="pk-seats">
+
+      <!-- RAKİP -->
+      <div class="pk-seat">
+
+        <div style="
+          font-size:12px;
+          color:#a5d6a7
+        ">
+          ${d.players?.[other]?.name || "Rakip"}
+        </div>
+
+        <div class="cards">
+
+  `;
+
+  /*
+    Rakibin kartları:
+    Oyun devam ediyorsa kapalı,
+    oyun bittiyse açık.
+  */
+
+  if(phase === "end"){
+
+    if(ot.hole.length > 0){
+
+      ot.hole.forEach(c => {
+        h += cardHTML(c);
+      });
+
+    }else{
+
+      h += cardHTML(null,true);
+      h += cardHTML(null,true);
+
+    }
+
+  }else{
+
+    h += cardHTML(null,true);
+    h += cardHTML(null,true);
+
+  }
+
+  h += `
+        </div>
+
+        <div style="
+          font-size:12px;
+          color:#c8e6c9
+        ">
+          Çip: ${ot.chips}₺
+          ${ot.fold ? " · ÇEKİLDİ" : ""}
+        </div>
+
+      </div>
+
+
+      <!-- BEN -->
+      <div class="pk-seat me">
+
+        <div style="
+          font-size:12px;
+          color:#ffe082
+        ">
+          ★ SEN ★
+        </div>
+
+        <div class="cards">
+  `;
+
+  /*
+    Kendi kartlarımız
+  */
+
+  if(phase === "bet"){
+
+    h += cardHTML(null,true);
+    h += cardHTML(null,true);
+
+  }else{
+
+    if(me.hole.length > 0){
+
+      me.hole.forEach(c => {
+        h += cardHTML(c);
+      });
+
+    }else{
+
+      h += cardHTML(null,true);
+      h += cardHTML(null,true);
+
+    }
+
+  }
+
+  h += `
+        </div>
+
+        <div style="
+          font-size:12px;
+          color:#c8e6c9
+        ">
+          Çip: ${me.chips}₺
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div style="
+    margin-top:14px;
+    text-align:center
+  ">
+  `;
+
+
+  /*
+    BUY-IN AŞAMASI
+  */
+
+  if(phase === "bet"){
+
+    const money =
+      Number(d.players?.[playerNumber]?.money) || 0;
+
+    h += `
+      <div class="info">
+        Paran: ${money}₺
+      </div>
+    `;
+
+    if(me.chips <= 0){
+
+      h += `
+        <div class="btn-row">
+
+          <input
+            type="number"
+            id="pkBet"
+            value="100"
+            min="20"
+          >
+
+          <button
+            class="gold"
+            id="pkBuyin"
+          >
+            Masaya Gir (Buy-in)
+          </button>
+
+        </div>
+      `;
+
+    }else{
+
+      h += `
+        <div
+          class="info"
+          style="color:#4ade80"
+        >
+          Buy-in alındı
+        </div>
+      `;
+    }
+
+  }
+
+
+  /*
+    OYUN DEVAM EDİYOR
+  */
+
+  else if(
+    phase !== "end" &&
+    Number(g.turn) === playerNumber &&
+    !me.fold
+  ){
+
+    const equalBet =
+      me.bet === currentBet;
+
+    h += `
+      <div class="btn-row">
+
+        <button
+          class="red"
+          id="pkFold"
+        >
+          Çekil (Fold)
+        </button>
+
+        ${
+          equalBet
+          ?
+          `
+          <button
+            class="blue"
+            id="pkCheck"
+          >
+            Pas (Check)
+          </button>
+          `
+          :
+          `
+          <button
+            id="pkCall"
+          >
+            Gör (Call)
+          </button>
+          `
+        }
+
+        <input
+          type="number"
+          id="raiseIn"
+          value="${currentBet + 50}"
+          style="width:80px"
+          min="${Math.max(currentBet + 1,1)}"
+        >
+
+        <button
+          class="gold"
+          id="pkRaise"
+        >
+          Raise Yap
+        </button>
+
+      </div>
+    `;
+
+  }
+
+
+  /*
+    SIRA RAKİPTE
+  */
+
+  else if(phase !== "end"){
+
+    h += `
+      <p style="color:#aaa">
+        Sıra:
+        ${d.players?.[Number(g.turn)]?.name || "Rakip"}
+      </p>
+    `;
+
+  }
+
+
+  /*
+    OYUN SONU
+  */
+
+  if(phase === "end"){
+
+    h += `
+      <div
+        style="
+          margin-top:12px;
+          padding:12px;
+          border-radius:10px;
+          background:#0005;
+          color:#ffe082;
+          font-weight:bold;
+        "
+      >
+        ${g.message || "El bitti."}
+      </div>
+
+      <div class="btn-row">
+
+        <button
+          id="pkClose"
+        >
+          Masaya Dön
+        </button>
+
+      </div>
+    `;
+  }
+
+
+  h += `
+    </div>
+  `;
+
+
+  /*
+    EKRANA BAS
+  */
+
+  const modalContent = $("modalContent");
+  const modal = $("modal");
+
+  if(!modalContent || !modal){
+    console.warn("Poker modal elemanları bulunamadı.");
+    return;
+  }
+
+  modalContent.innerHTML = h;
+  modal.classList.remove("hidden");
+
+
+  /*
+    BUTONLAR
+  */
+
+  const buyinBtn = $("pkBuyin");
+  if(buyinBtn){
+    buyinBtn.onclick = () => window.pkPlaceBet();
+  }
+
+  const foldBtn = $("pkFold");
+  if(foldBtn){
+    foldBtn.onclick = () => window.pkAct("fold");
+  }
+
+  const checkBtn = $("pkCheck");
+  if(checkBtn){
+    checkBtn.onclick = () => window.pkAct("check");
+  }
+
+  const callBtn = $("pkCall");
+  if(callBtn){
+    callBtn.onclick = () => window.pkAct("call");
+  }
+
+  const raiseBtn = $("pkRaise");
+  if(raiseBtn){
+    raiseBtn.onclick = () => window.pkRaise();
+  }
+
+  const closeBtn = $("pkClose");
+  if(closeBtn){
+    closeBtn.onclick = () => window.closeGame();
+  }
+}
+    {
 
     if(
         g.phase!=="end"
