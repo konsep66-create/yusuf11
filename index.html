@@ -469,7 +469,7 @@ function renderActions(d){
   });
 }
 
-async async function skipJailTurn(){
+async function skipJailTurn(){
   skipLock=false;
   await runTransaction(path(),d=>{
     if(!d||d.turn!==playerNumber)return d;
