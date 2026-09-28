@@ -18,19 +18,11 @@ body{display:flex;flex-direction:column;max-width:1920px;margin:auto}
 .player-card.active{border-color:#22c55e;box-shadow:0 0 12px #22c55e33}
 .money{font-size:20px;color:#fbbf24;font-weight:bold}
 .board-area{display:flex;align-items:center;justify-content:center;min-height:0}
-.board{
-    display:grid;
-    grid-template-columns:repeat(9,1fr);
-    grid-template-rows:repeat(9,1fr);
-    width:min(820px,100%);
-    height:min(820px,100%);
-    gap:3px;
-    background:#222;
-    border:4px solid #555;
-    border-radius:10px;
-    padding:3px;
-    box-shadow:0 15px 30px rgba(0,0,0,.7);
-}
+.board-area{position:relative}
+#view3d{width:min(820px,100%);height:min(820px,100%);border-radius:10px;border:4px solid #555;display:block;background:#87ceeb}
+.board{display:none!important}
+
+.board{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);width:min(820px,100%);height:min(820px,100%);gap:3px;background:#090909;border:4px solid #555;border-radius:10px;padding:3px}
 .cell{border:1px solid #333;font-size:10px;padding:3px;display:flex;flex-direction:column;justify-content:space-between;text-align:center;position:relative;line-height:1.15;border-radius:4px;min-height:0}
 .cell .name{font-weight:bold;font-size:9px;text-shadow:0 1px 2px #000}
 .cell .price,.cell .rent{font-size:8px;color:#ddd}
@@ -165,7 +157,8 @@ input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px sol
       </div>
     </div>
     <div class="board-area">
-      <div id="board" class="board">
+      <canvas id="view3d"></canvas>
+      <div id="board" class="board" style="display:none">
         <div class="center">
           <div style="font-size:18px;color:#666">KUMARHANE MONOPOLY</div>
           <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
@@ -182,6 +175,13 @@ input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px sol
 
 <div id="modal" class="modal hidden"><div class="modalbox" id="modalContent"></div></div>
 
+
+<script type="importmap">
+{"imports":{
+  "three":"https://unpkg.com/three@0.170.0/build/three.module.js",
+  "three/addons/":"https://unpkg.com/three@0.170.0/examples/jsm/"
+}}
+</script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import {getDatabase,ref,set,get,onValue,runTransaction,update} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
@@ -217,6 +217,7 @@ const CHANCE_EVENTS=[
   {text:"Bonus çekiliş: +80₺",money:80}
 ];
 
+const BOARD=32;
 const cells=[
   {name:"BAŞLANGIÇ",type:"go",bg:"#14532d"},
   {name:"Kırmızı Sokak",type:"prop",price:60,rent:6,color:"#dc2626",bg:"#450a0a"},
@@ -248,8 +249,10 @@ const cells=[
   {name:"Şans",type:"chance",bg:"#1e3a5f"},
   {name:"Kırmızı 3",type:"prop",price:280,rent:28,color:"#dc2626",bg:"#450a0a"},
   {name:"İstasyon 3",type:"station",price:200,rent:25,bg:"#1c1917"},
+  {name:"İstanbul Cad.",type:"prop",price:300,rent:30,color:"#e11d48",bg:"#881337"},
   {name:"SON",type:"go",bg:"#14532d"}
 ];
+
 
 const boardEl=$("board");
 cells.forEach((c,i)=>{
@@ -284,7 +287,7 @@ function showDice(a,b){drawDie($("die1"),a);drawDie($("die2"),b);$("diceTotal").
 function path(){return ref(db,"rooms/"+roomCode)}
 function log(t){const d=document.createElement("div");d.textContent=new Date().toLocaleTimeString("tr-TR")+" — "+t;$("log").prepend(d)}
 function setMsg(t){$("message").textContent=t||""}
-function ensureProps(d){if(!d.properties)d.properties={};for(let i=0;i<32;i++)if(!d.properties[i])d.properties[i]={owner:null,level:0};return d}
+function ensureProps(d){if(!d.properties)d.properties={};for(let i=0;i<BOARD;i++)if(!d.properties[i])d.properties[i]={owner:null,level:0};return d}
 function generateCode(){const ch="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";for(let i=0;i<4;i++)c+=ch[Math.floor(Math.random()*ch.length)];return c}
 function getName(){return ($("nameInput").value||"").trim().slice(0,16)||"Oyuncu"}
 function rentFor(c,level){return Math.round((c.rent||25)*(1+0.75*(level||0)))}
@@ -310,7 +313,7 @@ function placePiece(pos,who,moving=false){
 async function animateMove(who,from,to){
   if(from===to){displayPos[who]=to;return}
   animating=true;let cur=from;const steps=[];
-  while(cur!==to){cur=(cur+1)%32;steps.push(cur)}
+  while(cur!==to){cur=(cur+1)%BOARD;steps.push(cur)}
   for(const step of steps){
     clearPieces();displayPos[who]=step;
     placePiece(displayPos[0],0,who===0);placePiece(displayPos[1],1,who===1);
@@ -325,7 +328,7 @@ async function createGame(){
   try{
     let code;while(true){code=generateCode();if(!(await get(ref(db,"rooms/"+code))).exists())break}
     roomCode=code;playerNumber=0;
-    const props={};for(let i=0;i<32;i++)props[i]={owner:null,level:0};
+    const props={};for(let i=0;i<BOARD;i++)props[i]={owner:null,level:0};
     await set(ref(db,"rooms/"+roomCode),{
       players:{0:{name:playerName,money:1500,position:0,props:[],jailTurns:0},1:null},
       properties:props,turn:0,message:playerName+" oda kurdu. Oyuncu 2 bekleniyor...",
@@ -386,7 +389,7 @@ async function render(d){
     else if(!animating)displayPos[who]=target;
   }
   if(!animating){clearPieces();if(p0)placePiece(displayPos[0],0);if(p1)placePiece(displayPos[1],1)}
-  for(let i=0;i<32;i++){
+  for(let i=0;i<BOARD;i++){
     const pr=d.properties?.[i];
     const el=$("owner-"+i),lv=$("level-"+i),rentEl=$("rent-"+i),priceEl=$("price-"+i);
     if(el)el.textContent=pr?.owner===0?"👑":pr?.owner===1?"👤":"";
@@ -450,7 +453,7 @@ async function rollDice(){
       if(p.jailTurns>0)return d;
       const d1=Math.floor(Math.random()*6)+1,d2=Math.floor(Math.random()*6)+1,total=d1+d2;
       d.lastDice=[d1,d2];
-      const old=p.position||0,next=(old+total)%32,passed=next<old;
+      const old=p.position||0,next=(old+total)%BOARD,passed=next<old;
       p.position=next;
       if(passed)p.money=(p.money||0)+200;
       d.message=`${p.name} ${d1}+${d2}=${total} → ${cells[next].name}`+(passed?" (+200₺ tur bonusu)":"");
@@ -1118,6 +1121,144 @@ function confetti(){
   }
   document.body.appendChild(box);setTimeout(()=>box.remove(),2800);
 }
+
+
+/* ===== THREE.JS 3D TAHTA ===== */
+import * as THREE from "https://unpkg.com/three@0.170.0/build/three.module.js";
+import { OrbitControls } from "https://unpkg.com/three@0.170.0/examples/jsm/controls/OrbitControls.js";
+
+const SIDE=8, STEP=1.12;
+function cellXZ(i){
+  i=((i%BOARD)+BOARD)%BOARD;
+  const s=Math.floor(i/SIDE), p=i%SIDE;
+  let gx,gz;
+  switch(s){
+    case 0: gx=p; gz=0; break;
+    case 1: gx=SIDE; gz=p; break;
+    case 2: gx=SIDE-p; gz=SIDE; break;
+    case 3: gx=0; gz=SIDE-p; break;
+  }
+  return {x:(gx-SIDE/2)*STEP, z:(gz-SIDE/2)*STEP};
+}
+function hexColor(bg){
+  if(!bg) return 0x334155;
+  return parseInt(String(bg).replace("#","0x"),16);
+}
+function makeLabelTex(lines){
+  const c=document.createElement("canvas"); c.width=256; c.height=160;
+  const ctx=c.getContext("2d");
+  ctx.fillStyle="#0f172a"; ctx.fillRect(0,0,256,160);
+  ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.font="bold 20px Arial";
+  lines.forEach((t,i)=>{
+    const y=80+(i-(lines.length-1)/2)*22;
+    ctx.fillText(String(t).slice(0,18),128,y,240);
+  });
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=2; return tex;
+}
+
+let _3dReady=false, _pawns=[], _renderer, _scene, _camera, _controls;
+function init3D(){
+  const canvas=$("view3d"); if(!canvas||_3dReady) return;
+  const w=canvas.clientWidth||700, h=canvas.clientHeight||700;
+  _renderer=new THREE.WebGLRenderer({canvas, antialias:true});
+  _renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  _renderer.setSize(w,h,false);
+  _renderer.shadowMap.enabled=true;
+  _scene=new THREE.Scene();
+  _scene.background=new THREE.Color(0x7dd3fc);
+  _camera=new THREE.PerspectiveCamera(45,w/h,0.1,100);
+  _camera.position.set(11,13,11);
+  _controls=new OrbitControls(_camera,canvas);
+  _controls.enableDamping=true;
+  _controls.target.set(0,0,0);
+  _controls.maxPolarAngle=Math.PI*0.48;
+  _scene.add(new THREE.AmbientLight(0xffffff,0.55));
+  const sun=new THREE.DirectionalLight(0xffffff,1.1);
+  sun.position.set(10,18,8); sun.castShadow=true; _scene.add(sun);
+  const ground=new THREE.Mesh(new THREE.CircleGeometry(18,40), new THREE.MeshStandardMaterial({color:0x3a7d44, roughness:0.9}));
+  ground.rotation.x=-Math.PI/2; ground.position.y=-0.05; ground.receiveShadow=true; _scene.add(ground);
+  const mid=new THREE.Mesh(new THREE.BoxGeometry(SIDE*STEP*0.7,0.1,SIDE*STEP*0.7), new THREE.MeshStandardMaterial({color:0x166534}));
+  mid.position.y=0.05; _scene.add(mid);
+  const logo=new THREE.Mesh(new THREE.PlaneGeometry(3.2,1.5), new THREE.MeshBasicMaterial({map:makeLabelTex(["KUMARHANE","MONOPOLY"]), transparent:true}));
+  logo.rotation.x=-Math.PI/2; logo.position.y=0.12; _scene.add(logo);
+  const geo=new THREE.BoxGeometry(STEP*0.9,0.24,STEP*0.9);
+  for(let i=0;i<BOARD;i++){
+    const c=cells[i], {x,z}=cellXZ(i);
+    const mesh=new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:hexColor(c.bg||c.color), roughness:0.65}));
+    mesh.position.set(x,0.12,z); mesh.castShadow=true; mesh.receiveShadow=true; _scene.add(mesh);
+    const lines=[c.name];
+    if(c.price) lines.push("Alım "+c.price+"₺");
+    if(c.rent) lines.push("Kira "+c.rent+"₺");
+    if(c.amount) lines.push("-"+c.amount+"₺");
+    const lab=new THREE.Mesh(new THREE.PlaneGeometry(STEP*0.82,STEP*0.45), new THREE.MeshBasicMaterial({map:makeLabelTex(lines), transparent:true}));
+    lab.rotation.x=-Math.PI/2; lab.position.set(x,0.26,z); _scene.add(lab);
+  }
+  function mkPawn(col){
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.19,0.3,12), new THREE.MeshStandardMaterial({color:col, metalness:0.25, roughness:0.35}));
+    body.position.y=0.2; body.castShadow=true;
+    const head=new THREE.Mesh(new THREE.SphereGeometry(0.13,12,12), new THREE.MeshStandardMaterial({color:col, metalness:0.3, roughness:0.3}));
+    head.position.y=0.44; head.castShadow=true; g.add(body,head); return g;
+  }
+  _pawns=[mkPawn(0xfbbf24), mkPawn(0x3b82f6)];
+  _pawns.forEach(p=>_scene.add(p));
+  window.setPiece3D=function(who, idx, jump){
+    if(!_3dReady) return;
+    idx=((idx%BOARD)+BOARD)%BOARD;
+    const {x,z}=cellXZ(idx), ox=who===0?-0.16:0.16;
+    const p=_pawns[who], end=new THREE.Vector3(x+ox,0,z);
+    if(!jump){ p.position.copy(end); return; }
+    const start=p.position.clone(), t0=performance.now(), dur=240;
+    (function step(now){
+      const t=Math.min(1,(now-t0)/dur);
+      p.position.lerpVectors(start,end,t);
+      p.position.y=Math.sin(t*Math.PI)*0.45;
+      if(t<1) requestAnimationFrame(step); else p.position.copy(end);
+    })(t0);
+  };
+  window.setPiece3D(0,0); window.setPiece3D(1,0);
+  function onResize(){
+    const w=canvas.clientWidth, h=canvas.clientHeight;
+    if(!w||!h) return;
+    _camera.aspect=w/h; _camera.updateProjectionMatrix();
+    _renderer.setSize(w,h,false);
+  }
+  addEventListener("resize", onResize);
+  (function loop(){ requestAnimationFrame(loop); _controls.update(); _renderer.render(_scene,_camera); })();
+  _3dReady=true;
+  setTimeout(onResize, 100);
+}
+
+// start 3D after game UI shown
+const _startGameOrig = startGame;
+startGame = function(){
+  _startGameOrig();
+  setTimeout(init3D, 50);
+};
+
+// hook animateMove to also move 3D pawns
+const _animateMoveOrig = animateMove;
+animateMove = async function(who, from, to){
+  if(from===to){ displayPos[who]=to; if(window.setPiece3D) window.setPiece3D(who,to,false); return; }
+  animating=true;
+  let cur=from;
+  while(cur!==to){
+    cur=(cur+1)%BOARD;
+    clearPieces();
+    displayPos[who]=cur;
+    placePiece(displayPos[0],0,who===0);
+    placePiece(displayPos[1],1,who===1);
+    if(window.setPiece3D) window.setPiece3D(who, cur, true);
+    await new Promise(r=>setTimeout(r,220));
+  }
+  displayPos[who]=to;
+  animating=false;
+  clearPieces();
+  placePiece(displayPos[0],0);
+  placePiece(displayPos[1],1);
+  if(window.setPiece3D){ window.setPiece3D(0,displayPos[0],false); window.setPiece3D(1,displayPos[1],false); }
+};
 
 $("createRoom").onclick=createGame;
 $("joinRoom").onclick=joinGame;
