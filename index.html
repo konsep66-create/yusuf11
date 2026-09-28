@@ -109,6 +109,27 @@ input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px sol
 .debt-box{background:#3b1010;border:2px solid #ef5350;border-radius:12px;padding:16px;text-align:center}
 @media(max-width:1100px){.main{grid-template-columns:220px 1fr 230px}.board{max-width:620px;max-height:620px}}
 @media(max-width:850px){.main{grid-template-columns:1fr}.left,.right{max-height:180px}.board{width:95vw;height:95vw}.board-area{order:-1}}
+
+.hip-modal{background:linear-gradient(160deg,#0b1f14,#0f3d2e 40%,#0a1628);border:3px solid #d4af37;border-radius:16px;padding:20px;color:#eee}
+.hip-title{text-align:center;font-size:26px;color:#d4af37;letter-spacing:2px;margin-bottom:6px}
+.hip-sub{text-align:center;color:#a7f3d0;margin-bottom:12px;font-size:14px}
+.hip-fee{text-align:center;font-size:18px;color:#fbbf24;font-weight:bold;margin-bottom:14px}
+.hip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.hip-card{background:#0a0a0a99;border:2px solid #334155;border-radius:12px;padding:12px;cursor:pointer;text-align:center;transition:.15s}
+.hip-card:hover{border-color:#d4af37}
+.hip-card.selected{border-color:#d4af37;box-shadow:0 0 16px #d4af3766;background:#14532d88}
+.hip-card .odd{font-size:22px;color:#fbbf24;font-weight:900}
+.hip-bar{height:8px;background:#222;border-radius:4px;margin-top:8px;overflow:hidden}
+.hip-bar>i{display:block;height:100%;border-radius:4px}
+.hip-lanes{margin:16px 0}
+.hip-lane{display:flex;align-items:center;gap:8px;margin:6px 0;background:#0005;border-radius:8px;padding:4px 8px}
+.hip-lane .track{flex:1;height:28px;background:#1a1a1a;border-radius:6px;position:relative;overflow:hidden;border:1px solid #333}
+.hip-lane .horse{position:absolute;left:0;top:2px;font-size:20px;transition:left 0.15s linear}
+.hip-lane.winner .track{border-color:#d4af37;box-shadow:0 0 8px #d4af37}
+.dice-hud{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;display:flex;gap:10px;align-items:center;background:#000a;border:2px solid #d4af37;border-radius:14px;padding:8px 14px;pointer-events:none}
+.dice-hud .d{width:48px;height:48px;background:#fff;color:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;border:2px solid #ccc}
+.dice-hud .sum{color:#fbbf24;font-size:20px;font-weight:bold;min-width:70px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -172,7 +193,8 @@ input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px sol
         <button id="leaveButton" class="red" style="width:100%">🚪 Odadan Çık</button>
       </div>
     </div>
-    <div class="board-area">
+    <div class="board-area" style="position:relative">
+      <div class="dice-hud" id="diceHud"><div class="d" id="hudDie1">-</div><div class="d" id="hudDie2">-</div><div class="sum" id="hudSum">Zar</div></div>
       <canvas id="view3d"></canvas>
       <div id="board" class="board" style="display:none">
         <div class="center">
@@ -262,7 +284,7 @@ const cells=[
   {name:"Yeşil Sokak",type:"prop",price:100,rent:10,color:"#16a34a",bg:"#14532d"},
   {name:"BLACKJACK",type:"blackjack",bg:"#422006"},
   {name:"Sarı Sokak",type:"prop",price:120,rent:12,color:"#ca8a04",bg:"#422006"},
-  {name:"Ücretsiz Otopark",type:"free",bg:"#365314"},
+  {name:"HİPODROM",type:"hipodrom",bg:"#14532d"},
   {name:"Kumarhane",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
   {name:"Mor Sokak",type:"prop",price:140,rent:14,color:"#7c3aed",bg:"#2e1065"},
   {name:"Şans",type:"chance",bg:"#1e3a5f"},
@@ -316,7 +338,7 @@ function drawDie(el,n){
   const map={1:["d1"],2:["d2a","d2b"],3:["d3a","d3b","d3c"],4:["d4a","d4b","d4c","d4d"],5:["d5a","d5b","d5c","d5d","d5e"],6:["d6a","d6b","d6c","d6d","d6e","d6f"]};
   (map[n]||[]).forEach(cls=>{const s=document.createElement("span");s.className=cls;el.appendChild(s)});
 }
-function showDice(a,b){try{drawDie($("die1"),a);drawDie($("die2"),b);if($("diceTotal"))$("diceTotal").textContent=`${a+b} (${a}+${b})`}catch(e){} if(window.setDice3D) window.setDice3D(a,b);}
+function showDice(a,b){try{drawDie($("die1"),a);drawDie($("die2"),b);if($("diceTotal"))$("diceTotal").textContent=`${a+b} (${a}+${b})`}catch(e){} if($("hudDie1")){$("hudDie1").textContent=a;$("hudDie2").textContent=b;$("hudSum").textContent=(a+b)+" 🎲"} if(window.setDice3D) window.setDice3D(a,b);}
 function path(){return ref(db,"rooms/"+roomCode)}
 function log(t){const d=document.createElement("div");d.textContent=new Date().toLocaleTimeString("tr-TR")+" — "+t;$("log").prepend(d)}
 function setMsg(t){$("message").textContent=t||""}
@@ -326,6 +348,34 @@ function getName(){return ($("nameInput").value||"").trim().slice(0,16)||"Oyuncu
 function rentFor(c,level){return Math.round((c.rent||25)*(1+0.75*(level||0)))}
 function upgradeCost(c,level){return Math.max(50,Math.round((c.price||100)*0.5*((level||0)+1)))}
 function valueFor(c,level){return Math.round((c.price||100)*(1+0.4*(level||0)))}
+function isBuyable(i){const t=cells[i]?.type;return t==="prop"||t==="station"||t==="utility"}
+function checkVurgun(d){
+  if(!d||!d.properties)return;
+  for(let i=0;i<BOARD;i++){ if(d.properties[i]) d.properties[i].vurgun=false; }
+  const buy=[];
+  for(let i=0;i<BOARD;i++) if(isBuyable(i)) buy.push(i);
+  const n=buy.length;
+  if(n<3)return;
+  for(let s=0;s<n;s++){
+    const owner0=d.properties[buy[s]]?.owner;
+    if(owner0===null||owner0===undefined) continue;
+    let len=1;
+    for(let k=1;k<n;k++){
+      const idx=buy[(s+k)%n];
+      if(d.properties[idx]?.owner===owner0) len++;
+      else break;
+    }
+    if(len>=3){
+      for(let k=0;k<len;k++) d.properties[buy[(s+k)%n]].vurgun=true;
+    }
+  }
+}
+function effectiveRent(c, pr){
+  const level=pr?.level||0;
+  let r=rentFor(c, level);
+  if(pr?.vurgun) r*=2;
+  return r;
+}
 
 const suits=["♠","♥","♦","♣"],ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 function makeDeck(){const d=[];for(const s of suits)for(const r of ranks)d.push({s,r});return d.sort(()=>Math.random()-0.5)}
@@ -523,6 +573,7 @@ function resolveLanding(d,who,pos){
   if(cell.type==="blackjack"){d.game=bjInit(who);d.turn=who;d.message="🃏 BLACKJACK masası açıldı.";return d}
   if(cell.type==="poker"){d.game=pokerInit(who);d.turn=who;d.message="♠️ POKER masası açıldı.";return d}
   if(cell.type==="jackpot"){d.game=jackpotInit(who);d.turn=who;d.message="🎰 JACKPOT!";return d}
+  if(cell.type==="hipodrom"){d.game=hipoInit(who);d.turn=who;d.message="🏇 HİPODROM! Atını seç.";return d}
   if(cell.type==="auction"){
     d.auction={kind:"propertySelect",seller:who,highest:0,highestBy:null,pos:null,minBid:0,active:true};
     d.turn=who;d.message=`${p.name} açık artırma alanına geldi. Satacağı yeri seçiyor.`;return d;
@@ -1083,10 +1134,226 @@ async function spinJackpot(){
   });
 }
 
+
+/* ================= HİPODROM / AT YARIŞI ================= */
+const HIPO_FEE=1000;
+const HIPO_HORSES=[
+  {id:1,name:"Favori",odd:1.5,w:40,bar:"#22c55e",barW:90},
+  {id:2,name:"Plase",odd:2.0,w:25,bar:"#84cc16",barW:70},
+  {id:3,name:"Fırtına",odd:3.0,w:15,bar:"#eab308",barW:50},
+  {id:4,name:"Yıldırım",odd:5.0,w:10,bar:"#f97316",barW:35},
+  {id:5,name:"Çılgın",odd:10.0,w:7,bar:"#ef4444",barW:22},
+  {id:6,name:"Prens",odd:20.0,w:3,bar:"#a855f7",barW:12}
+];
+function hipoInit(startedBy){
+  return{
+    type:"hipodrom",phase:"pick",startedBy,fee:HIPO_FEE,
+    picks:{}, stakes:{}, paid:{},
+    winner:null,message:"Atını seç, kupon tutarını yaz ve yatır."
+  };
+}
+function hipoWeightedWinner(){
+  const total=HIPO_HORSES.reduce((s,h)=>s+h.w,0);
+  let r=Math.random()*total;
+  for(const h of HIPO_HORSES){
+    r-=h.w;
+    if(r<=0) return h.id;
+  }
+  return HIPO_HORSES[0].id;
+}
+function renderHipodrom(g,d){
+  const phase=g.phase||"pick";
+  let h=`<div class="hip-modal">`;
+  h+=`<div class="hip-title">🏇 HİPODROM — BÜYÜK GANYAN</div>`;
+  h+=`<div class="hip-sub">Atını seç, kuponunu yatır, köşeyi dön!</div>`;
+  h+=`<div class="hip-fee">Kupon tutarını sen belirle (min 50₺). Kazanç = kupon × oran</div>`;
+
+  if(phase==="pick"){
+    const myPick=g.picks?.[playerNumber];
+    const myPaid=!!g.paid?.[playerNumber];
+    h+=`<div class="hip-grid">`;
+    HIPO_HORSES.forEach(ho=>{
+      const sel=myPick===ho.id?"selected":"";
+      h+=`<div class="hip-card ${sel}" data-hid="${ho.id}">
+        <div style="font-size:13px;color:#94a3b8">#${ho.id}</div>
+        <div style="font-size:18px;font-weight:bold">${ho.name}</div>
+        <div class="odd">${ho.odd.toFixed(1)}x</div>
+        <div style="font-size:11px;color:#94a3b8">Şans ~%${ho.w}</div>
+        <div class="hip-bar"><i style="width:${ho.barW}%;background:${ho.bar}"></i></div>
+      </div>`;
+    });
+    h+=`</div>`;
+    h+=`<div class="info">Paran: ${d.players?.[playerNumber]?.money??0}₺ ${myPaid?" · Kupon alındı":""}</div>`;
+    if(!myPaid){
+      h+=`<div class="btn-row" style="align-items:center;justify-content:center">
+        <label style="color:#d4af37">Kupon (₺):</label>
+        <input type="number" id="hipoStake" value="200" min="50" max="5000" step="50" style="width:100px">
+        <button class="gold" id="hipoConfirm" ${myPick?"":"disabled"}>🎟️ Kupon Yatır</button>
+        <button class="red" id="hipoSkip">Pas</button></div>`;
+    } else {
+      const st=g.stakes?.[playerNumber]||0;
+      h+=`<div style="text-align:center;color:#86efac">Seçimin: #${myPick} · Kupon: ${st}₺ — yarış bekleniyor...</div>`;
+    }
+    // Host (startedBy) can force start when at least one paid
+    if(playerNumber===g.startedBy){
+      h+=`<div class="btn-row" style="margin-top:8px"><button id="hipoStartRace" class="pink">🏁 Yarışı Başlat</button></div>`;
+    }
+  } else if(phase==="race" || phase==="anim"){
+    h+=`<div style="text-align:center;color:#d4af37;margin-bottom:8px">⏱️ 10 saniyelik büyük koşu</div>`;
+    h+=`<div class="hip-lanes" id="hipLanes" style="background:linear-gradient(#0b3d2c,#062018);padding:14px;border-radius:12px;border:2px solid #d4af37">`;
+    HIPO_HORSES.forEach(ho=>{
+      h+=`<div class="hip-lane" id="hipLane${ho.id}" style="margin:8px 0">
+        <span style="width:88px;font-size:12px;color:#fde68a;font-weight:bold">#${ho.id} ${ho.name}</span>
+        <div class="track" style="height:36px;background:repeating-linear-gradient(90deg,#1a1a1a 0 20px,#222 20px 40px);border:1px solid #444;box-shadow:inset 0 0 12px #000">
+          <span class="horse" id="hipH${ho.id}" style="font-size:26px;filter:drop-shadow(0 2px 4px #000)">🐎</span>
+        </div>
+        <span style="width:40px;color:#94a3b8;font-size:11px">${ho.odd}x</span></div>`;
+    });
+    h+=`</div><div class="info" style="text-align:center" id="hipTimer">Yarış sürüyor...</div>`;
+  } else if(phase==="end"){
+    const win=HIPO_HORSES.find(x=>x.id===g.winner)||HIPO_HORSES[0];
+    h+=`<div style="text-align:center;font-size:28px;color:#d4af37;margin:16px 0">🏆 KAZANAN: #${win.id} ${win.name} (${win.odd}x)</div>`;
+    const myPick=g.picks?.[playerNumber];
+    const paid=!!g.paid?.[playerNumber];
+    const st=Number(g.stakes?.[playerNumber]||0);
+    if(paid && myPick===g.winner){
+      const gain=Math.floor(st*win.odd);
+      h+=`<div style="text-align:center;font-size:24px;color:#4ade80;font-weight:bold">+${gain} ₺ (kupon ${st}₺ × ${win.odd})</div>`;
+    } else if(paid){
+      h+=`<div style="text-align:center;font-size:22px;color:#f87171">−${st} ₺ kupon gitti</div>`;
+    } else {
+      h+=`<div style="text-align:center;color:#94a3b8">Bu yarışa katılmadın.</div>`;
+    }
+    h+=`<div class="btn-row" style="margin-top:16px"><button id="hipoClose">Masaya Dön</button></div>`;
+  }
+  h+=`</div>`;
+  $("modalContent").innerHTML=h;
+  $("modal").classList.remove("hidden");
+
+  if(phase==="pick"){
+    $("modalContent").querySelectorAll(".hip-card").forEach(el=>{
+      el.onclick=()=>{
+        if(g.paid?.[playerNumber]) return;
+        window._hipoPick=Number(el.dataset.hid);
+        $("modalContent").querySelectorAll(".hip-card").forEach(c=>c.classList.remove("selected"));
+        el.classList.add("selected");
+        const btn=$("hipoConfirm"); if(btn) btn.disabled=false;
+      };
+    });
+    if($("hipoConfirm")) $("hipoConfirm").onclick=hipoConfirmPick;
+    if($("hipoSkip")) $("hipoSkip").onclick=hipoSkip;
+    if($("hipoStartRace")) $("hipoStartRace").onclick=hipoStartRace;
+  }
+  if(phase==="race" && !window._hipoAnimating){
+    window._hipoAnimating=true;
+    runHipodromAnim(g.winner).then(()=>{ window._hipoAnimating=false; });
+  }
+  if($("hipoClose")) $("hipoClose").onclick=closeCasino;
+}
+async function hipoConfirmPick(){
+  const hid=window._hipoPick;
+  if(!hid) return alert("Önce at seç");
+  const stake=Math.max(50, Math.min(5000, Number($("hipoStake")?.value||200)));
+  await runTransaction(path(),d=>{
+    const g=d.game,p=d.players[playerNumber];
+    if(!g||g.type!=="hipodrom"||g.phase!=="pick"||!p) return d;
+    if(g.paid?.[playerNumber]) return d;
+    if(p.money<stake){ d.message="Yetersiz para."; return d; }
+    p.money-=stake;
+    if(!g.picks) g.picks={}; if(!g.paid) g.paid={}; if(!g.stakes) g.stakes={};
+    g.picks[playerNumber]=hid;
+    g.paid[playerNumber]=true;
+    g.stakes[playerNumber]=stake;
+    g.message=`${p.name} #${hid} için ${stake}₺ kupon yatırdı.`;
+    return d;
+  });
+}
+async function hipoSkip(){
+  await runTransaction(path(),d=>{
+    const g=d.game;
+    if(!g||g.type!=="hipodrom"||g.phase!=="pick") return d;
+    if(!g.picks) g.picks={}; if(!g.paid) g.paid={};
+    g.picks[playerNumber]=null;
+    g.paid[playerNumber]=false;
+    g.message=`${d.players[playerNumber]?.name||"Oyuncu"} yarışa katılmadı.`;
+    return d;
+  });
+}
+async function hipoStartRace(){
+  await runTransaction(path(),d=>{
+    const g=d.game;
+    if(!g||g.type!=="hipodrom"||g.phase!=="pick") return d;
+    if(g.startedBy!==playerNumber) return d;
+    const any=Object.values(g.paid||{}).some(Boolean);
+    if(!any){ d.message="En az bir kupon gerekli."; return d; }
+    g.winner=hipoWeightedWinner();
+    g.phase="race";
+    g.message="Yarış başladı!";
+    return d;
+  });
+}
+async function runHipodromAnim(winnerId){
+  const duration=10000;
+  const t0=performance.now();
+  const progress={};
+  HIPO_HORSES.forEach(h=>progress[h.id]=0);
+  await new Promise(resolve=>{
+    function frame(now){
+      const t=Math.min(1,(now-t0)/duration);
+      const left=Math.ceil((1-t)*10);
+      const tim=$("hipTimer"); if(tim) tim.textContent="Süre: "+left+" sn";
+      HIPO_HORSES.forEach(h=>{
+        const el=$("hipH"+h.id);
+        if(!el) return;
+        // kazanan sona doğru öne çıksın
+        let target=t*0.85 + Math.random()*0.08;
+        if(h.id===winnerId) target=t*0.98;
+        else target=Math.min(target, 0.72+t*0.15);
+        progress[h.id]=Math.max(progress[h.id], target);
+        el.style.left = (progress[h.id]*100) + "%";
+        el.style.transform = "translateX(-100%)";
+      });
+      if(t<1) requestAnimationFrame(frame);
+      else {
+        HIPO_HORSES.forEach(h=>{
+          const el=$("hipH"+h.id);
+          if(!el) return;
+          const final = h.id===winnerId ? 0.98 : 0.55+Math.random()*0.25;
+          el.style.left=(final*100)+"%";
+          const lane=$("hipLane"+h.id);
+          if(lane && h.id===winnerId) lane.classList.add("winner");
+        });
+        resolve();
+      }
+    }
+    requestAnimationFrame(frame);
+  });
+  // settle payouts
+  await runTransaction(path(),d=>{
+    const g=d.game;
+    if(!g||g.type!=="hipodrom"||g.phase!=="race") return d;
+    const win=HIPO_HORSES.find(x=>x.id===g.winner);
+    const odd=win?.odd||1;
+    Object.keys(g.paid||{}).forEach(k=>{
+      const i=Number(k);
+      if(!g.paid[k] || !d.players?.[i]) return;
+      if(g.picks[i]===g.winner){
+        const st=Number(g.stakes?.[i]||HIPO_FEE);
+        d.players[i].money += Math.floor(st * odd);
+      }
+    });
+    g.phase="end";
+    g.message=`Kazanan #${g.winner} ${win?.name||""}`;
+    return d;
+  });
+}
+
+
 function renderCasino(g,d){
   if(g.type==="blackjack")renderBJ(g,d);
   else if(g.type==="poker")renderPoker(g,d);
   else if(g.type==="jackpot")renderJackpot(g,d);
+  else if(g.type==="hipodrom")renderHipodrom(g,d);
 }
 async function closeCasino(){
   await runTransaction(path(),d=>{if(!d)return d;d.game=null;d.turn=nextSeat(d,playerNumber);d.message="🎲 Masa kapandı. Sıra sonraki oyuncuya geçti.";return d});
@@ -1240,7 +1507,7 @@ function makeLevelBadgeTex(level){
 }
 
 let _3dReady=false, _pawns=[], _renderer, _scene, _camera;
-let _tileLabels=[], _levelBadges=[], _ownerMarks=[];
+let _tileLabels=[], _levelBadges=[], _ownerMarks=[], _tileMeshes=[];
 const PAWN_COLORS=[0xfbbf24,0x3b82f6,0x22c55e,0xec4899];
 
 function buildTileLines(i, pr){
@@ -1293,87 +1560,122 @@ function init3D(){
   const logo=new THREE.Mesh(new THREE.PlaneGeometry(3.4,1.6), new THREE.MeshBasicMaterial({map:makeLabelTex(["KUMARHANE","MONOPOLY"],{w:512,h:256}), transparent:true}));
   logo.rotation.x=-Math.PI/2; logo.position.y=0.14; boardGroup.add(logo);
 
-  // --- Orta 3D zarlar ---
+  // --- Orta 3D zarlar (dönen, sonra sayı) ---
+  function faceTex(n, highlight){
+    const c=document.createElement("canvas"); c.width=128; c.height=128;
+    const ctx=c.getContext("2d");
+    ctx.fillStyle = highlight ? "#fef3c7" : "#f8fafc";
+    ctx.fillRect(0,0,128,128);
+    ctx.strokeStyle = highlight ? "#d4af37" : "#1e293b";
+    ctx.lineWidth=8; ctx.strokeRect(6,6,116,116);
+    // pip style for 1-6
+    ctx.fillStyle="#0f172a";
+    const pips={
+      1:[[64,64]],
+      2:[[36,36],[92,92]],
+      3:[[36,36],[64,64],[92,92]],
+      4:[[36,36],[36,92],[92,36],[92,92]],
+      5:[[36,36],[36,92],[92,36],[92,92],[64,64]],
+      6:[[36,36],[36,64],[36,92],[92,36],[92,64],[92,92]]
+    };
+    (pips[n]||pips[1]).forEach(([x,y])=>{
+      ctx.beginPath(); ctx.arc(x,y,12,0,Math.PI*2); ctx.fill();
+    });
+    const tex=new THREE.CanvasTexture(c); tex.needsUpdate=true; return tex;
+  }
   function makeDieMesh(){
-    const g=new THREE.BoxGeometry(0.55,0.55,0.55);
-    const mats=[];
-    // 6 yüz basit renk + canvas sayı
-    for(let f=1;f<=6;f++){
-      const c=document.createElement("canvas");c.width=128;c.height=128;
-      const ctx=c.getContext("2d");
-      ctx.fillStyle="#f8fafc";ctx.fillRect(0,0,128,128);
-      ctx.strokeStyle="#334155";ctx.lineWidth=6;ctx.strokeRect(4,4,120,120);
-      ctx.fillStyle="#0f172a";ctx.font="900 64px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(String(f),64,70);
-      mats.push(new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));
-    }
-    // BoxGeometry face order: +x -x +y -y +z -z — map roughly
-    const mesh=new THREE.Mesh(g,[mats[0],mats[1],mats[2],mats[3],mats[4],mats[5]]);
+    const g=new THREE.BoxGeometry(0.7,0.7,0.7);
+    // all faces start as 1; we'll update materials on result
+    const mats=[1,2,3,4,5,6].map(n=>new THREE.MeshStandardMaterial({map:faceTex(n,false), roughness:0.35, metalness:0.1}));
+    const mesh=new THREE.Mesh(g, mats);
     mesh.castShadow=true;
     return mesh;
   }
   const dieA=makeDieMesh(), dieB=makeDieMesh();
-  dieA.position.set(-0.55, 0.55, 0); dieB.position.set(0.55, 0.55, 0);
+  dieA.position.set(-0.75, 0.85, 0); dieB.position.set(0.75, 0.85, 0);
   boardGroup.add(dieA); boardGroup.add(dieB);
-  const diceTotalSpr=(()=>{ 
-    const c=document.createElement("canvas");c.width=256;c.height=64;
-    const ctx=c.getContext("2d");ctx.fillStyle="rgba(0,0,0,0.55)";ctx.fillRect(0,0,256,64);
-    ctx.fillStyle="#fbbf24";ctx.font="900 36px Arial";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("ZAR",128,34);
+  let _diceSpinning=false, _diceSpinUntil=0, _diceTarget=[1,1];
+  const diceLabel=(()=>{
+    const c=document.createElement("canvas"); c.width=320; c.height=80;
+    const ctx=c.getContext("2d");
+    ctx.fillStyle="rgba(0,0,0,0.65)"; ctx.fillRect(0,0,320,80);
+    ctx.fillStyle="#fbbf24"; ctx.font="900 36px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText("🎲 ZAR",160,42);
     const tex=new THREE.CanvasTexture(c);
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(2.2,0.55), new THREE.MeshBasicMaterial({map:tex,transparent:true}));
-    m.rotation.x=-Math.PI/2; m.position.set(0,0.9,0); boardGroup.add(m); return m;
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(2.6,0.65), new THREE.MeshBasicMaterial({map:tex, transparent:true}));
+    m.rotation.x=-Math.PI/2; m.position.set(0,1.35,0); boardGroup.add(m); return m;
+  })();
+  function setDiceLabel(text){
+    const c=document.createElement("canvas"); c.width=320; c.height=80;
+    const ctx=c.getContext("2d");
+    ctx.fillStyle="rgba(15,23,42,0.8)"; ctx.fillRect(0,0,320,80);
+    ctx.strokeStyle="#d4af37"; ctx.lineWidth=4; ctx.strokeRect(2,2,316,76);
+    ctx.fillStyle="#fbbf24"; ctx.font="900 34px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(text,160,42);
+    const old=diceLabel.material.map;
+    diceLabel.material.map=new THREE.CanvasTexture(c);
+    diceLabel.material.needsUpdate=true;
+    if(old) old.dispose();
+  }
+  window.setDice3D=function(a,b){
+    a=Math.max(1,Math.min(6,a|0)); b=Math.max(1,Math.min(6,b|0));
+    _diceTarget=[a,b];
+    _diceSpinning=true;
+    _diceSpinUntil=performance.now()+900;
+    setDiceLabel("🎲 ...");
+  };
+  // spin in render loop
+  const _renderLoopOrig = null;
+  (function diceAnimLoop(){
+    requestAnimationFrame(diceAnimLoop);
+    if(!_3dReady||!dieA) return;
+    const now=performance.now();
+    if(_diceSpinning){
+      dieA.rotation.x += 0.35; dieA.rotation.y += 0.42;
+      dieB.rotation.x += 0.38; dieB.rotation.y += 0.31;
+      if(now>=_diceSpinUntil){
+        _diceSpinning=false;
+        const [a,b]=_diceTarget;
+        // settle rotation so a face is up-ish
+        dieA.rotation.set(0.25, 0.4, 0.1);
+        dieB.rotation.set(0.2, -0.35, 0.15);
+        // refresh face 0 material as result number for visual cue
+        if(dieA.material[0]){ const o=dieA.material[0].map; dieA.material[0].map=faceTex(a,true); dieA.material[0].needsUpdate=true; if(o)o.dispose(); }
+        if(dieB.material[0]){ const o=dieB.material[0].map; dieB.material[0].map=faceTex(b,true); dieB.material[0].needsUpdate=true; if(o)o.dispose(); }
+        setDiceLabel(`${a} + ${b} = ${a+b}`);
+      }
+    }
   })();
 
-  window.setDice3D=function(a,b){
-    if(!dieA||!dieB) return;
-    a=Math.max(1,Math.min(6,a|0)); b=Math.max(1,Math.min(6,b|0));
-    // basit sallanma
-    dieA.rotation.set(Math.random()*1.2, Math.random()*1.2, Math.random()*0.5);
-    dieB.rotation.set(Math.random()*1.2, Math.random()*1.2, Math.random()*0.5);
-    const c=document.createElement("canvas");c.width=256;c.height=64;
-    const ctx=c.getContext("2d");
-    ctx.fillStyle="rgba(15,23,42,0.75)";ctx.fillRect(0,0,256,64);
-    ctx.fillStyle="#fbbf24";ctx.font="900 32px Arial";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillText(`${a} + ${b} = ${a+b}`,128,34);
-    const old=diceTotalSpr.material.map;
-    diceTotalSpr.material.map=new THREE.CanvasTexture(c);
-    diceTotalSpr.material.needsUpdate=true;
-    if(old) old.dispose();
-  };
 
-
-  // Bitişik kareler: geometry boyutu = STEP (gap yok)
+  // --- 32 kare + etiket + piyonlar (harita) ---
   const geo=new THREE.BoxGeometry(STEP*0.98, 0.42, STEP*0.98);
-  _tileLabels=[]; _levelBadges=[]; _ownerMarks=[]; const _tileMeshes=[];
+  _tileLabels=[]; _levelBadges=[]; _ownerMarks=[]; _tileMeshes=[];
   for(let i=0;i<BOARD;i++){
     const c=cells[i], {x,z}=cellXZ(i);
     const mesh=new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:hexColor(c.bg||c.color), roughness:0.65}));
-    mesh.position.set(x,0.21,z); mesh.castShadow=true; mesh.receiveShadow=true; boardGroup.add(mesh); _tileMeshes[i]=mesh;
+    mesh.position.set(x,0.21,z); mesh.castShadow=true; mesh.receiveShadow=true;
+    boardGroup.add(mesh); _tileMeshes[i]=mesh;
 
     const labMat=new THREE.MeshBasicMaterial({map:makeLabelTex(buildTileLines(i,null)), transparent:true});
     const lab=new THREE.Mesh(new THREE.PlaneGeometry(STEP*0.98, STEP*0.78), labMat);
-    lab.rotation.x=-Math.PI/2; lab.position.set(x,0.48,z); lab.renderOrder=1; boardGroup.add(lab);
-    _tileLabels[i]=lab;
+    lab.rotation.x=-Math.PI/2; lab.position.set(x,0.48,z); lab.renderOrder=1;
+    boardGroup.add(lab); _tileLabels[i]=lab;
 
-    const badgeMat=new THREE.MeshBasicMaterial({map:makeLevelBadgeTex(1), transparent:true, visible:false});
+    const badgeMat=new THREE.MeshBasicMaterial({map:makeLevelBadgeTex(1), transparent:true, visible:false, depthTest:false});
     const badge=new THREE.Mesh(new THREE.PlaneGeometry(0.42,0.42), badgeMat);
     badge.rotation.x=-Math.PI/2;
     badge.position.set(x+STEP*0.36, 0.58, z-STEP*0.36);
     badge.renderOrder=2;
-    badge.material.depthTest=false;
-    boardGroup.add(badge);
-    _levelBadges[i]=badge;
+    boardGroup.add(badge); _levelBadges[i]=badge;
 
-    const ownMat=new THREE.MeshBasicMaterial({color:0xfbbf24, transparent:true, opacity:0, depthWrite:false});
+    const ownMat=new THREE.MeshBasicMaterial({color:0xfbbf24, transparent:true, opacity:0, depthWrite:false, depthTest:false});
     const own=new THREE.Mesh(new THREE.CircleGeometry(0.16,16), ownMat);
     own.rotation.x=-Math.PI/2;
     own.position.set(x-STEP*0.36, 0.58, z+STEP*0.36);
     own.renderOrder=2;
-    own.material.depthTest=false;
-    boardGroup.add(own);
-    _ownerMarks[i]=own;
+    boardGroup.add(own); _ownerMarks[i]=own;
   }
-
   function mkPawn(col){
     const g=new THREE.Group();
     const body=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.18,0.28,12), new THREE.MeshStandardMaterial({color:col, metalness:0.25, roughness:0.35}));
@@ -1437,8 +1739,12 @@ function init3D(){
       }
       const tm=_tileMeshes[i];
       if(tm && tm.material){
-        // VURGUN: altın çerçeve hissi (emissive)
-        if(pr?.vurgun){ tm.material.emissive=new THREE.Color(0xaa5500); tm.material.emissiveIntensity=0.35; }
+        if(pr?.owner!=null && pr.owner>=0){
+          tm.material.color.setHex(PAWN_COLORS[pr.owner]||0xfbbf24);
+        } else {
+          tm.material.color.setHex(hexColor(cells[i].bg||cells[i].color));
+        }
+        if(pr?.vurgun){ tm.material.emissive=new THREE.Color(0xaa5500); tm.material.emissiveIntensity=0.4; }
         else { tm.material.emissive=new THREE.Color(0x000000); tm.material.emissiveIntensity=0; }
       }
     }
