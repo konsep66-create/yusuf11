@@ -197,7 +197,7 @@ input:focus,select:focus{outline:none;border-color:#d4af37;box-shadow:0 0 0 2px 
 <body>
 <div id="lobby">
   <div style="font-size:48px;margin-bottom:4px">🎰</div>
-  <h1>Kumarhane Monopoly</h1>
+  <h1>Kumarhane Yolu</h1>
   <div style="color:#94a3b8;font-size:14px;text-align:center;margin-bottom:8px">Max 4 oyuncu · Lüks kumarhane deneyimi</div>
   <input id="nameInput" maxlength="16" placeholder="İsminizi yazın">
   <button id="createRoom">🏠 Oda Oluştur</button>
@@ -270,7 +270,7 @@ input:focus,select:focus{outline:none;border-color:#d4af37;box-shadow:0 0 0 2px 
       <canvas id="view3d"></canvas>
       <div id="board" class="board" style="display:none">
         <div class="center">
-          <div style="font-size:18px;color:#666">KUMARHANE MONOPOLY</div>
+          <div style="font-size:18px;color:#666">KUMARHANE YOLU</div>
           <div class="dice-box"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
           <div class="dice-total" id="diceTotal">-</div>
         </div>
@@ -2639,7 +2639,7 @@ function init3D(){
   // Logo — premium plak
   const logo=new THREE.Mesh(
     new THREE.PlaneGeometry(3.4, 1.55),
-    new THREE.MeshBasicMaterial({map:makeLabelTex(["KUMARHANE","MONOPOLY"],{w:512,h:256, bg:"rgba(12,14,22,0.95)", border:"#d4af37"}), transparent:true})
+    new THREE.MeshBasicMaterial({map:makeLabelTex(["KUMARHANE","YOLU"],{w:512,h:256, bg:"rgba(12,14,22,0.95)", border:"#d4af37"}), transparent:true})
   );
   logo.rotation.x=-Math.PI/2; logo.position.set(0, 0.18, -1.75); boardGroup.add(logo);
 
